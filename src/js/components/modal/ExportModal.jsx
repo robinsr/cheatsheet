@@ -1,35 +1,8 @@
 import React, { Component } from 'react';
 
+import Modal from 'components/modal/Modal';
 import { AppContext } from 'context/Store';
-
 import copy_to_clip from 'utils/clipboard';
-
-
-
-const GenericModal = (props) => {
-    return (
-        <div className={'modal modal-lg ' + (props.active ? 'active' : '')}>
-            <a href="#close" className="modal-overlay" aria-label="Close" onClick={props.onClose}></a>
-            <div className="modal-container">
-                <div className="modal-header">
-                    <a href="#close" className="btn btn-clear float-right" aria-label="Close" onClick={props.onClose}></a>
-                    <div className="modal-title h5">{props.title}</div>
-                </div>
-                <div className="modal-body">
-                    {props.content}
-                </div>
-                <div className="modal-footer">
-                    <div className="docs-demo columns">
-                        <div className="column col-12">
-                            {props.footer}
-                            <button className="btn btn-default" onClick={props.onClose}>Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-}
 
 
 export default class ExportModal extends Component {
@@ -56,7 +29,7 @@ export default class ExportModal extends Component {
         let { progress, show_markdown } = this.context.items;
 
         return (
-            <GenericModal 
+            <Modal 
                 title={'Export to Markdown'}
                 active={show_markdown}
                 onClose={() => this.close()}
@@ -74,7 +47,7 @@ export default class ExportModal extends Component {
         let { markdown_val, show_markdown } = this.context.items;
 
         return (
-            <GenericModal 
+            <Modal 
                 title={'Export to Markdown'}
                 active={show_markdown}
                 onClose={() => this.close()}

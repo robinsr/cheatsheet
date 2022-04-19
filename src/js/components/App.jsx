@@ -4,7 +4,8 @@ import Store from 'context/Store'
 import ShortcutCards from 'components/ShortcutCards.jsx';
 import OptionsForm from 'components/OptionsForm.jsx';
 import Hero from 'components/Hero.jsx';
-import ExportModal from 'components/ExportModal.jsx'
+import ExportModal from 'components/modal/ExportModal.jsx'
+import ImageModal from 'components/modal/ImageModal.jsx'
 
 
 export default class App extends React.Component {
@@ -16,10 +17,10 @@ export default class App extends React.Component {
                         <Hero />
                         <OptionsForm />
                         <ShortcutCards />
-                        
                     </div>
                 </div>
                 <ExportModal />
+                <ImageModal />
             </Store>
         )
 	}

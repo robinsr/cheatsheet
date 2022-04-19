@@ -20,13 +20,15 @@
     display: inline-block;
 }
 
-.shortcut-cards .column {
-    padding: 0.4rem;
+.shortcut-cards {
+    column-count: 2;
 }
 
 .shortcut-card {
     border: 0;
     box-shadow: 0 0.25rem 1rem rgb(48 55 66 / 15%);
+    break-inside: avoid;
+    margin-bottom: 0.8rem;
 }
 
 .shortcut-card .card-header {
@@ -41,4 +43,14 @@
 
 .shortcut-card .export-menu a {
     cursor: pointer;
+}
+
+.download-container {
+    display: flex;
+}
+
+.download-image {
+    border: 1px solid #ddd;
+    padding: 0.8rem;
+    border-radius: 1rem;
 }

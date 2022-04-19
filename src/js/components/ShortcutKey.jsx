@@ -19,24 +19,6 @@ class ShortcutKey extends Component {
 
     constructor(props) {
         super(props);
-
-        this.ref = createRef();
-
-        this.state = {
-            image_data: null
-        }
-
-        this.props.item.attach_ref(this.ref);
-    }
-
-    generate_png = () => {
-        if (this.state.image_data) {
-            return;
-        }
-
-        this.props.item.fetch_image_data().then(image_data => {
-            this.setState({ image_data })
-        });
     }
 
     render_key = (key) => {
@@ -50,41 +32,18 @@ class ShortcutKey extends Component {
         );
     }
 
-    render_image = () => {
-        let { data_url, width, height } = this.state.image_data;
-
-        return (
-            <img src={'' + data_url} width={width} height={height} />
-        );
-    }
-
 
 	render() {
 		let { command } = this.props;
 
-        let { image_data } = this.state;
-
         return(
-            <div className="popover popover-right" onMouseEnter={this.generate_png}>
-                <span id={'kbd-' + command} className="label shortcut" ref={this.ref}>
+            <div className="popover popover-right">
+                <span id={'kbd-' + command} className="label shortcut">
                     {command.split('-')
                         .map(this.render_key)
                         .reduce((prev, curr) => [prev, ' + ', curr])
                     }
                 </span>
-                <div className="popover-container">
-                    <div className="card">
-                        <div className="card-body p-centered">
-                        {image_data != null
-                            ? this.render_image()
-                            : <span className="">
-                                Getting that image for you...
-                                <div className="loading loading-lg"></div>
-                                </span>
-                        }
-                        </div>
-                    </div>
-                </div>
             </div>
         );
     }

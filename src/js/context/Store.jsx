@@ -77,6 +77,9 @@ export class Items {
         this.items = quiver_configs.map(i => new ShortcutItem(i));
         this.show_markdown = false;
         this.markdown_val = null;
+
+        this.show_image_modal = false;
+        this.image_data = null
     }
 
     static async get_all_images(all_items, progress_cb = () => {}) {
@@ -87,6 +90,13 @@ export class Items {
             }
             resolve();
         });
+    }
+
+    show_image = (image_data) => {
+        this.updater({
+            show_image_modal: true,
+            image_data
+        })
     }
 
     export = () => {
@@ -100,8 +110,14 @@ export class Items {
             .then(() => this.export_markdown());
     }
 
-    export_markdown = () => {
-        let rows = this.items.map(item => item.get_markdown_string()).join('\n');
+    export_markdown = (group) => {
+        let items = this.items;
+
+        if (group) {
+            items = items.filter(i => i.category == group);
+        }
+
+        let rows = items.map(item => item.get_markdown_string()).join('\n');
 
         let header = [
             '|Category|Name|Command|',
@@ -117,8 +133,9 @@ export class Items {
 
     close_export_window = () => {
         this.updater({
-            show_markdown: false
-        })
+            show_markdown: false,
+            show_image_modal: false
+        });
     }
 }
 
