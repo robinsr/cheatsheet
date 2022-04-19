@@ -1,0 +1,44 @@
+.shortcut-table.large-font kbd {
+    font-size: 1rem;
+}
+
+.shortcut-table th {
+    background-color: #f7f8f9;
+}
+
+.shortcut-table td, .shortcut-table th  {
+    padding: 0.2rem 0.2rem;
+    background-color: #fff;
+}
+
+.shortcut-table tr:last-child td {
+    border-bottom:  none;
+}
+
+.shortcut-table .shortcut {
+    padding: 0.2rem 0.3em 0.3rem 0.2rem;
+    display: inline-block;
+}
+
+.shortcut-cards .column {
+    padding: 0.4rem;
+}
+
+.shortcut-card {
+    border: 0;
+    box-shadow: 0 0.25rem 1rem rgb(48 55 66 / 15%);
+}
+
+.shortcut-card .card-header {
+    background-color: #f7f8f9;
+    padding-bottom: 0.8rem;
+}
+
+.shortcut-card .card-header {
+    background-color: #f7f8f9;
+    padding-bottom: 0.8rem;
+}
+
+.shortcut-card .export-menu a {
+    cursor: pointer;
+}
