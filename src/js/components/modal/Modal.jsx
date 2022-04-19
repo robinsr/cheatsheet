@@ -1,9 +1,18 @@
 import React from 'react';
+import classnames from 'classnames';
 
 
 const Modal = (props) => {
+
+    let cns = classnames(
+        'modal',
+        props.type || 'modal-lg', 
+        props.active ? 'active' : '',
+        props.name
+    )
+
     return (
-        <div className={'modal modal-lg ' + (props.active ? 'active' : '')}>
+        <div className={cns}>
             <a href="#close" className="modal-overlay" aria-label="Close" onClick={props.onClose}></a>
             <div className="modal-container">
                 <div className="modal-header">

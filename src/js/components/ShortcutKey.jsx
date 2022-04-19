@@ -19,6 +19,10 @@ class ShortcutKey extends Component {
 
     constructor(props) {
         super(props);
+
+        this.ref = createRef();
+
+        this.props.item.attach_ref(this.ref);
     }
 
     render_key = (key) => {
@@ -36,9 +40,13 @@ class ShortcutKey extends Component {
 	render() {
 		let { command } = this.props;
 
+        if (!command) {
+            return null;
+        }
+
         return(
-            <div className="popover popover-right">
-                <span id={'kbd-' + command} className="label shortcut">
+            <div>
+                <span id={'kbd-' + command} className="label shortcut" ref={this.ref}>
                     {command.split('-')
                         .map(this.render_key)
                         .reduce((prev, curr) => [prev, ' + ', curr])

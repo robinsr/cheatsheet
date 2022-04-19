@@ -3,27 +3,52 @@ import ShortcutKey from 'components/ShortcutKey.jsx';
 
 
 class Row extends Component {
+	constructor(props) {
+		super(props)
+	}
+
+	edit_item = () => {
+		this.props.onEdit(this.props.item)
+	}
+
 	render(){
-		let { label, cmd } = this.props.item;
+		let { editing } = this.props;
+		let { id, label, cmd, edit } = this.props.item;
+
+		if (edit) {
+			return (
+				<tr key="row-new">
+					<td colSpan="2" className="text-center"><em>editing...</em></td>
+				</tr>
+			);
+		}
 
 		return (
-			<tr key="row-{cmd}">
-	            <td>{label}</td>
-	            <td className="text-right">
-	            	<ShortcutKey 
-	            		command={cmd}
-	            		item={this.props.item}
-            		/>
-	            </td>
-	        </tr>
+			<tr key={id}>
+				<td>
+					{editing ? <i className="icon icon-cross"></i> : null}
+					<span onClick={this.edit_item} style={{cursor: 'pointer'}}>{label}</span>
+				</td>
+				<td className="text-right">
+					<ShortcutKey
+					command={cmd}
+					item={this.props.item}
+					/>
+				</td>
+			</tr>
 		)
 	}
 }
 
 
 export default class ShortcutTable extends Component {
+
+	constructor(props) {
+		super(props);
+	}
+
 	render() {
-		let { items } = this.props
+		let { items, editing } = this.props
 
 		return (
 			<table className="table shortcut-table">
@@ -34,7 +59,7 @@ export default class ShortcutTable extends Component {
 					</tr>
 				</thead>
 				<tbody>
-					{items.map(item => <Row item={item} key={item.cmd} />)}
+					{items.map(item => <Row item={item} key={item.id} {...this.props} />)}
 				</tbody>
 			</table>
 		)
