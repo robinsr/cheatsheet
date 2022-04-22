@@ -22,7 +22,9 @@ class ShortcutKey extends Component {
 
         this.ref = createRef();
 
-        this.props.item.attach_ref(this.ref);
+        if (this.props.item && this.props.item.attach_ref) {
+            this.props.item.attach_ref(this.ref);
+        }
     }
 
     render_key = (key) => {

@@ -2,6 +2,14 @@ import React, { Component, createContext } from 'react';
 
 import ShortcutCollection from './items/ShortcutCollection';
 
+const ls = window.localStorage;
+
+console.log(window)
+
+console.log(ls.getItem("TEST"))
+
+// ls.setItem("TEST", JSON.stringify({ does_it_work: 'yes' }));
+
 
 export const AppContext = createContext();
 

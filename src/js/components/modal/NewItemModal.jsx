@@ -6,6 +6,7 @@ import Modal from 'components/modal/Modal';
 import CaptureBox from 'components/modal/CaptureBox';
 import { AppContext } from 'context/Store';
 
+const key_msg = 'Not all keyboard shortcuts can be captured.\nExamples include:\n- Cmd-W (close window)\n- Cmd-Q (quit)';
 
 export default class NewItemModal extends Component {
     static contextType = AppContext;
@@ -14,6 +15,8 @@ export default class NewItemModal extends Component {
         super(props);
 
         this.formRef = createRef();
+        this.nameInputRef = createRef();
+        this.categoryRef = createRef();
         this.cmdRef = createRef();
         this.saveRef = createRef();
 
@@ -22,6 +25,10 @@ export default class NewItemModal extends Component {
             group: null,
             cmd: null
         }
+    }
+
+    componentDidMount() {
+        this.nameInputRef.current.focus();
     }
 
     close = (e) => {
@@ -64,7 +71,13 @@ export default class NewItemModal extends Component {
     render() {
         let { item_groups, new_item, edit_item } = this.context.items;
 
-        let temp_item = Object.assign({}, new_item || edit_item)
+        let temp_item = Object.assign({}, new_item || edit_item);
+
+        if (new_item) {
+            temp_item = {
+                
+            }
+        }
 
         return (
             <Modal 
@@ -77,27 +90,33 @@ export default class NewItemModal extends Component {
                     <div className="content">
                         <form ref={this.formRef}>
                             <FormGroup>
-                                <label className="form-label" htmlFor="new-item-name">Shortcut name:</label>
+                                <label className="form-label">Shortcut name:</label>
                                 <input className="form-input" 
-                                id="new-item-name"
-                                type="text"
-                                placeholder="Shortcut name"
-                                defaultValue={temp_item.label}
-                                name="label"
-                                autoFocus />
+                                    name="label"
+                                    type="text"
+                                    placeholder="Shortcut name"
+                                    defaultValue={temp_item.label}
+                                    tabIndex="0"
+                                    ref={this.nameInputRef}
+                                />
                             </FormGroup>
                             <FormGroup>
                                 <label className="form-label">Group:</label>
-                                <select className="form-select" name="category" defaultValue={temp_item.category}>
-                                    {item_groups.map(i => {
-                                        return (<option value={i} key={i}>{i}</option>)
-                                    })}
+                                <select className="form-select"
+                                    name="category"
+                                    defaultValue={temp_item.category}
+                                    tabIndex="0"
+                                    ref={this.categoryRef}>
+                                        {item_groups.map(i => (
+                                            <option value={i} key={i}>{i}</option>
+                                        ))}
                                 </select>
                             </FormGroup>
                             <FormGroup>
-                                <label className="form-label">Keys:</label>
+                                <label className="form-label tooltip" data-tooltip={key_msg}>Keys:</label>
                                 <input type="hidden" name="cmd" defaultValue={temp_item.cmd} ref={this.cmdRef} />
                                 <CaptureBox defaultValue={temp_item.cmd} onData={this.capture_keys} />
+
                             </FormGroup>
                         </form>
                     </div>

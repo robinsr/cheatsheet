@@ -8,20 +8,12 @@ export default class Nav extends Component {
 
     render() {
         return (
-            <header className="navbar">
+            <header className="navbar my-2">
                 <section className="navbar-section">
-                    <div className="navbar-brand mr-2">
-                        <a href="..." className="h5">Keymap Maker</a>
-                        <br />
-                        <small>Generate keyboard shortcut sheets</small>
-                    </div>
-                </section>
-                <section className="navbar-section">
-                    <div className="float-right">
-                        <div className="d-inline mx-2">
-                            <a href="..." className="btn btn-link">GitHub</a>
-                        </div>
-                        <OptionsForm />
+                    <OptionsForm />
+                    <div className="input-group input-inline">
+                        <input className="form-input" type="text" placeholder="search" />
+                        <button className="btn btn-primary input-group-btn">Search</button>
                     </div>
                 </section>
             </header>

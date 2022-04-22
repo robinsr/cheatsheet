@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import hotkeys from 'hotkeys-js';
+import { get_kb_string, is_single_key, is_tab_key, oops_handler } from 'utils/dom';
 
 import ShortcutKey from 'components/ShortcutKey';
 
@@ -11,80 +12,33 @@ const HOTKEYS_CONFIG = {
     keyup: true
 }
 
-const keyMap = {
-    k32: 'SPACE',
-    k65: 'A',
-    k66: 'B',
-    k67: 'C',
-    k68: 'D',
-    k69: 'E',
-    k70: 'F',
-    k71: 'G',
-    k72: 'H',
-    k73: 'I',
-    k74: 'J',
-    k75: 'K',
-    k76: 'L',
-    k77: 'M',
-    k78: 'N',
-    k79: 'O',
-    k80: 'P',
-    k81: 'Q',
-    k82: 'R',
-    k83: 'S',
-    k84: 'T',
-    k85: 'U',
-    k86: 'V',
-    k87: 'W',
-    k88: 'X',
-    k89: 'Y',
-    k90: 'Z',
-};
-
-const handle_keydown = (e) => {
-    const id = 'k' + e.keyCode;
-    console.debug(`keydown:${keyMap[id]}, keycode:${e.keyCode}`);
-
-    let kbString = '';
-    let kbHtmlString = '';
-
-    if (e.metaKey) {
-        kbString += 'cmd-';
-        kbHtmlString += '<kbd>⌘ Cmd</kbd>+';
-    }
-
-    if (e.ctrlKey) {
-        kbString += 'ctrl-';
-        kbHtmlString += '<kbd>Ctrl</kbd>+';
-    }
-
-    if(e.altKey){
-        kbString += 'alt-';
-        kbHtmlString += '<kbd>Alt</kbd>+';
-    }
-
-    if (e.shiftKey) {
-        kbString += 'shift-';
-        kbHtmlString += '<kbd>Shift</kbd>+';
-    }
-
-
-    if (e.key != 'Control' && e.key != 'Shift' && e.key != 'Alt' && e.key != 'Meta') {
-        kbString += e.key;
-        if (keyMap[id] != undefined) {
-            kbHtmlString += '<kbd>' + keyMap[id] + '</kbd>';    
-        } else {
-            kbHtmlString += '<kbd>' + e.key + '</kbd>';
-        }
-    }
-
-    return [ kbString, kbHtmlString ];
+const actions = {
+    CAPTURE: 'CAPTURE',
+    IGNORE: 'IGNORE',
+    EXIT: 'EXIT',
+    SAVE: 'SAVE'
 }
 
-const oops_handler = (e) => {
-    e.preventDefault();
-    return event.returnValue = "Are you sure you want to exit?";
+const get_action = (e) => {
+    if (e.type == 'keydown' && is_tab_key(e) && is_single_key(e)) {
+        return actions.EXIT;
+    }
+
+    if (e.type == 'keyup' && is_tab_key(e) && is_single_key(e)) {
+        return actions.IGNORE;
+    }
+
+    if (e.type == 'keydown') {
+        return actions.CAPTURE;
+    }
+
+    if (e.type == 'keyup') {
+        return actions.SAVE;
+    }
+
+    return actions.IGNORE;
 }
+
 
 export default class CaptureBox extends Component {
     constructor(props) {
@@ -92,45 +46,34 @@ export default class CaptureBox extends Component {
 
         this.state = {
             status: 'blur',
-            kb_string: null,
-            kb_html_string: null
+            kb_string: null
         }
     }
 
     start_capture = () => {
-        console.log("Capturing");
+        console.debug("Capturing");
 
         document.addEventListener("beforeunload", oops_handler, { capture: true });
 
-        var kb_string = '';
-        var kb_html_string = '';
+        let kb_string = '';
         
         hotkeys('*', HOTKEYS_CONFIG, (e, handler) => {
             e.preventDefault();
             e.stopPropagation();
 
-            let { type } = e;
+            console.debug(e);
 
-            if (type == 'keydown') {
-
-                if (e.keyCode == 9 || e.key == 'Tab') {
-                    return this.handle_tab(e)
-                }
-
-                let result = handle_keydown(e);
-                kb_string = result[0];
-                kb_html_string = result[1];
-
-            } else if (type == 'keyup') {
-                if (e.keyCode == 9 || e.key == 'Tab') {
-                    return;
-                }
-
-                this.setState({
-                    kb_string, kb_html_string
-                })
+            switch (get_action(e)) {
+                case actions.EXIT:
+                    this.handle_tab(e);
+                    break;
+                case actions.CAPTURE:
+                    kb_string = get_kb_string(e);
+                    break;
+                case actions.SAVE:
+                    this.setState({ kb_string });
+                    break;                
             }
-            
         });
 
         hotkeys.setScope(HK_SCOPE);
@@ -138,8 +81,8 @@ export default class CaptureBox extends Component {
         this.setState({ status: 'focus' });
     }
 
-    stop_capture = (tab_out = false) => {
-        console.log("End capturing");
+    stop_capture = (e, tab_out = false) => {
+        console.debug("End capturing");
 
         document.removeEventListener("beforeunload", oops_handler);
 
@@ -153,7 +96,7 @@ export default class CaptureBox extends Component {
     }
 
     handle_tab = (e) => {
-        this.stop_capture(true);
+        this.stop_capture(null, true);
     }
 
     render() {

@@ -30,7 +30,7 @@ let macos_symbols = {
         symbol: "↓", name: ""
     },
     tab: { 
-        symbol: "⇥", name: ""
+        symbol: "⇥", name: "tab",
     },
     backtab: { 
         symbol: "⇤", name: ""
