@@ -1,7 +1,9 @@
 import ShortcutItem from './ShortcutItem';
-import { default as quiver_configs } from 'context/configs/quiver';
 import groupBy from 'lodash/groupBy';
 import pick from 'lodash/pick';
+import short from 'short-uuid';
+
+const uuid = short();
 
 async function get_all_images(all_items, progress_cb = () => {}) {
     return new Promise(async (resolve) => {
@@ -19,7 +21,7 @@ export class ShortcutCollection {
         this.updater = updater;
 
         // TODO: Add as parameter
-        this.items = quiver_configs.map(i => new ShortcutItem(i));
+        this.items = [] 
         
         this.item_groups = [];
         this.new_item = null;
@@ -29,6 +31,19 @@ export class ShortcutCollection {
         this.markdown_val = null;
         this.show_image_modal = false;
         this.image_data = null
+
+        if (!window.keymap_api) {
+            throw new Error('No keymap_api found')
+        } else {
+            window.keymap_api.getInitialData()
+                .then(data => {
+                    this.items = data.map(i => {
+                        return new ShortcutItem(Object.assign({}, i, { id: uuid.new() }));
+                    });
+
+                    this.normalize();
+                })
+        }
     }
 
     /**

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import ShortcutKey from 'components/ShortcutKey.jsx';
+import ShortcutKey from './ShortcutKey.jsx';
 
 
 class Row extends Component {

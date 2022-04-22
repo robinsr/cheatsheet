@@ -1,4 +1,5 @@
 import { macos_symbols } from 'utils/macos_symbols';
+import { pick as _pick } from 'lodash';
 
 export class ShowHideElement {
     constructor(e, display_type = 'block') {
@@ -10,69 +11,43 @@ export class ShowHideElement {
     hide = () => this.e.forEach(e => e.style.display = 'none');
 }
 
-const keyMap = {
-    k32: 'SPACE',
-    k65: 'A',
-    k66: 'B',
-    k67: 'C',
-    k68: 'D',
-    k69: 'E',
-    k70: 'F',
-    k71: 'G',
-    k72: 'H',
-    k73: 'I',
-    k74: 'J',
-    k75: 'K',
-    k76: 'L',
-    k77: 'M',
-    k78: 'N',
-    k79: 'O',
-    k80: 'P',
-    k81: 'Q',
-    k82: 'R',
-    k83: 'S',
-    k84: 'T',
-    k85: 'U',
-    k86: 'V',
-    k87: 'W',
-    k88: 'X',
-    k89: 'Y',
-    k90: 'Z',
-};
+const letter_key = new RegExp(/^Key[\w]{1}$/);
+
 
 export const get_kb_string = (e) => {
-    const id = 'k' + e.keyCode;
 
-    console.debug(`keydown:${keyMap[id]}, keycode:${e.keyCode}`);
+    console.debug('keyevent in:', _pick(e, ['altKey', 'shiftKey', 'ctrlKey', 'metaKey', 'code', 'keyCode', 'key']));
 
     let kbString = [];
 
     if (e.metaKey) {
-        kbString.push('cmd');
+        kbString.push('Meta');
     }
 
     if (e.ctrlKey) {
-        kbString.push('ctrl');
+        kbString.push('Control');
     }
 
     if(e.altKey){
-        kbString.push('alt');
+        kbString.push('Alt');
     }
 
     if (e.shiftKey) {
-        kbString.push('shift');
+        kbString.push('Shift');
     }
 
 
     if (!['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) {
         if (macos_symbols[e.key.toLowerCase()]) {
             kbString.push(e.key.toLowerCase());
+        } else if (letter_key.test(e.code)) {
+            kbString.push(e.code.substr(-1));
         } else {
             kbString.push(e.key);
         }
     }
 
-    console.debug(kbString)
+    console.debug('key out:', kbString)
 
     return kbString.join('-');
 }

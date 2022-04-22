@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import hotkeys from 'hotkeys-js';
 import { get_kb_string, is_single_key, is_tab_key, oops_handler } from 'utils/dom';
 
-import ShortcutKey from 'components/ShortcutKey';
+import ShortcutKey from 'components/card/ShortcutKey';
 
 const HK_SCOPE = 'new-shortcut';
 
@@ -61,8 +61,6 @@ export default class CaptureBox extends Component {
             e.preventDefault();
             e.stopPropagation();
 
-            console.debug(e);
-
             switch (get_action(e)) {
                 case actions.EXIT:
                     this.handle_tab(e);
@@ -93,6 +91,8 @@ export default class CaptureBox extends Component {
         this.props.onData({
             capture: this.state.kb_string, tab_out
         });
+
+        this.setState({ kb_string: null });
     }
 
     handle_tab = (e) => {

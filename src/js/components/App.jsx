@@ -2,14 +2,11 @@ import React from 'react';
 
 import Store from 'context/Store'
 
-import Nav from 'components/Nav.jsx'
-import ShortcutCards from 'components/ShortcutCards.jsx';
-import Hero from 'components/Hero.jsx';
-import Footer from 'components/Footer.jsx';
-import ExportModal from 'components/modal/ExportModal.jsx'
-import ImageModal from 'components/modal/ImageModal.jsx'
-import NewItemModal from 'components/modal/NewItemModal.jsx'
-import ErrorAlert from 'components/ErrorAlert.jsx';
+import { Footer, ErrorAlert } from 'components/layout';
+import { ExportModal, ImageModal, NewItemModal } from 'components/modal/'
+
+import Nav from 'components/menu/Nav.jsx'
+import ShortcutCards from 'components/card/ShortcutCards.jsx';
 
 
 

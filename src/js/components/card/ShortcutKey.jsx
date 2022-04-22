@@ -1,7 +1,7 @@
 import React, { Component, createRef } from 'react';
 
 import { AppContext, Themes } from 'context/Store';
-import { macos_symbols as symbols_dict } from 'utils/macos_symbols';
+import { get_for_key } from 'utils/macos_symbols';
 
 const keyStyles = {
     light: {
@@ -30,8 +30,7 @@ class ShortcutKey extends Component {
     render_key = (key) => {
         let { command } = this.props;
         let { theme } = this.context.theme;
-
-        let symbol = symbols_dict[key] ? symbols_dict[key].symbol : key;
+        let symbol = get_for_key(key);
 
         return (
             <kbd style={keyStyles[theme]} key={command + key}>{symbol}</kbd>

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Navbar, Button } from 'spectre-react';
-import OptionsForm from 'components/OptionsForm.jsx';
+import OptionsForm from './OptionsForm.jsx';
 
 
 

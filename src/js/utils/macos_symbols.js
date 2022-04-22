@@ -1,75 +1,147 @@
 let macos_symbols = {
-    cmd: { 
-        symbol: "⌘", name: "cmd"
+    Meta: { 
+        symbol: "⌘", alt: "cmd"
     },
-    option: { 
-        symbol: "⌥", name: "alt"
+    Option: { 
+        symbol: "⌥", alt: "alt"
     },
-    alt: { 
-        symbol: "⌥", name: "alt"
+    Alt: { 
+        symbol: "⌥", alt: "alt"
     },
-    ctrl: { 
-        symbol: "⌃", name: "ctrl"
+    Control: { 
+        symbol: "⌃", alt: "ctrl"
     },
-    shift: { 
-        symbol: "⇧", name: "shift"
+    Shift: { 
+        symbol: "⇧", alt: "shift"
     },
-    capslock: { 
-        symbol: "⇪", name: ""
+    CapsLock: { 
+        symbol: "⇪", alt: null
     },
-    leftarrow: { 
-        symbol: "←", name: ""
+    Fn: {
+        symbol: "fn", alt: null
     },
-    rightarrow: { 
-        symbol: "→", name: ""
+    ArrowLeft: { 
+        symbol: "←", alt: null
     },
-    up: { 
-        symbol: "↑", name: ""
+    ArrowRight: { 
+        symbol: "→", alt: null
     },
-    down: { 
-        symbol: "↓", name: ""
+    ArrowUp: { 
+        symbol: "↑", alt: null
     },
-    tab: { 
-        symbol: "⇥", name: "tab",
+    ArrowDown: { 
+        symbol: "↓", alt: null
+    },
+    Tab: { 
+        symbol: "⇥", alt: null,
     },
     backtab: { 
-        symbol: "⇤", name: ""
+        symbol: "⇤", alt: null
     },
     return: { 
-        symbol: "↩", name: ""
+        symbol: "↩", alt: null
     },
-    enter: { 
-        symbol: "⌤", name: ""
+    Enter: { 
+        symbol: "↩", alt: null
     },
-    delete: { 
-        symbol: "⌫", name: "del"
+    Delete: { 
+        symbol: "⌫", alt: "del"
     },
     forwarddelete: { 
-        symbol: "⌦", name: ""
+        symbol: "⌦", alt: null
     },
-    pageup: { 
-        symbol: "⇞", name: ""
+    PageUp: { 
+        symbol: "⇞", alt: null
     },
-    pagedown: { 
-        symbol: "⇟", name: ""
+    PageDown: { 
+        symbol: "⇟", alt: null
     },
-    home: { 
-        symbol: "↖", name: ""
+    Home: { 
+        symbol: "↖", alt: null
     },
-    end: { 
-        symbol: "↘", name: ""
+    End: { 
+        symbol: "↘", alt: null
     },
-    clear: { 
-        symbol: "⌧", name: ""
+    Clear: { 
+        symbol: "⌧", alt: null
     },
-    space: { 
-        symbol: "␣", name: ""
+    Space: { 
+        symbol: "␣", alt: 'space', useAlt: true
     },
-    escape: { 
-        symbol: "⎋", name: ""
+    ' ': {
+        symbol: null, alt: 'space', useAlt: true
     },
-    eject: { 
-        symbol: "⏏", name: ""
+    Escape: { 
+        symbol: "⎋", alt: null
+    },
+    Eject: { 
+        symbol: "⏏", alt: null
+    }
+}
+
+const unshift_symbols = {
+    '!': '1',
+    '@': '2',
+    '#': '3',
+    '$': '4',
+    '%': '5',
+    '^': '6',
+    '&': '7',
+    '*': '8',
+    '(': '9',
+    ')': '0',
+    '_': '-',
+    '+': '='
+}
+
+
+const unalt_symbols = {
+    '¡': '1',
+    '™': '2',
+    '£': '3',
+    '¢': '4',
+    '∞': '5',
+    '§': '6',
+    '¶': '7',
+    '•': '8',
+    'ª': '9',
+    'º': '0',
+    '–': '-',
+    '≠': '=',
+    '“': '[',
+    '‘': ']',
+    '«': '\\',
+    '…': ';',
+    'æ': '\'',
+    '≤': ',',
+    '≥': '.',
+    '÷': '/'
+}
+
+
+
+const modes = {
+    symbol: 'symbol',
+    full: 'full'
+}
+
+export function get_for_key (key, mode = modes.symbol) {
+    if (unshift_symbols[key]) {
+        return unshift_symbols[key];
+    }
+
+    if (unalt_symbols[key]) {
+        return unalt_symbols[key];
+    }
+
+    if (!macos_symbols[key]){
+        return key;
+    }
+
+    if (macos_symbols[key].useAlt) {
+        return macos_symbols[key].alt;
+    } else {
+        return macos_symbols[key].symbol;
     }
 }
 

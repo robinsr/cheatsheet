@@ -4,7 +4,7 @@ import { Button, Card, CardHeader, CardTitle, CardBody } from 'spectre-react';
 import render from 'utils/canvas_renderer';
 import { ShowHideElement } from 'utils/dom';
 import { AppContext } from 'context/Store';
-import ShortcutTable from 'components/ShortcutTable';
+import ShortcutTable from './ShortcutTable';
 
 
 export default class ShortcutCard extends Component {

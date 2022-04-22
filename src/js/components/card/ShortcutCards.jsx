@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import * as _ from 'lodash';
 
 import { AppContext } from 'context/Store';
-import ShortcutTable from 'components/ShortcutTable';
-import ShortcutCard from 'components/ShortcutCard';
+import ShortcutTable from './ShortcutTable';
+import ShortcutCard from './ShortcutCard';
 
 
 export default class ShortcutCards extends Component {
