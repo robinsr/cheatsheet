@@ -1,25 +1,24 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { observer } from 'mobx-react-lite';
 import * as _ from 'lodash';
 
-import { AppContext } from 'context/Store';
+import { useMst } from 'context/Store';
 import ShortcutTable from './ShortcutTable';
 import ShortcutCard from './ShortcutCard';
 
 
-export default class ShortcutCards extends Component {
-    static contextType = AppContext;
+const ShortcutCards = observer(() => {
+    let { items } = useMst()
 
-    render() {
-        let { items } = this.context.items;
+    let item_groups = items.itemGroups;
 
-        let item_groups = _.groupBy(items, i => i.category);
+    return (
+        <div className="shortcut-cards">
+            {item_groups.map(group => 
+                <ShortcutCard key={'shortcut-card-' + group} group={group} />
+            )}
+        </div>
+    );
+});
 
-        return (
-            <div className="shortcut-cards">
-                {Object.keys(item_groups).map(group => (
-                    <ShortcutCard key={'shortcut-card-' + group} group={group} items={item_groups[group]} />
-                ))}
-            </div>
-        );
-    }
-}
+export default ShortcutCards;

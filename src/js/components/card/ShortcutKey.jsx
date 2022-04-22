@@ -1,6 +1,7 @@
-import React, { Component, createRef } from 'react';
+import React, { useRef } from 'react';
+import { observer } from 'mobx-react-lite';
 
-import { AppContext, Themes } from 'context/Store';
+import { useMst, Themes } from 'context/Store';
 import { get_for_key } from 'utils/macos_symbols';
 
 const keyStyles = {
@@ -14,48 +15,27 @@ const keyStyles = {
     }
 };
 
-class ShortcutKey extends Component {
-    static contextType = AppContext;
+const ShortcutKey = observer(({ item, command }) => {
+    let { ui } = useMst();
 
-    constructor(props) {
-        super(props);
+    let ref = useRef(null);
 
-        this.ref = createRef();
+    item.setRef(ref);
 
-        if (this.props.item && this.props.item.attach_ref) {
-            this.props.item.attach_ref(this.ref);
-        }
+    if (!command) {
+        return null;
     }
 
-    render_key = (key) => {
-        let { command } = this.props;
-        let { theme } = this.context.theme;
-        let symbol = get_for_key(key);
-
-        return (
-            <kbd style={keyStyles[theme]} key={command + key}>{symbol}</kbd>
-        );
-    }
-
-
-	render() {
-		let { command } = this.props;
-
-        if (!command) {
-            return null;
-        }
-
-        return(
-            <div>
-                <span id={'kbd-' + command} className="label shortcut" ref={this.ref}>
-                    {command.split('-')
-                        .map(this.render_key)
-                        .reduce((prev, curr) => [prev, ' + ', curr])
-                    }
-                </span>
-            </div>
-        );
-    }
-}
+    return(
+        <div>
+            <span id={'kbd-' + command} className="label shortcut" ref={ref}>
+                {command.split('-')
+                    .map(key => <kbd style={keyStyles[ui.theme]} key={command + key}>{get_for_key(key)}</kbd>)
+                    .reduce((prev, curr) => [prev, ' + ', curr])
+                }
+            </span>
+        </div>
+    );
+})
 
 export default ShortcutKey;

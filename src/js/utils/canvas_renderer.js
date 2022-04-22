@@ -10,7 +10,7 @@ const render = (e) => {
             backgroundColor: null,
         }).then(canvas => {
             resolve({
-                data_url: canvas.toDataURL('image/png', 1.0),
+                dataUrl: canvas.toDataURL('image/png', 1.0),
                 width: e_width,
                 height: e_height
             })

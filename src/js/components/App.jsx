@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-import Store from 'context/Store'
+import { Provider, rootStore } from 'context/Store'
 
 import { Footer, ErrorAlert } from 'components/layout';
 import { ExportModal, ImageModal, NewItemModal } from 'components/modal/'
@@ -9,44 +9,36 @@ import Nav from 'components/menu/Nav.jsx'
 import ShortcutCards from 'components/card/ShortcutCards.jsx';
 
 
+// TODO; figure out error boundary. Not possible in function componant
+export default function App() {
 
-export default class App extends React.Component {
-    constructor(props) {
-        super(props);
+    const [ error, setError ] = useState(null);
 
-        this.state = {
-            hasError: false,
-            error: null
-        }
+    const hasError = useEffect(err => {
+        return err != null;
+    }, [ error ]);
+
+    const clearError = () => {
+        setError(null);
     }
 
-    static getDerivedStateFromError(error) {
-        return { hasError: true, error };
-    }
-
-    clearError = () => {
-        this.setState({ hasError: false, error: null });
-    }
-
-	render() {
-		return (
-            <Store>
-                <div className="app-container">
-                    <div className="app-content">
-                        <Nav/>
-                        <div className="container grid-lg">
-                            <ErrorAlert error={this.state.error} onClear={this.clearError}>
-                                <ShortcutCards/>
-                            </ErrorAlert>
-                        </div>
+    return (
+        <Provider value={rootStore}>
+            <div className="app-container">
+                <div className="app-content">
+                    <Nav/>
+                    <div className="container grid-lg">
+                        <ErrorAlert error={error} onClear={clearError}>
+                            <ShortcutCards/>
+                        </ErrorAlert>
                     </div>
-                    <div className="divider"></div>
-                    <Footer/>
                 </div>
-                <ExportModal/>
-                <ImageModal/>
-                <NewItemModal/>
-            </Store>
-        )
-	}
+                <div className="divider"></div>
+                <Footer/>
+            </div>
+            {/*<ExportModal/>*/}
+            <ImageModal/>
+            {/*<NewItemModal/>*/}
+        </Provider>
+    );
 }

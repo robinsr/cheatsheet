@@ -1,113 +1,92 @@
-import React, { Component, createRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { observer } from 'mobx-react-lite';
 import { Button, Card, CardHeader, CardTitle, CardBody } from 'spectre-react';
 
 import render from 'utils/canvas_renderer';
 import { ShowHideElement } from 'utils/dom';
-import { AppContext } from 'context/Store';
+import { useMst } from 'context/Store';
+
 import ShortcutTable from './ShortcutTable';
 
 
-export default class ShortcutCard extends Component {
-    static contextType = AppContext;
+const ShortcutCard = observer(({ group }) => {
+    let { items, png } = useMst();
 
-    constructor(props) {
-        super(props);
-        this.cardRef = createRef();
-        this.menuRef = createRef();
-        this.addItemRef = createRef()
+    let cardRef = useRef(null);
+    let menuRef = useRef(null);
+    let addItemRef = useRef(null);
 
-        this.state = {
-            edit: false,
-            edit_group: this.props.group
+    let [ edit, setEdit ] = useState(false);
+    let [ editGroupName, setEditGroupName ] = useState(group);
+
+    useEffect(editing => {
+        if (editing) {
+            return;
         }
-    }
 
-    export_png = () => {
+        if (editGroupName != group) {
+            console.log(editGroupName, group)
+        }
+    }, [edit]);
+
+    function exportPNG() {
         let e = new ShowHideElement([
-            this.menuRef.current, this.addItemRef.current
+            menuRef.current, addItemRef.current
         ]);
         e.hide();
 
-        render(this.cardRef.current)
-            .then(image_data => {
+        render(cardRef.current)
+            .then(imageData => {
                 e.show();
-                this.context.items.show_image(image_data);
+                png.setImageData(imageData);
             })
             .catch(e.show())
     }
 
-    export_md = (group) => {
-        this.context.items.export_markdown(group);
+    function exportMD() {
+        // todo
     }
 
-    update_group = (e) => {
-        this.setState(() => ({
-            edit_group: e.target.value
-        }));
-    }
+    return (
+        <div className="shortcut-card" key={'shortcut-card-' + group} ref={cardRef}>
+            <Card>
+                <CardHeader>
+                    <div className="dropdown float-right" ref={menuRef}>
+                        <Button 
+                            className="mx-1"
+                            primary={!edit}
+                            success={edit}
+                            small={true}
+                            onClick={() => setEdit(!edit)}>
+                                {edit
+                                    ? <i className="icon icon-check"></i>
+                                    : <i className="icon icon-edit"></i>}
+                        </Button>
+                        <Button className="dropdown-toggle" primary={true} small={true}>
+                            <i className="icon icon-download"></i>
+                        </Button>
+                        <ul className="menu export-menu">
+                            <li className="menu-item">
+                                <a onClick={() => exportPNG()}>PNG</a>
+                            </li>
+                            <li className="menu-item">
+                                <a onClick={() => exportMD()}>Markdown</a>
+                            </li>
+                      </ul>
+                    </div>
+                    <CardTitle className="h5">
+                        {edit ? <input type="text" value={editGroupName} onChange={e => setEditGroupName(e.target.value)} /> : group}
+                    </CardTitle>
+                </CardHeader>
+                <CardBody>
+                    <ShortcutTable items={items.getItemsByGroup(group)} editing={edit}/>
+                    <div className="row-new-cmd text-center" ref={addItemRef}>
+                        <a onClick={() => items.addItem('quiver', group)} className="btn btn-link">+</a>
+                    </div>
+                </CardBody>
+            </Card>
+        </div>
+    );
+});
 
-    toggle_edit = () => {
-        this.setState(state => ({
-            edit: !state.edit
-        }));
-    }
-
-    add_item = () => {
-        this.context.items.add_item({
-            category: this.props.group,
-            is_editing: true
-        });
-    }
-
-    edit_item = (item) => {
-        this.context.items.update_item(Object.assign(item, {
-            is_editing: true
-        }));
-    }
-
-    render() {
-        let { edit, edit_group } = this.state;
-        let { items, group } = this.props;
-
-        return (
-            <div className="shortcut-card" key={'shortcut-card-' + group} ref={this.cardRef}>
-                <Card>
-                    <CardHeader>
-                        <div className="dropdown float-right" ref={this.menuRef}>
-                            <Button 
-                                className="mx-1"
-                                primary={!edit}
-                                success={edit}
-                                small={true}
-                                onClick={this.toggle_edit}>
-                                    {edit
-                                        ? <i className="icon icon-check"></i>
-                                        : <i className="icon icon-edit"></i>}
-                            </Button>
-                            <Button className="dropdown-toggle" primary={true} small={true}>
-                                <i className="icon icon-download"></i>
-                            </Button>
-                            <ul className="menu export-menu">
-                                <li className="menu-item">
-                                    <a onClick={() => this.export_png(group)}>PNG</a>
-                                </li>
-                                <li className="menu-item">
-                                    <a onClick={() => this.export_md(group)}>Markdown</a>
-                                </li>
-                          </ul>
-                        </div>
-                        <CardTitle className="h5">
-                            {edit ? <input type="text" value={edit_group} onChange={this.update_group} /> : group}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardBody>
-                        <ShortcutTable items={items} editing={edit} onEdit={this.edit_item}/>
-                        <div className="row-new-cmd text-center" ref={this.addItemRef}>
-                            <a onClick={this.add_item} className="btn btn-link">+</a>
-                        </div>
-                    </CardBody>
-                </Card>
-            </div>
-        );
-    }
-}
+export default ShortcutCard;

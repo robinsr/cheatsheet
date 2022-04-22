@@ -1,66 +1,83 @@
-import React, { Component, createContext } from 'react';
+import { createContext, useContext } from 'react';
+import { types, onSnapshot } from 'mobx-state-tree';
 
-import ShortcutCollection from './items/ShortcutCollection';
 
-const ls = window.localStorage;
+import { Themes, UI } from './models/ui';
+import { MobxItemList } from './models/items';
 
-console.log(window)
+export { Themes } from './models/ui';
 
-console.log(ls.getItem("TEST"))
+const MobxPNGImageData = types
+    .model({
+        dataUrl: types.string,
+        width: types.number,
+        height: types.number
+    })
 
-// ls.setItem("TEST", JSON.stringify({ does_it_work: 'yes' }));
+const MobxPNG = types
+    .model({
+        imageData: types.maybeNull(MobxPNGImageData),
+        showModal: types.boolean
+    })
+    .actions(self => ({
+        setImageData(data) {
+            self.imageData = data;
+            self.showModal = true;
+        },
 
+        closeModal() {
+            self.showModal = false;
+        }
+    }))
+
+
+const MobxStore = types
+    .model({
+        ui: UI,
+        items: MobxItemList,
+        png: MobxPNG
+    })
+    .actions(self => ({
+        fetch() {
+            window.keymap_api.getInitialData().then(self.load)
+        },
+        load(data) {
+            console.log(data);
+            self.items.itemList = data;
+        }
+    }))
+    
+
+let initialstate = MobxStore.create({
+    ui: {
+        theme: 'dark'
+    },
+    items: {
+        itemList: [],
+        editItem: null // todo; get from electron window api
+    },
+    png: {
+        imageData: null,
+        showModal: false
+    }
+});
+
+export const rootStore = initialstate;
+
+onSnapshot(rootStore, (snapshot) => {
+    console.log("Snapshot: ", snapshot);
+    localStorage.setItem("rootState", JSON.stringify(snapshot));
+});
 
 export const AppContext = createContext();
+export const Provider = AppContext.Provider;
 
-export class Themes {
-    static values = {
-        light: 'light',
-        dark: 'dark',
+export function useMst() {
+    const store = useContext(AppContext);
+    if (store === null) {
+        throw new Error("Store cannot be null, please add a context provider");
     }
-
-    constructor(updater) {
-        this.updater = updater;
-        this.theme = Themes.values.dark;
-    }
-
-    toggleTheme = () => {
-        let vals = Themes.values;
-
-        this.theme = this.theme == vals.dark ? vals.light : vals.dark
-
-        this.updater({ theme: this.theme });
-    }
+    return store;
 }
 
-
-
-
-class Store extends Component {
-    constructor(props) {
-        super(props);
-
-        this.state = { 
-            theme: new Themes(this.root_updater.bind(this, 'theme')),
-            items: new ShortcutCollection(this.root_updater.bind(this, 'items'))
-        };
-    }
-
-    root_updater = (domain, data) => {
-        let newState = {
-            ...this.state, [domain]: { ...this.state[domain], ...data }
-        }
-
-        this.setState(newState);
-    }
-
-    render() {
-        return (
-            <AppContext.Provider value={this.state}>
-                {this.props.children}
-            </AppContext.Provider>
-        );
-    }
-}
-
-export default Store;
+rootStore.fetch();
