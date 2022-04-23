@@ -1,15 +1,18 @@
-import { types } from 'mobx-state-tree';
-import { uniq as _uniq } from 'lodash';
+import { types, getSnapshot } from 'mobx-state-tree';
+import { observable } from 'mobx';
+import { uniq as _uniq, pick as _pick } from 'lodash';
 import short from 'short-uuid';
 
 const uuid = short();
+
+const EDIT = '__edit__';
 
 
 export const MobxItem = types
     .model('MobxItem', {
         id: types.identifier,
         app: types.string,
-        category: types.string,
+        category: types.maybeNull(types.string),
         label: types.maybeNull(types.string),
         command: types.maybeNull(types.string)
     })
@@ -27,12 +30,8 @@ export const MobxItem = types
             ref = reactRef;
         }
 
-        function updateCommand(newCommand) {
-            self.command = newCommand; // todo; validate
-        }
-
-        function updateName(newName) {
-            self.label = newName;
+        function update(attr, value) {
+            self[attr] = value;
         }
 
         // todo: can this be a 'view'?
@@ -42,14 +41,14 @@ export const MobxItem = types
             });
         }
 
-        return { setRef, updateCommand, updateName, getDataImage }
+        return { setRef, update, getDataImage }
     });
 
 
 export const MobxEditItem = types.maybeNull(
     types.reference(MobxItem, {
-        get(id) {
-            return parent.items.find(i => i.id === id) || null;
+        get(id, parent) {
+            return parent.itemList.find(i => i.id === id) || null;
         },
         set(mobxItem) {
             return mobxItem.id;
@@ -60,17 +59,36 @@ export const MobxEditItem = types.maybeNull(
 export const MobxItemList = types
     .model('MobxItemList', {
         itemList: types.array(MobxItem),
-        editItem: MobxEditItem
+        editItem: types.maybeNull(MobxItem)
     })
     .actions(self => ({
         setEditItem(id) {
-            self.editItem = id;
+            if (!id) {
+                throw new Error('Cannot edit item with no ID')
+            } else {
+                let target = self.itemList.find(i => i.id === id);
+                self.editItem = MobxItem.create(Object.assign(
+                    { id: id + EDIT }, _pick(target, [ 'app', 'label', 'category', 'command' ])
+                ))
+            }
         },
         clearEditItem() {
-            self.editItem = undefined;
+            self.itemList = self.itemList.filter(i => i.id !== self.editItem.id); 
+            self.editItem = null;
+        },
+        saveEditItem() {
+            let id = self.editItem.id.replace(EDIT, '');
+            let target = self.itemList.find(i => i.id === id);
+
+            Object.assign(target, _pick(self.editItem, [ 'label', 'category', 'command' ]))
+
+            self.editItem = null;
         },
         addItem(app, category) {
             self.itemList.push({ id: uuid.new(), app, category, label: 'New Shortcut', command: 'Space' });
+        },
+        removeItem(id) {
+            self.itemList = self.itemList.filter(i => i.id !== id);
         }
     }))
     .views(self => ({

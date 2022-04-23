@@ -15,12 +15,14 @@ const keyStyles = {
     }
 };
 
-const ShortcutKey = observer(({ item, command }) => {
+const ShortcutKey = observer(({ item, command, capture=false }) => {
     let { ui } = useMst();
 
     let ref = useRef(null);
 
-    item.setRef(ref);
+    if (capture) {
+        item.setRef(ref);
+    }
 
     if (!command) {
         return null;

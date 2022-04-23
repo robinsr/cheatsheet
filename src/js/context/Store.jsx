@@ -48,7 +48,7 @@ const MobxStore = types
     }))
     
 
-let initialstate = MobxStore.create({
+let initialState = MobxStore.create({
     ui: {
         theme: 'dark'
     },
@@ -62,11 +62,24 @@ let initialstate = MobxStore.create({
     }
 });
 
-export const rootStore = initialstate;
+const data = localStorage.getItem("rootState");
+if (data) {
+    const json = JSON.parse(data);
+    if (MobxStore.is(json)) {
+        initialState = MobxStore.create(json);
+    }
+}
+
+export const rootStore = initialState;
 
 onSnapshot(rootStore, (snapshot) => {
-    console.log("Snapshot: ", snapshot);
-    localStorage.setItem("rootState", JSON.stringify(snapshot));
+    if (snapshot.items.editItem == null) {
+        console.log("Snapshot (saving): ", snapshot)
+        localStorage.setItem("rootState", JSON.stringify(snapshot));
+    } else {
+        console.log("Snapshot: ", snapshot);
+    }
+
 });
 
 export const AppContext = createContext();
@@ -80,4 +93,6 @@ export function useMst() {
     return store;
 }
 
-rootStore.fetch();
+if (rootStore.items.length == 0) {
+    rootStore.fetch();
+}

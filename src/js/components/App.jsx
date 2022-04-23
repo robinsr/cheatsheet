@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Provider, rootStore } from 'context/Store'
 
 import { Footer, ErrorAlert } from 'components/layout';
-import { ExportModal, ImageModal, NewItemModal } from 'components/modal/'
+import { ExportModal, ImageModal, EditItemModal } from 'components/modal/'
 
 import Nav from 'components/menu/Nav.jsx'
 import ShortcutCards from 'components/card/ShortcutCards.jsx';
@@ -38,7 +38,7 @@ export default function App() {
             </div>
             {/*<ExportModal/>*/}
             <ImageModal/>
-            {/*<NewItemModal/>*/}
+            <EditItemModal/>
         </Provider>
     );
 }

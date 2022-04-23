@@ -14,11 +14,11 @@ const Row = observer(({ item, editing }) => {
 	return (
 		<tr key={id}>
 			<td>
-				{editing ? <i className="icon icon-cross"></i> : null}
+				{editing ? <i className="icon icon-cross remove-shortcut" onClick={e => items.removeItem(id)}></i> : null}
 				<span onClick={() => items.setEditItem(id)} style={{cursor: 'pointer'}}>{label}</span>
 			</td>
 			<td className="text-right">
-				<ShortcutKey item={item} command={command} />
+				<ShortcutKey item={item} command={command} capture={true}/>
 			</td>
 		</tr>
 	)

@@ -82,17 +82,27 @@ export default class CaptureBox extends Component {
     stop_capture = (e, tab_out = false) => {
         console.debug("End capturing");
 
+        let { kb_string } = this.state;
+        let { defaultValue } = this.props;
+
         document.removeEventListener("beforeunload", oops_handler);
 
         hotkeys.deleteScope(HK_SCOPE);   
 
         this.setState({ status: 'blur' });
 
-        this.props.onData({
-            capture: this.state.kb_string, tab_out
-        });
-
-        this.setState({ kb_string: null });
+        if (kb_string == null) {
+            // nothing captured, do nothing
+            this.props.onData({
+                capture: defaultValue, tab_out
+            })
+        } else {
+            this.props.onData({
+                capture: kb_string, tab_out
+            });
+            
+            this.setState({ kb_string: null });
+        }
     }
 
     handle_tab = (e) => {
