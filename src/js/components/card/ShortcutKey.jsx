@@ -29,14 +29,14 @@ const ShortcutKey = observer(({ item, command, capture=false }) => {
     }
 
     return(
-        <div>
+        <span>
             <span id={'kbd-' + command} className="label shortcut" ref={ref}>
                 {command.split('-')
                     .map(key => <kbd style={keyStyles[ui.theme]} key={command + key}>{get_for_key(key)}</kbd>)
                     .reduce((prev, curr) => [prev, ' + ', curr])
                 }
             </span>
-        </div>
+        </span>
     );
 })
 

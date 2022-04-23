@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navbar, Button } from 'spectre-react';
-import OptionsForm from './OptionsForm.jsx';
-
+import OptionsForm from './OptionsForm';
+import SearchBox from './SearchBox'
 
 
 export default function Nav() {
@@ -10,10 +10,7 @@ export default function Nav() {
         <header className="navbar my-2">
             <section className="navbar-section">
                 <OptionsForm />
-                <div className="input-group input-inline">
-                    <input className="form-input" type="text" placeholder="search" />
-                    <button className="btn btn-primary input-group-btn">Search</button>
-                </div>
+                <SearchBox />
             </section>
         </header>
     );

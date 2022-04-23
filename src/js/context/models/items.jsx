@@ -20,6 +20,17 @@ export const MobxItem = types
         return {
             get markdown() {
                 return `|${self.label}|${self.command}|`; // todo; complete md string
+            },
+
+             getResultsSplit(q) {
+                let query = new RegExp('(' + q + ')', 'i');
+                let split = self.label.split(query);
+
+                if (split.length > 1) {
+                    return [ split[0], split[1], split.slice(2).join('') ]
+                } else {
+                    return [];
+                }
             }
         }
     })
@@ -97,5 +108,12 @@ export const MobxItemList = types
         },
         getItemsByGroup(group) {
             return self.itemList.filter(i => i.category == group) || null
+        },
+        find(query) {
+            if (['', ' '].includes(query)) {
+                return []
+            } else {
+                return self.itemList.filter(i => i.label.toLowerCase().includes(query)).slice(0, 5) || []
+            }
         }
     }))

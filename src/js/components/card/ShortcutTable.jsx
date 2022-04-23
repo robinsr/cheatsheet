@@ -10,12 +10,20 @@ const Row = observer(({ item, editing }) => {
 	
 	let { id, label, command } = item;
 
+	function onClick() {
+		if (editing) {
+			return;
+		} else {
+			items.setEditItem(id)
+		}
+	}
+
 
 	return (
-		<tr key={id}>
+		<tr key={id} className="shortcut-table-item" onClick={onClick}>
 			<td>
 				{editing ? <i className="icon icon-cross remove-shortcut" onClick={e => items.removeItem(id)}></i> : null}
-				<span onClick={() => items.setEditItem(id)} style={{cursor: 'pointer'}}>{label}</span>
+				<span>{label}</span>
 			</td>
 			<td className="text-right">
 				<ShortcutKey item={item} command={command} capture={true}/>
