@@ -7,12 +7,39 @@ const uuid = short();
 
 const EDIT = '__edit__';
 
+export const MobxNamedItem = types
+    .model({
+        id: types.identifier,
+        name: types.string
+    })
+    .actions(self => ({
+        updateName(name) {
+            self.name = name
+        }
+    }))
+
+export const MobxAppGroup = types
+    .model({
+        id: types.identifier,
+        name: types.string,
+        categories: types.array(MobxNamedItem)
+    })
+    .actions(self => ({
+        updateName(name) {
+            self.name = name
+        },
+        addCategory(name) {
+            self.categories.push(MobxNamedItem.create({
+                id: uuid.new(), name 
+            }))
+        }
+    }))
 
 export const MobxItem = types
     .model('MobxItem', {
         id: types.identifier,
-        app: types.string,
-        category: types.maybeNull(types.string),
+        app: types.maybeNull(types.reference(MobxAppGroup)),
+        category: types.maybeNull(types.reference(MobxNamedItem)),
         label: types.maybeNull(types.string),
         command: types.maybeNull(types.string)
     })
@@ -85,7 +112,7 @@ export const MobxItemList = types
         },
         clearEditItem() {
             self.itemList = self.itemList.filter(i => i.id !== self.editItem.id); 
-            self.editItem = null;
+            self.editItem = null; // TODO: destroy() ?
         },
         saveEditItem() {
             let id = self.editItem.id.replace(EDIT, '');
@@ -106,8 +133,11 @@ export const MobxItemList = types
         get itemGroups() {
             return _uniq(self.itemList.map(i => i.category)); 
         },
-        getItemsByGroup(group) {
-            return self.itemList.filter(i => i.category == group) || null
+        getItems(appId, groupId) {
+            return self.itemList.filter(i => i.app.id == appId && i.category.id == groupId)
+        },
+        getItemsByGroup(id) {
+            return self.itemList.filter(i => i.category == group.id) || null
         },
         find(query) {
             if (['', ' '].includes(query)) {

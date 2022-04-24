@@ -2,11 +2,9 @@ import React, { useState, useEffect } from 'react';
 
 import { Provider, rootStore } from 'context/Store'
 
-import { Footer, ErrorAlert } from 'components/layout';
+import { Footer, ErrorAlert, AppGroups } from 'components/layout';
 import { ExportModal, ImageModal, EditItemModal } from 'components/modal/'
-
 import Nav from 'components/menu/Nav.jsx'
-import ShortcutCards from 'components/card/ShortcutCards.jsx';
 
 
 // TODO; figure out error boundary. Not possible in function componant
@@ -28,8 +26,8 @@ export default function App() {
                 <div className="app-content">
                     <Nav/>
                     <div className="container grid-lg">
+                        <AppGroups/>
                         <ErrorAlert error={error} onClear={clearError}>
-                            <ShortcutCards/>
                         </ErrorAlert>
                     </div>
                 </div>

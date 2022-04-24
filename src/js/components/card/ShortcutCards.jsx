@@ -7,15 +7,14 @@ import ShortcutTable from './ShortcutTable';
 import ShortcutCard from './ShortcutCard';
 
 
-const ShortcutCards = observer(() => {
-    let { items } = useMst()
+const ShortcutCards = observer(({ app }) => {
 
-    let item_groups = items.itemGroups;
+    let item_groups = app.categories
 
     return (
         <div className="shortcut-cards">
             {item_groups.map(group => 
-                <ShortcutCard key={'shortcut-card-' + group} group={group} />
+                <ShortcutCard key={'shortcut-card-' + group.id} app={app} group={group} />
             )}
         </div>
     );

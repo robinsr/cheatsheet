@@ -9,7 +9,7 @@ import { useMst } from 'context/Store';
 import ShortcutTable from './ShortcutTable';
 
 
-const ShortcutCard = observer(({ group }) => {
+const ShortcutCard = observer(({ group, app }) => {
     let { items, png } = useMst();
 
     let cardRef = useRef(null);
@@ -17,7 +17,9 @@ const ShortcutCard = observer(({ group }) => {
     let addItemRef = useRef(null);
 
     let [ edit, setEdit ] = useState(false);
-    let [ editGroupName, setEditGroupName ] = useState(group);
+    let [ editGroupName, setEditGroupName ] = useState(group.name);
+
+    let tableItems = items.getItems(app.id, group.id);
 
     useEffect(editing => {
         if (editing) {
@@ -25,7 +27,7 @@ const ShortcutCard = observer(({ group }) => {
         }
 
         if (editGroupName != group) {
-            console.log(editGroupName, group)
+            group.updateName(editGroupName);
         }
     }, [edit]);
 
@@ -48,7 +50,7 @@ const ShortcutCard = observer(({ group }) => {
     }
 
     return (
-        <div className="shortcut-card" key={'shortcut-card-' + group} ref={cardRef}>
+        <div className="shortcut-card" key={'shortcut-card-' + group.id} ref={cardRef}>
             <Card>
                 <CardHeader>
                     <div className="dropdown float-right" ref={menuRef}>
@@ -75,13 +77,13 @@ const ShortcutCard = observer(({ group }) => {
                       </ul>
                     </div>
                     <CardTitle className="h5">
-                        {edit ? <input type="text" value={editGroupName} onChange={e => setEditGroupName(e.target.value)} /> : group}
+                        {edit ? <input type="text" value={editGroupName} onChange={e => setEditGroupName(e.target.value)} /> : group.name}
                     </CardTitle>
                 </CardHeader>
                 <CardBody>
-                    <ShortcutTable items={items.getItemsByGroup(group)} editing={edit}/>
+                    <ShortcutTable items={tableItems} editing={edit}/>
                     <div className="row-new-cmd text-center" ref={addItemRef}>
-                        <a onClick={() => items.addItem('quiver', group)} className="btn btn-link">+</a>
+                        <a onClick={() => items.addItem(app, group)} className="btn btn-link">+</a>
                     </div>
                 </CardBody>
             </Card>

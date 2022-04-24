@@ -3,7 +3,7 @@ import { types, onSnapshot } from 'mobx-state-tree';
 
 
 import { Themes, UI } from './models/ui';
-import { MobxItemList } from './models/items';
+import { MobxItemList, MobxAppGroup } from './models/items';
 
 export { Themes } from './models/ui';
 
@@ -35,6 +35,7 @@ const MobxStore = types
     .model({
         ui: UI,
         items: MobxItemList,
+        apps: types.array(MobxAppGroup),
         png: MobxPNG
     })
     .actions(self => ({
@@ -43,7 +44,8 @@ const MobxStore = types
         },
         load(data) {
             console.log(data);
-            self.items.itemList = data;
+            self.items.itemList = data.items.itemList;
+            self.apps = data.apps;
         }
     }))
     
@@ -56,6 +58,7 @@ let initialState = MobxStore.create({
         itemList: [],
         editItem: null // todo; get from electron window api
     },
+    apps: [],
     png: {
         imageData: null,
         showModal: false
@@ -93,6 +96,6 @@ export function useMst() {
     return store;
 }
 
-if (rootStore.items.length == 0) {
+if (rootStore.items.itemList.length == 0) {
     rootStore.fetch();
 }

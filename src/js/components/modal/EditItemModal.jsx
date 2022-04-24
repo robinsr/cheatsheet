@@ -34,8 +34,7 @@ const EditModal = observer(() => {
 
     if (editItem) {
 
-        let { label, category, command } = editItem;
-
+        let { label, category, command, app } = editItem;
 
         return (
             <Modal 
@@ -62,11 +61,11 @@ const EditModal = observer(() => {
                                 <label className="form-label">Group:</label>
                                 <select className="form-select"
                                     name="category"
-                                    value={category}
+                                    value={category.id}
                                     onChange={e => { editItem.update('category', e.target.value) }}
                                     tabIndex="0">
-                                        {itemGroups.map(i => (
-                                            <option value={i} key={i}>{i}</option>
+                                        {app.categories.map(i => (
+                                            <option value={i.id} key={'edit_cat_' + i.id}>{i.name}</option>
                                         ))}
                                 </select>
                             </FormGroup>
