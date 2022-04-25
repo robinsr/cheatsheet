@@ -237,8 +237,8 @@ module.exports = {
             ]
         }
     ],
-    "png": {
-        "imageData": null,
+    "imageModal": {
+        "data": null,
         "showModal": false
     }
 }

@@ -1,38 +1,48 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const path = require('path');
 
+const { saveFile } = require('./src/js/main/io');
+
 const createWindow = () => {
-  const win = new BrowserWindow({
-    width: 2000,
-    height: 1600,
-    webPreferences: {
-      preload: path.resolve(__dirname, 'src/js/preload.js')
-    }
-  })
+    const win = new BrowserWindow({
+        width: 2000,
+        height: 1600,
+        title: 'Cheat',
+        titleBarStyle: 'hiddenInset',
+        // titleBarOverlay: {
+        //   color: '#2f3241',
+        //   symbolColor: '#74b1be'
+        // },
+        vibrancy: 'content',
+        webPreferences: {
+            nodeIntegration: true,
+            preload: path.resolve(__dirname, 'src/js/preload.js')
+        }
+    });
 
-  win.loadFile('index.html')
+    win.loadFile('index.html')
 
-  win.webContents.openDevTools();
+    win.webContents.openDevTools();
+
+    return win;
 }
 
+
+
 app.whenReady().then(() => {
-  createWindow();
+    const win = createWindow();
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  });
+    app.on('activate', () => {
+        if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    });
 
-  // app.setAppLogsPath()
+    
+    const electron_conf = {
+        cwd: __dirname,
+        logs: app.getPath('logs'),
+        appData: app.getPath('appData'),
+        userData: app.getPath('userData')
+    }
 
-
-  var electron_conf = {
-    cwd: __dirname,
-    logs: app.getPath('logs'),
-    appData: app.getPath('appData'),
-    userData: app.getPath('userData')
-  }
-
-  console.log('config:', electron_conf);
-
-
+    ipcMain.handle('app:dialog:saveFile', saveFile);
 })

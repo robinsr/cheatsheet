@@ -1,42 +1,18 @@
 import { createContext, useContext } from 'react';
 import { types, onSnapshot } from 'mobx-state-tree';
 
-
 import { Themes, UI } from './models/ui';
 import { MobxItemList, MobxAppGroup } from './models/items';
-
+import { MobxImageModal } from './models/image';
 export { Themes } from './models/ui';
-
-const MobxPNGImageData = types
-    .model({
-        dataUrl: types.string,
-        width: types.number,
-        height: types.number
-    })
-
-const MobxPNG = types
-    .model({
-        imageData: types.maybeNull(MobxPNGImageData),
-        showModal: types.boolean
-    })
-    .actions(self => ({
-        setImageData(data) {
-            self.imageData = data;
-            self.showModal = true;
-        },
-
-        closeModal() {
-            self.showModal = false;
-        }
-    }))
 
 
 const MobxStore = types
-    .model({
+    .model('MobxStore', {
         ui: UI,
         items: MobxItemList,
         apps: types.array(MobxAppGroup),
-        png: MobxPNG
+        imageModal: MobxImageModal
     })
     .actions(self => ({
         fetch() {
@@ -59,8 +35,8 @@ let initialState = MobxStore.create({
         editItem: null // todo; get from electron window api
     },
     apps: [],
-    png: {
-        imageData: null,
+    imageModal: {
+        data: null,
         showModal: false
     }
 });

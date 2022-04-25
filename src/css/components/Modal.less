@@ -1,5 +1,9 @@
 .modal {
 
+    &.image_modal {
+        max-height: 98vh;
+    }
+
     .download-container {
         display: flex;
     }
@@ -8,6 +12,11 @@
         border: 1px solid #ddd;
         padding: 0.8rem;
         border-radius: 1rem;
+
+        img {
+            max-height: 30rem;
+            max-width: 24rem;
+        }
     }
 
     &.new-shortcut-modal {

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Button, Card, CardHeader, CardTitle, CardBody } from 'spectre-react';
 
-import render from 'utils/canvas_renderer';
+import { renderPNG, renderSVG } from 'utils/canvas_renderer';
 import { ShowHideElement } from 'utils/dom';
 import { useMst } from 'context/Store';
 
@@ -10,7 +10,7 @@ import ShortcutTable from './ShortcutTable';
 
 
 const ShortcutCard = observer(({ group, app }) => {
-    let { items, png } = useMst();
+    let { items, imageModal } = useMst();
 
     let cardRef = useRef(null);
     let menuRef = useRef(null);
@@ -31,16 +31,28 @@ const ShortcutCard = observer(({ group, app }) => {
         }
     }, [edit]);
 
-    function exportPNG() {
+    function render(type) {
+        if (type == 'SVG') {
+            return renderSVG(cardRef.current);
+        } else if (type == 'PNG') {
+            return renderPNG(cardRef.current);
+        } else {
+            return Promise.reject('Image type must be SVG on PNG')
+        }
+    }
+
+    function exportImage(type) {
         let e = new ShowHideElement([
             menuRef.current, addItemRef.current
         ]);
         e.hide();
 
-        render(cardRef.current)
+        render(type)
             .then(imageData => {
                 e.show();
-                png.setImageData(imageData);
+
+                imageData.filename = `cheatsheet-${app.name}-${group.name}`;
+                imageModal.setImageData(imageData);
             })
             .catch(e.show())
     }
@@ -69,10 +81,22 @@ const ShortcutCard = observer(({ group, app }) => {
                         </Button>
                         <ul className="menu export-menu">
                             <li className="menu-item">
-                                <a onClick={() => exportPNG()}>PNG</a>
+                                <a onClick={() => exportImage('PNG')}>
+                                    <i className="icon icon-photo"></i>
+                                    <span className="mx-1">PNG</span>
+                                </a>
                             </li>
                             <li className="menu-item">
-                                <a onClick={() => exportMD()}>Markdown</a>
+                                <a onClick={() => exportImage('SVG')}>
+                                    <i className="icon icon-resize-horiz"></i>
+                                    <span className="mx-1">SVG</span>
+                                </a>
+                            </li>
+                            <li className="menu-item">
+                                <a onClick={() => exportMD()}>
+                                    <i className="icon icon-bookmark"></i>
+                                    <span className="mx-1">MD</span>
+                                </a>
                             </li>
                       </ul>
                     </div>

@@ -19,7 +19,7 @@ export const MobxNamedItem = types
     }))
 
 export const MobxAppGroup = types
-    .model({
+    .model('MobxAppGroup', {
         id: types.identifier,
         name: types.string,
         categories: types.array(MobxNamedItem)

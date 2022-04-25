@@ -17,12 +17,13 @@ var sourcemaps = require('gulp-sourcemaps');
 var less = require('gulp-less');
 
 const browserify_opts = {
-  extensions: [ '.jsx' ],
+  extensions: [ '.jsx', '.js' ],
   debug: true,
   cache: {},
   packageCache: {},
   entries: [ './src/js/index.js' ],
-  paths: [ './src/js' ]
+  paths: [ './src/js' ],
+  sourceType: 'module'
 }
 
 
@@ -33,7 +34,8 @@ function compile (watch) {
       '@babel/preset-env',
       '@babel/preset-react'
     ],
-    sourceMaps: true
+    sourceMaps: true,
+    global: true
   });
 
   return bundler

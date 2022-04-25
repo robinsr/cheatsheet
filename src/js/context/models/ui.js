@@ -6,7 +6,7 @@ export const Themes = {
 }
 
 export const UI = types
-    .model({
+    .model('UI', {
         theme: types.enumeration('theme', ['light', 'dark'])
     })
     .actions(self => ({

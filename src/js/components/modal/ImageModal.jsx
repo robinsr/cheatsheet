@@ -2,33 +2,32 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 
 import Modal from 'components/modal/Modal';
+import { DataURIImage, DownloadButton } from 'components/image';
 
 import { useMst } from 'context/Store';
 import copy_to_clip from 'utils/clipboard';
 
 
 const ImageModal = observer(() => {
-    let { png } = useMst();
+    let { imageModal } = useMst();
 
-    if (png.imageData) {
-        let { dataUrl, width, height } = png.imageData;
+    if (imageModal.data) {
 
         return (
             <Modal 
-                title={'Export PNG'}
-                active={png.showModal}
-                onClose={() => png.closeModal()}
+                name="image-modal"
+                title={'Export ' + imageModal.data.type}
+                active={imageModal.showModal}
+                onClose={() => imageModal.closeModal()}
                 content={
                     <div className="content">
                         <div className="text-center download-container">
                             <div className="p-centered download-image">
                                 <div>
-                                    <img className="" src={'' + dataUrl} width={width} height={height} />
+                                    <DataURIImage imageModel={imageModal.data}/>
                                 </div>
                                 <div>
-                                    <a className="btn btn-primary" href={dataUrl} download={'filename.png'}>
-                                        <i className="icon icon-download"></i> Download
-                                    </a>
+                                    <DownloadButton imageModel={imageModal.data}/>
                                 </div>
                             </div>
                         </div>
