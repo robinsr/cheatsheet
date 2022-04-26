@@ -1,0 +1,28 @@
+@use './components/ShortcutTable';
+@use './components/ShortcutCard';
+@use './components/Modal';
+@use './components/SearchBox';
+
+html, body, #app {
+    height: 100%;
+}
+
+body {
+    background-color: #f7f8f9 !important;
+}
+
+
+.app-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    margin-top: 20px;
+    margin: 26px 8px;
+}
+
+.app-footer {
+    height: 2rem;
+    text-align: center;
+}

@@ -1,7 +1,9 @@
 const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const path = require('path');
 
-const { saveFile } = require('./src/js/main/io');
+console.log(process.env)
+
+const { saveFile } = require('./src/main/io');
 
 const createWindow = () => {
     const win = new BrowserWindow({
@@ -16,11 +18,11 @@ const createWindow = () => {
         vibrancy: 'content',
         webPreferences: {
             nodeIntegration: true,
-            preload: path.resolve(__dirname, 'src/js/preload.js')
+            preload: path.resolve(__dirname, 'src/main/preload.js')
         }
     });
 
-    win.loadFile('index.html')
+    win.loadFile('dist/index.html')
 
     win.webContents.openDevTools();
 
