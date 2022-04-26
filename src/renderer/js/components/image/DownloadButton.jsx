@@ -1,7 +1,9 @@
 import React from 'react';
 
+const noop = (data) => console.log(data);
+
 const DownloadButton = ({
-    imageModel
+    imageModel, onSave=noop, onError=noop
 }) => {
 
     if (!imageModel) {
@@ -10,15 +12,17 @@ const DownloadButton = ({
 
 
     const onClick = (e) => {
-        // send blob?
-        window.keymap_api.saveFile(imageModel)
+        
+        window.keymap_api.saveImage(imageModel)
             .then(filePath => {
-                console.log('success!');
-                console.log(filePath);
+                if (filePath) {
+                    onSave(`Iamge saved to ${filePath}`)
+                } 
+                
             })
             .catch(err => {
-                console.error(err);
-            })
+                onError(err);
+            });
     }
 
     return (

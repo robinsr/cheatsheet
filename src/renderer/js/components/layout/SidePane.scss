@@ -1,0 +1,19 @@
+.cheat-sliding-pane {
+
+    &-overlay {
+        margin-top: 80px;
+        z-index: 399;
+    }
+
+    &-panel {
+        .slide-pane__header {
+            display: none;
+        }
+    }
+
+    nav {
+        .nav-group {
+            margin-bottom: 30px;
+        }
+    }
+}

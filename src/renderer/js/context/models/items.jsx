@@ -49,7 +49,7 @@ export const MobxItem = types
                 return `|${self.label}|${self.command}|`; // todo; complete md string
             },
 
-             getResultsSplit(q) {
+            getResultsSplit(q) {
                 let query = new RegExp('(' + q + ')', 'i');
                 let split = self.label.split(query);
 

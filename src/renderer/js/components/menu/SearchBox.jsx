@@ -1,4 +1,6 @@
-import React, { useRef, useState } from 'react';
+import './SearchBox.scss';
+
+import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import * as _ from 'lodash';
 
@@ -6,14 +8,23 @@ import { useMst } from 'context/Store.jsx';
 
 import ShortcutKey from 'components/card/ShortcutKey.jsx';
 
-const SearchBox = observer(() => {
+const SearchBox = observer(({
+    isMenuOpen=false
+}) => {
     let { items } = useMst();
 
     let searchRef = useRef();
 
     let [ query, setQuery ] = useState('')
-    let [ focusClass, setFocusClass ] = useState();
+    let [ focusClass, setFocusClass ] = useState('');
     let [ result, setResult ] = useState([]);
+
+    useEffect(function clearOnMenuOopen() {
+        if (isMenuOpen) {
+            setQuery('');
+            setResult([]);
+        }
+    }, [ isMenuOpen ]);
 
     function onFocus(e) {
         setFocusClass('is-focused');
@@ -36,7 +47,7 @@ const SearchBox = observer(() => {
     }
 
     return (
-        <div className="form-autocomplete search-box">
+        <div className="form-autocomplete search-box mx-2">
             <div className={'form-autocomplete-input form-input ' + focusClass}>
                 <input className="form-input"
                     type="text"
@@ -90,10 +101,3 @@ const SearchBoxResult = ({ result, query, onClick }) => {
 }
 
 export default SearchBox;
-
-// <button className="btn btn-primary input-group-btn">Search</button>
-
-//<div class="chip">
-//    <figure class="avatar avatar-sm" data-initial="TS" style="background-color: #5755d9;"></figure>Tony Stark
-//</div>
-

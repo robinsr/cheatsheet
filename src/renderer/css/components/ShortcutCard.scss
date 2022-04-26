@@ -1,5 +1,11 @@
+$breakpoint-single-row: 768px;
+
 .shortcut-cards {
     column-count: 2;
+    
+    @media (max-width: $breakpoint-single-row) {
+        column-count: 1;  
+    }
 }
 
 .shortcut-card {

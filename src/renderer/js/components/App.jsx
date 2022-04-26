@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { Provider, rootStore } from 'context/Store.jsx'
 
-import { Footer, ErrorAlert, AppGroups } from 'components/layout';
+import { Footer, ErrorAlert, AppGroups, SidePane } from 'components/layout';
 import { ExportModal, ImageModal, EditItemModal } from 'components/modal/'
 import Nav from 'components/menu/Nav.jsx'
 
@@ -11,6 +11,7 @@ import Nav from 'components/menu/Nav.jsx'
 export default function App() {
 
     const [ error, setError ] = useState(null);
+    const [ isMenuOpen, setMenuOpen ] = useState(false);
 
     const hasError = useEffect(err => {
         return err != null;
@@ -20,23 +21,28 @@ export default function App() {
         setError(null);
     }
 
+    const toggleMenu = () => {
+        setMenuOpen(!isMenuOpen);
+    }
+
     return (
         <Provider value={rootStore}>
+            <Nav onMenuClick={toggleMenu} isMenuOpen={isMenuOpen}/>
             <div className="app-container">
                 <div className="app-content">
-                    <Nav/>
                     <div className="container grid-lg">
                         <AppGroups/>
                         <ErrorAlert error={error} onClear={clearError}>
                         </ErrorAlert>
+                        
                     </div>
                 </div>
-                <div className="divider"></div>
-                <Footer/>
+                <SidePane isOpen={isMenuOpen} onClose={() => setMenuOpen(false)}/>
             </div>
             {/*<ExportModal/>*/}
             <ImageModal/>
             <EditItemModal/>
+            
         </Provider>
     );
 }

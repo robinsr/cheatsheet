@@ -1,7 +1,6 @@
 @use './components/ShortcutTable';
 @use './components/ShortcutCard';
 @use './components/Modal';
-@use './components/SearchBox';
 
 html, body, #app {
     height: 100%;
@@ -18,8 +17,11 @@ body {
     flex-direction: column;
     flex-wrap: nowrap;
     justify-content: space-between;
-    margin-top: 20px;
-    margin: 26px 8px;
+    margin: 0 8px;
+}
+
+.app-content {
+    margin-top: 78px;
 }
 
 .app-footer {
