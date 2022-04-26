@@ -16,6 +16,9 @@ const AppGroups = observer(() => {
                     <div className="my-2">
                         <figure className="avatar avatar-md" data-initial={a.name[0].toUpperCase()} />
                         <em className="h3 mx-2">{a.name}</em>
+                        <button className="btn btn-sm btn-primary s-circle float-right" onClick={() => a.addCategory()}>
+                            <i className="icon icon-plus"></i>
+                        </button>
                     </div>
                     <ShortcutCards app={a} />
                 </div>

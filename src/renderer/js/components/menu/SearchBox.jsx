@@ -46,6 +46,17 @@ const SearchBox = observer(({
         items.setEditItem(id);
     }
 
+    window.keymap_api.handleStateChange((e, value) => {
+        if (value === 'focus') {
+            searchRef.current.focus();
+        }
+
+        if (value === 'blur') {
+            setQuery('');
+            setResult([]);
+        }
+    })
+
     return (
         <div className="form-autocomplete search-box mx-2">
             <div className={'form-autocomplete-input form-input ' + focusClass}>

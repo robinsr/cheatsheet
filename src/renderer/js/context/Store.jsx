@@ -1,11 +1,14 @@
 import { createContext, useContext } from 'react';
 import { types, onSnapshot } from 'mobx-state-tree';
+import short from 'short-uuid';
+
 
 import { Themes, UI } from './models/ui';
 import { MobxItemList, MobxAppGroup } from './models/items';
 import { MobxImageModal } from './models/image';
 export { Themes } from './models/ui';
 
+const uuid = short();
 
 const MobxStore = types
     .model('MobxStore', {
@@ -22,6 +25,18 @@ const MobxStore = types
             console.log(data);
             self.items.itemList = data.items.itemList;
             self.apps = data.apps;
+        },
+        addApp() {
+            self.apps.unshift(MobxAppGroup.create({
+                id: uuid.new()
+            }))
+        },
+        removeCategory(appId, groupId) {
+            let app = self.apps.find(i => i.id === appId);
+            console.log(app)
+
+            self.items.removeItemsByCategory(groupId);
+            app.removeCategory(groupId);
         }
     }))
     

@@ -9,8 +9,10 @@ import { useMst } from 'context/Store.jsx';
 import ShortcutTable from './ShortcutTable.jsx';
 
 
-const ShortcutCard = observer(({ group, app }) => {
-    let { items, imageModal } = useMst();
+const ShortcutCard = observer(({ 
+    group, app, onDelete
+}) => {
+    let { items, imageModal, removeCategory } = useMst();
 
     let cardRef = useRef(null);
     let menuRef = useRef(null);
@@ -57,6 +59,10 @@ const ShortcutCard = observer(({ group, app }) => {
             .catch(e.show())
     }
 
+    function deleteCategory() {
+        removeCategory(app.id, group.id);
+    }
+
     function exportMD() {
         // todo
     }
@@ -76,29 +82,43 @@ const ShortcutCard = observer(({ group, app }) => {
                                     ? <i className="icon icon-check"></i>
                                     : <i className="icon icon-edit"></i>}
                         </Button>
-                        <Button className="dropdown-toggle" primary={true} small={true}>
-                            <i className="icon icon-download"></i>
-                        </Button>
-                        <ul className="menu export-menu">
-                            <li className="menu-item">
-                                <a onClick={() => exportImage('PNG')}>
-                                    <i className="icon icon-photo"></i>
-                                    <span className="mx-1">PNG</span>
-                                </a>
-                            </li>
-                            <li className="menu-item">
-                                <a onClick={() => exportImage('SVG')}>
-                                    <i className="icon icon-resize-horiz"></i>
-                                    <span className="mx-1">SVG</span>
-                                </a>
-                            </li>
-                            <li className="menu-item">
-                                <a onClick={() => exportMD()}>
-                                    <i className="icon icon-bookmark"></i>
-                                    <span className="mx-1">MD</span>
-                                </a>
-                            </li>
-                      </ul>
+                        {edit ?
+                             <Button
+                                className=""
+                                error={true}
+                                small={true}
+                                onClick={deleteCategory}>
+                                <i className="icon icon-delete"></i>
+                            </Button>
+                            : <span>
+                                <Button 
+                                    className="dropdown-toggle"
+                                    primary={true}
+                                    small={true}>
+                                    <i className="icon icon-download"></i>
+                                </Button>
+                                <ul className="menu export-menu">
+                                    <li className="menu-item">
+                                        <a onClick={() => exportImage('PNG')}>
+                                            <i className="icon icon-photo"></i>
+                                            <span className="mx-1">PNG</span>
+                                        </a>
+                                    </li>
+                                    <li className="menu-item">
+                                        <a onClick={() => exportImage('SVG')}>
+                                            <i className="icon icon-resize-horiz"></i>
+                                            <span className="mx-1">SVG</span>
+                                        </a>
+                                    </li>
+                                    <li className="menu-item">
+                                        <a onClick={() => exportMD()}>
+                                            <i className="icon icon-bookmark"></i>
+                                            <span className="mx-1">MD</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </span>
+                          }
                     </div>
                     <CardTitle className="h5">
                         {edit ? <input type="text" value={editGroupName} onChange={e => setEditGroupName(e.target.value)} /> : group.name}

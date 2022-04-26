@@ -21,7 +21,7 @@ module.exports = {
     context: path.resolve(__dirname, '../src'),
     module: {
         rules: [{
-            test: /\.scss/i,
+            test: /\.s?css/i,
             use: [
                 'style-loader', 'css-loader', 'sass-loader',
             ],
@@ -55,7 +55,7 @@ module.exports = {
         new HtmlWebpackPlugin({
             title: 'Cheat',
             template: './index.ejs',
-            inject: 'body'
+            inject: false
         }),
     ],
     optimization: {

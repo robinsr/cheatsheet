@@ -25,6 +25,10 @@ export default function App() {
         setMenuOpen(!isMenuOpen);
     }
 
+    window.keymap_api.handleStateChange((e, value) => {
+        console.log(value)
+    })
+
     return (
         <Provider value={rootStore}>
             <Nav onMenuClick={toggleMenu} isMenuOpen={isMenuOpen}/>

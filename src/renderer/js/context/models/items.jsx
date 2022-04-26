@@ -1,4 +1,4 @@
-import { types, getSnapshot } from 'mobx-state-tree';
+import { types, getParent, getSnapshot } from 'mobx-state-tree';
 import { observable } from 'mobx';
 import { uniq as _uniq, pick as _pick } from 'lodash';
 import short from 'short-uuid';
@@ -28,10 +28,13 @@ export const MobxAppGroup = types
         updateName(name) {
             self.name = name
         },
-        addCategory(name) {
-            self.categories.push(MobxNamedItem.create({
+        addCategory(name='New Category') {
+            self.categories.unshift(MobxNamedItem.create({
                 id: uuid.new(), name 
             }))
+        },
+        removeCategory(id) {
+            self.categories = self.categories.filter(i => i.id !== id);
         }
     }))
 
@@ -127,6 +130,9 @@ export const MobxItemList = types
         },
         removeItem(id) {
             self.itemList = self.itemList.filter(i => i.id !== id);
+        },
+        removeItemsByCategory(id) {
+            self.itemList = self.itemList.filter(i => i.category.id !== id);
         }
     }))
     .views(self => ({

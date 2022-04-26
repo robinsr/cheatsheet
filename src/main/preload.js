@@ -4,6 +4,6 @@ const data = require('./data');
 
 contextBridge.exposeInMainWorld('keymap_api',{
   getInitialData: () => Promise.resolve(data),
-  saveFile: (imageModel) => ipcRenderer.invoke('app:dialog:saveFile', imageModel),
-  getSaveFilename: (filename) => ipcRenderer.invoke('app:dialog:getSaveFilename', filename)
+  saveImage: (imageData) => ipcRenderer.invoke('app:dialog:saveImage', imageData),
+  handleStateChange: (callback) => ipcRenderer.on('app:stateChange', callback)
 })

@@ -1,9 +1,10 @@
+const gm = require('gm');
 
 class CustomImage {
     type = null;
 
-    static fromSnapshot(value) {
-        let { type, data, width, height, filename } = value;
+    static fromData(imageData) {
+        let { type, data, width, height, filename } = imageData;
 
         if (type == 'SVG') {
             return new CustomSVGImage(data, width, height, filename);
@@ -19,35 +20,17 @@ class CustomImage {
         this.height = height;
         this.filename = filename;
     }
-
-    get dimensions() {
-        return { width: this.width, height: this.height };
-    }
-
-    getBuffer() {
-        throw new Error('Not implemented');
-    }
-
-    getDataURI() {
-        throw new Error('Not implemented');   
-    }
 }
 
 class CustomSVGImage extends CustomImage {
     static ext = '.svg';
-    static dataURIPrefix = 'data:image/svg+xml;base64,';
 
     constructor(data, width, height, filename) {
         super('SVG', data, width, height, filename);
     }
 
     getBuffer() {
-        return Buffer.from(this.data)
-    }
-
-    getDataURI() {
-        const buff = Buffer.from(unescape(encodeURIComponent(this.data)), 'latin1');
-        return CustomSVGImage.dataURIPrefix + buff.toString('base64');
+        return Promise.resolve(Buffer.from(this.data));
     }
 
     getFilename() {
@@ -57,22 +40,33 @@ class CustomSVGImage extends CustomImage {
 
 class CustomPNGImage extends CustomImage {
     static ext = '.png';
-    static dataURIPrefix = 'data:image/png;base64,';
 
     constructor(data, width, height, filename) {
         super('PNG', data, width, height, filename);
     }
 
     getBuffer() {
-        return Buffer.from(this.data, 'base64');
-    }
-
-    getDataURI() {
-        return CustomPNGImage.dataURIPrefix + this.data;
+        return new Promise((resolve, reject) => {
+            /**
+             * TODO; this still produces grainy images
+             * Ideally it would produce an image with
+             * * Pixel dimensions = 2x 
+             * * DPI dimensions = 144
+             */
+            gm(Buffer.from(this.data, 'base64'))
+                .units('PixelsPerInch')
+                .resample(144, 144)
+                .density(144, 144)
+                .resize(this.width*2, this.height*2)
+                .toBuffer('PNG', (err, buffer) => {
+                    if (err) return reject(err);
+                    resolve(buffer)
+                });
+        });
     }
 
     getFilename() {
-        return this.filename + CustomPNGImage.ext;
+        return this.filename + CustomSVGImage.ext;
     }
 }
 

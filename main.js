@@ -1,14 +1,21 @@
-const { app, BrowserWindow, dialog, ipcMain } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, ipcRenderer } = require('electron');
 const path = require('path');
 
-console.log(process.env)
+const IS_DEV = process.env.ELECTRON_DEV === 'true';
 
-const { saveFile } = require('./src/main/io');
+const { saveImage } = require('./src/main/io');
+
+const dimensions = {
+    dev: {
+        width: 2000, height: 1600
+    },
+    prod: {
+        width: 500, height: 1050
+    }
+}
 
 const createWindow = () => {
-    const win = new BrowserWindow({
-        width: 2000,
-        height: 1600,
+    const windowConfig = {
         title: 'Cheat',
         titleBarStyle: 'hiddenInset',
         // titleBarOverlay: {
@@ -20,11 +27,27 @@ const createWindow = () => {
             nodeIntegration: true,
             preload: path.resolve(__dirname, 'src/main/preload.js')
         }
-    });
+    }
+
+    Object.assign(windowConfig, dimensions[ IS_DEV ? 'dev' : 'prod' ]);
+
+    const win = new BrowserWindow(windowConfig);
 
     win.loadFile('dist/index.html')
 
-    win.webContents.openDevTools();
+    win.on('focus', (e) => {
+        console.log('Focused');
+        win.webContents.send('app:stateChange', 'focus');
+    });
+
+    win.on('blur', (e) => {
+        console.log('Lost focus');
+        win.webContents.send('app:stateChange', 'blur');
+    });
+
+    if (IS_DEV) {
+        win.webContents.openDevTools();
+    }
 
     return win;
 }
@@ -46,5 +69,5 @@ app.whenReady().then(() => {
         userData: app.getPath('userData')
     }
 
-    ipcMain.handle('app:dialog:saveFile', saveFile);
+    ipcMain.handle('app:dialog:saveImage', saveImage);
 })
