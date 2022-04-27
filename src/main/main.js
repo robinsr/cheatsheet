@@ -6,7 +6,7 @@ const activeWindows = require('electron-active-window');
 
 const IS_DEV = process.env.ELECTRON_DEV === 'true';
 
-const { saveImage } = require('./src/main/io');
+const { saveImage } = require('./io.js');
 
 const dimensions = {
     dev: {
@@ -28,7 +28,7 @@ const createWindow = () => {
         vibrancy: 'content',
         webPreferences: {
             nodeIntegration: true,
-            preload: path.resolve(__dirname, 'src/main/preload.js')
+            preload: path.resolve(__dirname, './preload.js')
         }
     }
 
@@ -36,7 +36,7 @@ const createWindow = () => {
 
     const win = new BrowserWindow(windowConfig);
 
-    win.loadFile('dist/index.html');
+    win.loadFile('./dist/index.html');
 
     function getActiveWindow() {
         activeWindows().getActiveWindow().then((result)=>{
