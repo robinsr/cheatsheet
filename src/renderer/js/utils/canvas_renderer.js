@@ -3,7 +3,7 @@ import { changeDpiDataUrl } from 'changedpi';
 import { elementToSVG, inlineResources } from 'dom-to-svg';
 import { optimize } from 'svgo';
 
-import { CustomPNGImage, CustomSVGImage } from './images';
+import { CustomPNGImage, CustomSVGImage } from 'context/models/images/images.js';
 
 
 

@@ -5,9 +5,11 @@ export const Themes = {
     dark: 'dark'
 }
 
-export const UI = types
-    .model('UI', {
-        theme: types.enumeration('theme', ['light', 'dark'])
+export const UIStore = types
+    .model('UIStore', {
+        theme: types.enumeration('theme', ['light', 'dark']),
+        activeWindow: types.maybeNull(types.string),
+        activeFollow: types.boolean
     })
     .actions(self => ({
         toggleTheme() {
@@ -19,6 +21,12 @@ export const UI = types
                     self.theme = Themes.light;
                     break;
             }
+        },
+        setActiveWindow(name) {
+            self.activeWindow = name;
+        },
+        toggleActiveFollow() {
+            self.activeFollow = !self.activeFollow;
         }
     }));
 

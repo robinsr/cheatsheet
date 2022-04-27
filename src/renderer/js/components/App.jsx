@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 import { Provider, rootStore } from 'context/Store.jsx'
 
-import { Footer, ErrorAlert, AppGroups, SidePane } from 'components/layout';
-import { ExportModal, ImageModal, EditItemModal } from 'components/modal/'
+import { ErrorAlert, AppGroups, SidePane } from 'components/layout/index';
+import { ExportModal, ImageModal, EditItemModal, EditAppModal } from 'components/modal/index'
 import Nav from 'components/menu/Nav.jsx'
 
 
@@ -25,10 +25,6 @@ export default function App() {
         setMenuOpen(!isMenuOpen);
     }
 
-    window.keymap_api.handleStateChange((e, value) => {
-        console.log(value)
-    })
-
     return (
         <Provider value={rootStore}>
             <Nav onMenuClick={toggleMenu} isMenuOpen={isMenuOpen}/>
@@ -46,7 +42,7 @@ export default function App() {
             {/*<ExportModal/>*/}
             <ImageModal/>
             <EditItemModal/>
-            
+            <EditAppModal/>
         </Provider>
     );
 }

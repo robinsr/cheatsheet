@@ -1,5 +1,8 @@
-const { app, BrowserWindow, dialog, ipcMain, ipcRenderer } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const activeWindows = require('electron-active-window');
+
+
 
 const IS_DEV = process.env.ELECTRON_DEV === 'true';
 
@@ -33,16 +36,29 @@ const createWindow = () => {
 
     const win = new BrowserWindow(windowConfig);
 
-    win.loadFile('dist/index.html')
+    win.loadFile('dist/index.html');
+
+    function getActiveWindow() {
+        activeWindows().getActiveWindow().then((result)=>{
+            console.log(result);
+            win.webContents.send('app:stateChange', [ 'change', result ]);
+        });
+    }
+
+    let pollActiveWindow;
 
     win.on('focus', (e) => {
         console.log('Focused');
         win.webContents.send('app:stateChange', 'focus');
+        win.webContents.send('app:stateChange', [ 'change', '__self__' ]);
+        clearInterval(pollActiveWindow);
     });
 
     win.on('blur', (e) => {
         console.log('Lost focus');
         win.webContents.send('app:stateChange', 'blur');
+        getActiveWindow()
+        pollActiveWindow = setInterval(getActiveWindow, 1000)
     });
 
     if (IS_DEV) {

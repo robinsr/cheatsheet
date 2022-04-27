@@ -1,5 +1,3 @@
-/* Main/Renderer */
-
 import { optimize } from 'svgo';
 
 export class CustomImage {
@@ -8,9 +6,9 @@ export class CustomImage {
     static fromSnapshot(value) {
         let { type, data, width, height, filename } = value;
 
-        if (type == 'SVG') {
+        if (type === 'SVG') {
             return new CustomSVGImage(data, width, height, filename);
-        } else if (type == 'PNG') {
+        } else if (type === 'PNG') {
             return new CustomPNGImage(data, width, height, filename);
         }
     }
@@ -26,20 +24,9 @@ export class CustomImage {
     get dimensions() {
         return { width: this.width, height: this.height };
     }
-
-    getBuffer() {
-        throw new Error('Not implemented');
-    }
-
-    getDataURI() {
-        throw new Error('Not implemented');   
-    }
 }
 
 export class CustomSVGImage extends CustomImage {
-    static ext = '.svg';
-    static dataURIPrefix = 'data:image/svg+xml;base64,';
-
     constructor(data, width, height, filename) {
         super('SVG', data, width, height, filename);
 
@@ -49,39 +36,18 @@ export class CustomSVGImage extends CustomImage {
 
         this.data = result.data;
     }
-
-    getBuffer() {
-        return Buffer.from(this.data)
-    }
-
     getDataURI() {
         const buff = Buffer.from(unescape(encodeURIComponent(this.data)), 'latin1');
-        return CustomSVGImage.dataURIPrefix + buff.toString('base64');
-    }
-
-    getFilename() {
-        return this.filename + CustomSVGImage.ext;
+        return 'data:image/svg+xml;base64,' + buff.toString('base64');
     }
 }
 
 export class CustomPNGImage extends CustomImage {
-    static ext = '.png';
-    static dataURIPrefix = 'data:image/png;base64,';
-
     constructor(data, width, height, filename) {
         super('PNG', data, width, height, filename);
     }
-
-    getBuffer() {
-        return Buffer.from(this.data, 'base64');
-    }
-
     getDataURI() {
-        return CustomPNGImage.dataURIPrefix + this.data;
-    }
-
-    getFilename() {
-        return this.filename + CustomPNGImage.ext;
+        return 'data:image/png;base64,' + this.data;
     }
 }
 

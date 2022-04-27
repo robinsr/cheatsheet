@@ -2,7 +2,6 @@ import './SearchBox.scss';
 
 import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import * as _ from 'lodash';
 
 import { useMst } from 'context/Store.jsx';
 

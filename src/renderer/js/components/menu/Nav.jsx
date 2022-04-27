@@ -1,21 +1,24 @@
 import './Nav.scss';
 
 import React from 'react';
-import { Navbar, Button } from 'spectre-react';
-import OptionsForm from './OptionsForm.jsx';
+import { Button } from 'spectre-react';
 import SearchBox from './SearchBox.jsx';
+import {observer} from "mobx-react-lite";
+import {useMst} from "context/Store";
 
 
 
-export default function Nav({
+const Nav = observer(({
     onMenuClick, isMenuOpen=false
-}) {
+}) => {
 
-
+    let { ui } = useMst();
 
     return (
         <header id="main-header">
-            <div id="title-bar"></div>
+            <div id="title-bar">
+                <small className={"float-right"}>active: {ui.activeWindow || 'none'}</small>
+            </div>
             <div className="navbar">
                 <section className="navbar-section">
                     <Button  primary={true} onClick={onMenuClick}>
@@ -26,4 +29,6 @@ export default function Nav({
             </div>
         </header>
     );
-}
+})
+
+export default Nav;

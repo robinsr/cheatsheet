@@ -21,6 +21,16 @@ const OptionsForm = observer(() => {
                     <i className="form-icon"></i> Light Keys
                 </label>
             </div>
+            <div className="form-control">
+                <label className="form-switch">
+                    <input
+                        type="checkbox"
+                        checked={ui.activeFollow}
+                        onChange={ui.toggleActiveFollow}
+                    />
+                    <i className="form-icon"></i> Active follow
+                </label>
+            </div>
         </nav>
     );
 });

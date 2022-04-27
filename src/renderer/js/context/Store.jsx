@@ -1,55 +1,23 @@
 import { createContext, useContext } from 'react';
-import { types, onSnapshot } from 'mobx-state-tree';
-import short from 'short-uuid';
+import { onSnapshot } from 'mobx-state-tree';
+import MobxStore from "context/models/RootStore";
 
-
-import { Themes, UI } from './models/ui';
-import { MobxItemList, MobxAppGroup } from './models/items';
-import { MobxImageModal } from './models/image';
-export { Themes } from './models/ui';
-
-const uuid = short();
-
-const MobxStore = types
-    .model('MobxStore', {
-        ui: UI,
-        items: MobxItemList,
-        apps: types.array(MobxAppGroup),
-        imageModal: MobxImageModal
-    })
-    .actions(self => ({
-        fetch() {
-            window.keymap_api.getInitialData().then(self.load)
-        },
-        load(data) {
-            console.log(data);
-            self.items.itemList = data.items.itemList;
-            self.apps = data.apps;
-        },
-        addApp() {
-            self.apps.unshift(MobxAppGroup.create({
-                id: uuid.new()
-            }))
-        },
-        removeCategory(appId, groupId) {
-            let app = self.apps.find(i => i.id === appId);
-            console.log(app)
-
-            self.items.removeItemsByCategory(groupId);
-            app.removeCategory(groupId);
-        }
-    }))
-    
+export { Themes } from './models/UIStore'
 
 let initialState = MobxStore.create({
     ui: {
-        theme: 'dark'
+        theme: 'dark',
+        activeWindow: 'Cheat',
+        activeFollow: true
     },
     items: {
         itemList: [],
         editItem: null // todo; get from electron window api
     },
-    apps: [],
+    apps: {
+        appList: [],
+        selectedApp: null
+    },
     imageModal: {
         data: null,
         showModal: false
@@ -87,6 +55,22 @@ export function useMst() {
     return store;
 }
 
-if (rootStore.items.itemList.length == 0) {
+if (rootStore.isEmpty()) {
     rootStore.fetch();
 }
+
+window.keymap_api.handleStateChange((e, value) => {
+    console.log(value)
+
+    if (value[0] === 'change') {
+        let appName = value[1].windowName;
+
+        rootStore.ui.setActiveWindow(appName);
+
+        let app = rootStore.apps.findByWindowName(appName);
+
+        if (app && rootStore.ui.activeFollow) {
+            rootStore.apps.setActiveApp(app.id);
+        }
+    }
+})

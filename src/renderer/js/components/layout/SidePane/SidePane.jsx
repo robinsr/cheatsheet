@@ -4,7 +4,8 @@ import './SidePane.scss';
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import SlidingPane from 'react-sliding-pane';
-import { AppMenu, OptionsForm } from 'components/menu';
+import AppMenu from './AppMenu';
+import OptionsForm from './OptionsForm';
 
 import { useMst } from 'context/Store';
 

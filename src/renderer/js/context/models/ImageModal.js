@@ -1,7 +1,6 @@
 import { types } from 'mobx-state-tree';
-import { pick as _pick } from 'lodash';
 
-import { CustomImage, CustomSVGImage, CustomPNGImage } from 'utils/images';
+import { CustomImage } from 'context/models/images/images.js';
 
 
 const MobxCustomImage = types.custom({
@@ -40,11 +39,9 @@ const MobxImageModal = types
             self.data = data;
             self.showModal = true;
         },
-
         closeModal() {
             self.showModal = false;
         }
     }));
 
 export { MobxImageModal };
-
