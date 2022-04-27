@@ -33,12 +33,18 @@ export const MobxAppList = types
         appList: types.array(MobxAppItem),
         selectedApp: types.maybeNull(types.reference(MobxAppItem)),
         editApp: types.maybeNull(types.reference(MobxAppItem)),
+        unknownApp: types.maybeNull(types.string)
     })
     .actions(self => ({
-        addNewApp() {
-            self.appList.unshift(MobxAppItem.create({
-                id: newUuid(), name: 'New App'
-            }));
+        addNewApp(name='New App', windowName='') {
+            let newApp = MobxAppItem.create({
+                id: newUuid(), name, windowName
+            });
+
+            self.appList.unshift(newApp);
+            self.selectedApp = newApp;
+
+            return newApp;
         },
         removeApp(id) {
             self.appList = self.appList.filter(a => a.id !== id);
@@ -57,5 +63,11 @@ export const MobxAppList = types
         },
         findByWindowName(windowName) {
             return self.appList.find(a => a.windowName === windowName) || null;
+        },
+        setUnknownAppName(appName) {
+            self.unknownApp = appName
+        },
+        clearUnknownAppName() {
+            self.unknownApp = null;
         }
     }))

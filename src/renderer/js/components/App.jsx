@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { Provider, rootStore } from 'context/Store.jsx'
 
-import { ErrorAlert, AppGroups, SidePane } from 'components/layout/index';
+import { BottomDrawer, ErrorAlert, AppGroups, SidePane } from 'components/layout/index';
 import { ExportModal, ImageModal, EditItemModal, EditAppModal } from 'components/modal/index'
 import Nav from 'components/menu/Nav.jsx'
 
@@ -43,6 +43,8 @@ export default function App() {
             <ImageModal/>
             <EditItemModal/>
             <EditAppModal/>
+            <BottomDrawer/>
+            {/*<BottomDrawer/>*/}
         </Provider>
     );
 }

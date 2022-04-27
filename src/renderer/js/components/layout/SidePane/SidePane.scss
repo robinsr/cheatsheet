@@ -5,11 +5,21 @@
         z-index: 399;
     }
 
-    &-panel {
+    &-panel,
+    &-panel__bottom {
         user-select: none;
 
         .slide-pane__header {
             display: none;
+        }
+
+        &__bottom {
+            height: 15vh;
+            margin-top: 85vh;
+
+            .slide-pane__content {
+                text-align: center;
+            }
         }
     }
 

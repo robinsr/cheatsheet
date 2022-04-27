@@ -69,8 +69,16 @@ window.keymap_api.handleStateChange((e, value) => {
 
         let app = rootStore.apps.findByWindowName(appName);
 
-        if (app && rootStore.ui.activeFollow) {
-            rootStore.apps.setActiveApp(app.id);
+        if (rootStore.ui.activeFollow) {
+            if (app) {
+                rootStore.apps.clearUnknownAppName();
+                rootStore.apps.setActiveApp(app.id);
+                return;
+            }
+
+            if (appName !== '__self__') {
+                rootStore.apps.setUnknownAppName(appName)
+            }
         }
     }
 })
