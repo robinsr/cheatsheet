@@ -6,6 +6,8 @@
     }
 
     &-panel {
+        user-select: none;
+
         .slide-pane__header {
             display: none;
         }

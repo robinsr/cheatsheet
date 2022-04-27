@@ -1,6 +1,51 @@
+$hover-color: #5755d9;
+
 .app-menu {
 
-  .nav-group-title h5 {
-    display: inline-block;
+  &-title {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    svg {
+      line-height: 2.2rem;
+      vertical-align: middle;
+      font-size: 1.2rem;
+      cursor: pointer;
+
+      &:hover {
+        color: $hover-color;
+      }
+    }
+  }
+
+  &-list {
+    width: 100%;
+    text-align: left;
+    line-height: 1.4rem;
+    margin: 0.8rem 0 2rem 0;
+    list-style: none;
+
+    &-item {
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      &:hover {
+        color: $hover-color;
+      }
+
+      div svg {
+        vertical-align: text-top;
+        display: inline-block;
+        font-size: 1.1rem;
+      }
+
+      div:first-child svg {
+        margin-right: 0.3rem;
+      }
+    }
   }
 }

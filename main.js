@@ -13,7 +13,7 @@ const dimensions = {
         width: 2000, height: 1600
     },
     prod: {
-        width: 500, height: 1050
+        width: 450, height: 980
     }
 }
 
@@ -40,17 +40,18 @@ const createWindow = () => {
 
     function getActiveWindow() {
         activeWindows().getActiveWindow().then((result)=>{
-            console.log(result);
             win.webContents.send('app:stateChange', [ 'change', result ]);
         });
     }
 
-    let pollActiveWindow;
+    let pollActiveWindow = setInterval(getActiveWindow, 1000);
 
     win.on('focus', (e) => {
         console.log('Focused');
         win.webContents.send('app:stateChange', 'focus');
-        win.webContents.send('app:stateChange', [ 'change', '__self__' ]);
+        win.webContents.send('app:stateChange', [ 'change', {
+            windowName: '__self__'
+        } ]);
         clearInterval(pollActiveWindow);
     });
 
@@ -58,7 +59,7 @@ const createWindow = () => {
         console.log('Lost focus');
         win.webContents.send('app:stateChange', 'blur');
         getActiveWindow()
-        pollActiveWindow = setInterval(getActiveWindow, 1000)
+        pollActiveWindow = setInterval(getActiveWindow, 1000);
     });
 
     if (IS_DEV) {

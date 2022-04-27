@@ -1,4 +1,4 @@
-import { types, destroy } from "mobx-state-tree";
+import {types, destroy, getSnapshot} from "mobx-state-tree";
 import { UIStore } from "context/models/UIStore.js";
 import { MobxAppList } from "context/models/AppStore";
 import { MobxShortcutItemList } from "context/models/ShortcutItemList.js";
@@ -41,6 +41,9 @@ const MobxStore = types
 
             let app = self.apps.find(i => i.id === appId);
             app.removeCategory(groupId);
+        },
+        backup() {
+            return getSnapshot(self);
         }
     }))
 

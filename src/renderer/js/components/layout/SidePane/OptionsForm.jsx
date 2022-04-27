@@ -1,12 +1,19 @@
-import { observer } from 'mobx-react-lite';
 import React from 'react';
+import { observer } from 'mobx-react-lite';
 import { Button } from 'spectre-react'
-
+import { HiOutlineSave } from "react-icons/all";
 import { useMst, Themes } from 'context/Store.jsx';
 
-
 const OptionsForm = observer(() => {
-    const { ui } = useMst();
+    const { ui, backup } = useMst();
+
+    function onBackup() {
+        let data = JSON.stringify(backup());
+
+        navigator.clipboard.writeText(data)
+            .then(() => console.log('copied'))
+            .catch(console.error);
+    }
 
     return (
         <nav className="nav-group">
@@ -30,6 +37,10 @@ const OptionsForm = observer(() => {
                     />
                     <i className="form-icon"></i> Active follow
                 </label>
+            </div>
+
+            <div className="form-control my-2">
+                <Button small={true} onClick={onBackup}><HiOutlineSave /> Backup now</Button>
             </div>
         </nav>
     );

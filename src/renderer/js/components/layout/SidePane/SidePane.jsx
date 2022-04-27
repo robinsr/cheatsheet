@@ -22,7 +22,7 @@ const SidePane = observer(({
             from="left"
             width="300px"
             onRequestClose={onClose}>
-            <AppMenu />
+            <AppMenu onSelect={onClose} />
             <OptionsForm />
         </SlidingPane>
     );
