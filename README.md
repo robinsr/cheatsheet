@@ -1,6 +1,8 @@
 Cheatsheet
 ----------
 
+![cheatsheet](https://user-images.githubusercontent.com/3228075/165586323-380692cf-c793-48cc-9e6b-fa99467c10e6.jpg)
+
 
 > About: 
 >
