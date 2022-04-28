@@ -5,9 +5,11 @@ const config = require('../../package.json');
 const data = require('./data');
 
 contextBridge.exposeInMainWorld('cheatsheetAPI', {
-  appName: config.productName,
+  thisApp: config.productName,
   saveImage: (imageData) => ipcRenderer.invoke('app:saveImage', imageData),
-  handleStateChange: (callback) => ipcRenderer.on('app:stateChange', callback),
+  handleFocus: (callback) => ipcRenderer.on('app:stateChange:focus', callback),
+  handleBlur: (callback) => ipcRenderer.on('app:stateChange:blur', callback),
+  handleWindow: (callback) => ipcRenderer.on('app:stateChange:window', callback),
   getInitialData: () => ipcRenderer.invoke('app:getLatestSnapshot'),
   onSnapshot: (data) =>  ipcRenderer.invoke('app:saveSnapshot', data)
 })

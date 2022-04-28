@@ -35,23 +35,25 @@ const createWindow = () => {
     win.loadFile('./dist/index.html');
 
     function getActiveWindow() {
-        activeWindows().getActiveWindow().then((result)=>{
-            win.webContents.send('app:stateChange', [ 'change', result ]);
+        activeWindows().getActiveWindow().then(result => {
+            win.webContents.send('app:stateChange:window', {
+                windowName: result.windowName
+            });
         });
     }
 
     let pollActiveWindow = setInterval(getActiveWindow, 1000);
 
     win.on('focus', (e) => {
-        win.webContents.send('app:stateChange', 'focus');
-        win.webContents.send('app:stateChange', [ 'change', {
+        win.webContents.send('app:stateChange:focus');
+        win.webContents.send('app:stateChange:window', {
             windowName: '__self__'
-        } ]);
+        });
         clearInterval(pollActiveWindow);
     });
 
     win.on('blur', (e) => {
-        win.webContents.send('app:stateChange', 'blur');
+        win.webContents.send('app:stateChange:blur');
         getActiveWindow()
         pollActiveWindow = setInterval(getActiveWindow, 1000);
     });

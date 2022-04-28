@@ -1,10 +1,12 @@
 import { debounce as _debounce } from 'lodash';
 import { createContext, useContext } from 'react';
-import { onPatch, onSnapshot } from 'mobx-state-tree';
+import {onAction, onPatch, onSnapshot} from 'mobx-state-tree';
+import { getDebugLogger } from 'utils/logger';
 import MobxStore from "context/models/RootStore";
 
-export { Themes } from './models/UIStore';
+const logger = getDebugLogger('Store');
 
+const api = window.cheatsheetAPI;
 const initialData = {
     ui: {
         theme: 'dark',
@@ -26,37 +28,22 @@ const initialData = {
         data: null,
         showModal: false
     },
-    isLoading: true
+    isLoading: true,
+    isSaving: false
 };
-
-const env = {
-    api: window.cheatsheetAPI
-}
+const env = { api };
 
 let initialState = MobxStore.create(initialData, env);
 
 export const rootStore = initialState;
 
-rootStore.getInitialData().then((data) => {
-    console.log('Loaded', data)
-})
+rootStore.getInitialData().then(() => logger('data:loaded'));
 
-onSnapshot(rootStore, (snapshot) => {
-    console.log("Snapshot: ", snapshot);
-});
+rootStore.listenToWindowChange();
 
-onSnapshot(rootStore, _debounce((snapshot) => {
-    if (snapshot.isLoading) {
-        return;
-    }
-
-    if (snapshot.items.editItem !== null) {
-        return;
-    }
-
-    console.log("Snapshot (saving): ", snapshot)
-    window.cheatsheetAPI.onSnapshot(snapshot);
-}, 750));
+onAction(rootStore, action => logger('action', action))
+//onPatch(rootStore, patch => logger('patch', patch))
+onSnapshot(rootStore, (snapshot) => logger('data:snapshot', snapshot));
 
 export const AppContext = createContext();
 export const Provider = AppContext.Provider;
@@ -69,32 +56,22 @@ export function useMst() {
     return store;
 }
 
-// if (rootStore.isEmpty()) {
-//     rootStore.getInitialData();
-// }
+export { Themes } from './models/UIStore';
 
-window.cheatsheetAPI.handleStateChange((e, value) => {
-    let ignoreApps = [
-        '__self__', window.cheatsheetAPI.appName
-    ].concat(rootStore.apps.ignoreApps);
-
-    if (value[0] === 'change') {
-        let appName = value[1].windowName;
-
-        rootStore.ui.setActiveWindow(appName);
-
-        let app = rootStore.apps.findByWindowName(appName);
-
-        if (rootStore.ui.activeFollow) {
-            if (app) {
-                rootStore.apps.clearUnknownAppName();
-                rootStore.apps.setActiveApp(app.id);
-                return;
-            }
-
-            if (!ignoreApps.includes(appName)) {
-                rootStore.apps.setUnknownAppName(appName)
-            }
-        }
+onSnapshot(rootStore, _debounce((snapshot) => {
+    if (rootStore.isLoading) {
+        return;
     }
-})
+
+    if (rootStore.items.editItem !== null) {
+        return;
+    }
+
+    logger('saving snapshot', snapshot);
+    // rootStore.setSaving(true);
+    api.onSnapshot(snapshot)
+        .then(data => logger('saved', data))
+        // .then(msg => rootStore.setSaving(false))
+        .catch(console.error);
+}, 750));
+

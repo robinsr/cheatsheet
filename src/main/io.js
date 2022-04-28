@@ -43,14 +43,18 @@ const saveSnapshot = (path , data) => {
 
     let filepath = `${path}/snapshots/latest.json`;
 
-    writeFile(filepath, JSON.stringify(data, null, 4), { encoding: 'utf8' })
-        .then(() => {
-            console.log('snapshot saved to ' + filepath)
-        })
-        .catch(err => {
-            console.error('failed to save snapshot');
-            console.error(err);
-        })
+    return new Promise((resolve, reject) => {
+        writeFile(filepath, JSON.stringify(data, null, 4), { encoding: 'utf8' })
+            .then(() => {
+                console.log('snapshot saved to ' + filepath)
+                resolve(filepath);
+            })
+            .catch(err => {
+                console.error('failed to save snapshot');
+                console.error(err);
+                reject(err);
+            });
+    });
 }
 
 const getLatestSnapshot = (path) => {

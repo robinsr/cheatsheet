@@ -81,3 +81,4 @@ export const MobxAppList = types
             self.ignoreApps.unshift(appName);
         }
     }))
+

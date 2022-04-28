@@ -45,16 +45,16 @@ const SearchBox = observer(({
         items.setEditItem(id);
     }
 
-    window.cheatsheetAPI.handleStateChange((e, value) => {
-        if (value === 'focus') {
-            searchRef.current.focus();
-        }
-
-        if (value === 'blur') {
-            setQuery('');
-            setResult([]);
-        }
-    })
+    // TODO: will get registered as event listeners on every
+    //  render pass, causing a memory leak
+    // window.cheatsheetAPI.handleFocus(() => {
+    //     searchRef.current.focus();
+    // });
+    //
+    // window.cheatsheetAPI.handleBlur(() => {
+    //     setQuery('');
+    //     setResult([]);
+    // });
 
     return (
         <div className="form-autocomplete search-box mx-2">
