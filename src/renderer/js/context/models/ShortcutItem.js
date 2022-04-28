@@ -30,20 +30,20 @@ export const MobxShortcutItem = types
     .actions(self => {
         let ref = null; // will store a reference to dom ref for data/image purposes
 
-        function setRef(reactRef) {
-            ref = reactRef;
+        return {
+            setRef: (reactRef) => {
+                ref = reactRef;
+            },
+            update: (attr, value) => {
+                self[attr] = value;
+            },
+            getDataImage: () => {
+                return new Promise((res, rej) => {
+                    render(ref.current).then(imageData => resolve(imageData));
+                });
+            },
+            beforeDestroy: () => {
+                console.log('I am being destroyed! ', self.label)
+            }
         }
-
-        function update(attr, value) {
-            self[attr] = value;
-        }
-
-        // todo: can this be a 'view'?
-        function getDataImage() {
-            return new Promise((res, rej) => {
-                render(ref.current).then(imageData => resolve(imageData));
-            });
-        }
-
-        return { setRef, update, getDataImage }
-    });
+    })

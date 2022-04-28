@@ -38,7 +38,8 @@ export const MobxShortcutItemList = types
             self.itemList.push({ id: newUuid(), app, category, label: 'New Shortcut', command: 'Space' });
         },
         removeItem(id) {
-            self.itemList = self.itemList.filter(i => i.id !== id);
+            let item = self.itemList.find(i => i.id === id);
+            self.itemList.splice(self.itemList.indexOf(item), 1);
         },
         removeItemsByCategory(id) {
             self.itemList = self.itemList.filter(i => i.category.id !== id);

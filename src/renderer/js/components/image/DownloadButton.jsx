@@ -13,7 +13,7 @@ const DownloadButton = ({
 
     const onClick = (e) => {
         
-        window.keymap_api.saveImage(imageModel)
+        window.cheatsheetAPI.saveImage(imageModel)
             .then(filePath => {
                 if (filePath) {
                     onSave(`Iamge saved to ${filePath}`)

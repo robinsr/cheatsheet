@@ -33,8 +33,14 @@ export const MobxAppList = types
         appList: types.array(MobxAppItem),
         selectedApp: types.maybeNull(types.reference(MobxAppItem)),
         editApp: types.maybeNull(types.reference(MobxAppItem)),
-        unknownApp: types.maybeNull(types.string)
+        unknownApp: types.maybeNull(types.string),
+        ignoreApps: types.array(types.string)
     })
+    .views(self => ({
+        getById(id) {
+            return self.appList.find(app => app.id === id) || null;
+        }
+    }))
     .actions(self => ({
         addNewApp(name='New App', windowName='') {
             let newApp = MobxAppItem.create({
@@ -47,16 +53,17 @@ export const MobxAppList = types
             return newApp;
         },
         removeApp(id) {
-            self.appList = self.appList.filter(a => a.id !== id);
+            let app = self.getById(id);
+            self.appList.splice(self.appList.indexOf(app), 1);
         },
         setActiveApp(appId) {
-            self.selectedApp = self.appList.find(a => a.id === appId);
+            self.selectedApp = self.getById(appId);
         },
         clearSelectedApp() {
             self.selectedApp = null;
         },
         setEditApp(appId) {
-            self.editApp = self.appList.find(a => a.id === appId);
+            self.editApp = self.getById(appId);
         },
         clearEditApp() {
             self.editApp = null;
@@ -69,5 +76,8 @@ export const MobxAppList = types
         },
         clearUnknownAppName() {
             self.unknownApp = null;
+        },
+        ignoreApp(appName) {
+            self.ignoreApps.unshift(appName);
         }
     }))

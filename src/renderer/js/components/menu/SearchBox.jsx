@@ -45,7 +45,7 @@ const SearchBox = observer(({
         items.setEditItem(id);
     }
 
-    window.keymap_api.handleStateChange((e, value) => {
+    window.cheatsheetAPI.handleStateChange((e, value) => {
         if (value === 'focus') {
             searchRef.current.focus();
         }

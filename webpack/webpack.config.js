@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     mode: 'development',
     entry: {
-        main: './renderer/js/index.js'
+        main: ['regenerator-runtime/runtime.js', './renderer/js/index.js']
     },
     // target: 'electron-main',
     devtool: 'inline-source-map',

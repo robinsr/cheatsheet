@@ -5,6 +5,12 @@ import ShortcutCards from 'components/card/ShortcutCards.jsx';
 
 import { useMst } from 'context/Store.jsx';
 
+const fullScreenCenter = {
+    width: '100%',
+    height: '60vh',
+    transform: 'scale(1.5)'
+}
+
 const SingleApp = ({ app }) => {
     return (
         <div key={'app_' + app.name}>
@@ -22,9 +28,13 @@ const SingleApp = ({ app }) => {
 };
 
 const AppGroups = observer(() => {
-    let { apps } = useMst();
+    let { apps, isLoading } = useMst();
 
     let selectedApp = apps.selectedApp;
+
+    if (isLoading) {
+        return (<div style={fullScreenCenter} className="loading loading-lg"></div>);
+    }
 
     return (
         <div className="app-groups">

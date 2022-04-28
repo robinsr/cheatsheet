@@ -15,6 +15,7 @@ const BottomDrawer = observer(() => {
     let { unknownApp } = apps;
 
     function onClose() {
+        apps.ignoreApp(unknownApp);
         apps.clearUnknownAppName();
     }
 

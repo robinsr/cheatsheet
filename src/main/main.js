@@ -2,11 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const activeWindows = require('electron-active-window');
 
-
-
 const IS_DEV = process.env.ELECTRON_DEV === 'true';
-
-const { saveImage } = require('./io.js');
 
 const dimensions = {
     dev: {
@@ -47,7 +43,6 @@ const createWindow = () => {
     let pollActiveWindow = setInterval(getActiveWindow, 1000);
 
     win.on('focus', (e) => {
-        console.log('Focused');
         win.webContents.send('app:stateChange', 'focus');
         win.webContents.send('app:stateChange', [ 'change', {
             windowName: '__self__'
@@ -56,7 +51,6 @@ const createWindow = () => {
     });
 
     win.on('blur', (e) => {
-        console.log('Lost focus');
         win.webContents.send('app:stateChange', 'blur');
         getActiveWindow()
         pollActiveWindow = setInterval(getActiveWindow, 1000);
@@ -69,7 +63,7 @@ const createWindow = () => {
     return win;
 }
 
-
+const { saveImage, saveSnapshot, getLatestSnapshot } = require('./io.js');
 
 app.whenReady().then(() => {
     const win = createWindow();
@@ -79,12 +73,14 @@ app.whenReady().then(() => {
     });
 
     
-    const electron_conf = {
+    const conf = {
         cwd: __dirname,
         logs: app.getPath('logs'),
         appData: app.getPath('appData'),
         userData: app.getPath('userData')
     }
 
-    ipcMain.handle('app:dialog:saveImage', saveImage);
+    ipcMain.handle('app:saveImage', saveImage);
+    ipcMain.handle('app:saveSnapshot', (e, data) => saveSnapshot(conf.userData, data));
+    ipcMain.handle('app:getLatestSnapshot', (e) => getLatestSnapshot(conf.userData));
 })

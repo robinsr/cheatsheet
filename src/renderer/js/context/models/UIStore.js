@@ -9,7 +9,8 @@ export const UIStore = types
     .model('UIStore', {
         theme: types.enumeration('theme', ['light', 'dark']),
         activeWindow: types.maybeNull(types.string),
-        activeFollow: types.boolean
+        activeFollow: types.boolean,
+        ignoreApps: types.array(types.string)
     })
     .actions(self => ({
         toggleTheme() {

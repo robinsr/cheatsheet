@@ -8,7 +8,6 @@
 * Import keybinding files from web
 * Export app keybinding (maybe in yaml)
 * support multi-action (`[ Command+K ]` + `[ Command+M ]`)
-* Suggest new app button (when active app not recognized)
 * Favorite shortcuts
 * add icon to shortcuts
 
@@ -18,5 +17,6 @@
 
 ## Done
 
+* [x] Suggest new app button (when active app not recognized)
 * [x] auto-switch applications ("active follow")
 

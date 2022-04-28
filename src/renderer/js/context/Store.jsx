@@ -1,10 +1,11 @@
+import { debounce as _debounce } from 'lodash';
 import { createContext, useContext } from 'react';
-import { onSnapshot } from 'mobx-state-tree';
+import { onPatch, onSnapshot } from 'mobx-state-tree';
 import MobxStore from "context/models/RootStore";
 
-export { Themes } from './models/UIStore'
+export { Themes } from './models/UIStore';
 
-let initialState = MobxStore.create({
+const initialData = {
     ui: {
         theme: 'dark',
         activeWindow: 'Cheat',
@@ -16,33 +17,46 @@ let initialState = MobxStore.create({
     },
     apps: {
         appList: [],
-        selectedApp: null
+        selectedApp: null,
+        editApp: null,
+        unknownApp: null,
+        ignoreApps: []
     },
     imageModal: {
         data: null,
         showModal: false
-    }
-});
+    },
+    isLoading: true
+};
 
-const data = localStorage.getItem("rootState");
-if (data) {
-    const json = JSON.parse(data);
-    if (MobxStore.is(json)) {
-        initialState = MobxStore.create(json);
-    }
+const env = {
+    api: window.cheatsheetAPI
 }
+
+let initialState = MobxStore.create(initialData, env);
 
 export const rootStore = initialState;
 
+rootStore.getInitialData().then((data) => {
+    console.log('Loaded', data)
+})
+
 onSnapshot(rootStore, (snapshot) => {
-    if (snapshot.items.editItem == null) {
-        console.log("Snapshot (saving): ", snapshot)
-        localStorage.setItem("rootState", JSON.stringify(snapshot));
-    } else {
-        console.log("Snapshot: ", snapshot);
+    console.log("Snapshot: ", snapshot);
+});
+
+onSnapshot(rootStore, _debounce((snapshot) => {
+    if (snapshot.isLoading) {
+        return;
     }
 
-});
+    if (snapshot.items.editItem !== null) {
+        return;
+    }
+
+    console.log("Snapshot (saving): ", snapshot)
+    window.cheatsheetAPI.onSnapshot(snapshot);
+}, 750));
 
 export const AppContext = createContext();
 export const Provider = AppContext.Provider;
@@ -55,12 +69,14 @@ export function useMst() {
     return store;
 }
 
-if (rootStore.isEmpty()) {
-    rootStore.fetch();
-}
+// if (rootStore.isEmpty()) {
+//     rootStore.getInitialData();
+// }
 
-window.keymap_api.handleStateChange((e, value) => {
-    console.log(value)
+window.cheatsheetAPI.handleStateChange((e, value) => {
+    let ignoreApps = [
+        '__self__', window.cheatsheetAPI.appName
+    ].concat(rootStore.apps.ignoreApps);
 
     if (value[0] === 'change') {
         let appName = value[1].windowName;
@@ -76,7 +92,7 @@ window.keymap_api.handleStateChange((e, value) => {
                 return;
             }
 
-            if (appName !== '__self__') {
+            if (!ignoreApps.includes(appName)) {
                 rootStore.apps.setUnknownAppName(appName)
             }
         }
