@@ -1,4 +1,4 @@
-import { types } from 'mobx-state-tree';
+import {applySnapshot, clone, detach, getSnapshot, protect, types, unprotect} from 'mobx-state-tree';
 import { uniq as _uniq, pick as _pick } from 'lodash';
 
 import { MobxShortcutItem } from "context/models/ShortcutItem";
@@ -44,9 +44,46 @@ export const MobxShortcutItemList = types
         removeItemsByCategory(id) {
             self.itemList = self.itemList.filter(i => i.category.id !== id);
         },
+
         getNext(id) {
-            let item = self.itemList.find(i => i.id === id);
-            return self.itemList.indexOf(item) + 1;
+            let a = self.itemList;
+            let t = a.find(i => i.id === id);
+            let f = a.filter(i => i.category.id === t.category.id);
+            let t0 = f[f.indexOf(t) + 1];
+
+            return t0 || null;
+        },
+
+        getPrev(id) {
+            let a = self.itemList;
+            let t = a.find(i => i.id === id);
+            let f = a.filter(i => i.category.id === t.category.id);
+            let t0 = f[f.indexOf(t) - 1];
+
+            return t0 || null;
+        },
+
+        swapProperties(id1, id2) {
+            let t1 = self.itemList.find(i => i.id === id1);
+            let t2 = self.itemList.find(i => i.id === id2);
+            let tmp = _pick(t1, [ 'label', 'category', 'command' ])
+            Object.assign(t1, _pick(t2, [ 'label', 'category', 'command' ]) )
+            Object.assign(t2, tmp);
+        },
+
+        moveItemUp(id) {
+            let prev = self.getPrev(id);
+
+            if (prev) {
+                self.swapProperties(id, prev.id);
+            }
+        },
+        moveItemDown(id) {
+            let next = self.getNext(id);
+
+            if (next) {
+                self.swapProperties(id, next.id);
+            }
         }
     }))
     .views(self => ({

@@ -1,10 +1,15 @@
 import { types } from "mobx-state-tree";
 import { pick as _pick } from 'lodash';
-import { MobxNamedItem } from "context/models/constructs";
+import { MobxNamedItem, MobxOrderedItem } from "context/models/constructs";
 import { newUuid } from "utils/uuid";
 
-export const MobxCategoryItem = MobxNamedItem
-    .named('MobxCategoryItem')
+export const MobxCategoryItem = types
+    .compose('MobxCategoryItem', MobxNamedItem, MobxOrderedItem)
+
+console.log(MobxCategoryItem.create({
+    id: 'sdf', name: 'wefwef'
+}))
+
 
 export const MobxAppItem = types
     .model('MobxAppItem', {

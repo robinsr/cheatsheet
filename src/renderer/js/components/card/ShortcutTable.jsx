@@ -15,7 +15,17 @@ const Row = observer(({ item, editing }) => {
     let { id, label, command } = item;
     let itemPath = getPath(item);
 
-    function onClick() {
+    function onClick(e) {
+        console.log(e);
+        if (e.nativeEvent.which === 3) {
+            if (e.nativeEvent.shiftKey) {
+                items.moveItemUp(id);
+            } else {
+                items.moveItemDown(id);
+            }
+            return
+        }
+
         if (editing) {
             return;
         } else {
@@ -27,12 +37,12 @@ const Row = observer(({ item, editing }) => {
         'active': id === cursor
     });
 
-    function makeActive() {
-        setCursor(id)
-    }
-
     return (
-        <tr key={id} className={cls} onClick={onClick} onMouseEnter={makeActive}>
+        <tr key={id} className={cls}
+            onClick={onClick}
+            onAuxClick={onClick}
+            onMouseEnter={() => setCursor(id)}
+            onMouseLeave={() => setCursor(null)}>
             <td>
                 {editing ? <i className="icon icon-cross remove-shortcut" onClick={e => items.removeItem(id)}></i> : null}
                 <span>{label}</span>

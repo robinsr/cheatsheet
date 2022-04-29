@@ -64,7 +64,11 @@ const MobxStore = types
         isEmpty() {
             return self.items.isEmpty();
         },
-        setCursor(val) {
+        setCursor: _debounce(val => self._setCursor(val), 10),
+        // setCursor(val) {
+        //     self.cursor = val;
+        // },
+        _setCursor(val) {
             self.cursor = val;
         }
     }));

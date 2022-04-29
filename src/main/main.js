@@ -1,8 +1,16 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, session } = require('electron');
 const path = require('path');
+const os = require('os')
+
 const activeWindows = require('electron-active-window');
 
 const IS_DEV = process.env.ELECTRON_DEV === 'true';
+
+const devToolsBath = path.join(
+   os.homedir(),
+   '/Library/Application Support/Google/Chrome/Default/Extensions/pfgnfdagidkfgccljigdamigbcnndkod/0.9.26_0'
+ );
+
 
 const dimensions = {
     dev: {
@@ -24,7 +32,8 @@ const createWindow = () => {
         vibrancy: 'content',
         webPreferences: {
             nodeIntegration: true,
-            preload: path.resolve(__dirname, './preload.js')
+            preload: path.resolve(__dirname, './preload.js'),
+            additionalArguments: [ ( IS_DEV ? 'IS_DEV' : null ) ]
         }
     }
 
@@ -67,13 +76,14 @@ const createWindow = () => {
 
 const { saveImage, saveSnapshot, getLatestSnapshot } = require('./io.js');
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
     const win = createWindow();
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     });
 
+    await session.defaultSession.loadExtension(devToolsBath);
     
     const conf = {
         cwd: __dirname,

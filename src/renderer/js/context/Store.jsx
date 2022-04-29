@@ -3,6 +3,7 @@ import { createContext, useContext } from 'react';
 import {onAction, onPatch, onSnapshot} from 'mobx-state-tree';
 import { getDebugLogger } from 'utils/logger';
 import MobxStore from "context/models/RootStore";
+import Logger from "js-logger";
 
 const logger = getDebugLogger('Store');
 
@@ -42,9 +43,9 @@ rootStore.getInitialData().then(() => logger('data:loaded'));
 
 rootStore.listenToWindowChange();
 
-onAction(rootStore, action => logger('action', action))
-// onPatch(rootStore, patch => logger('patch', patch))
-// onSnapshot(rootStore, (snapshot) => logger('data:snapshot', snapshot));
+onAction(rootStore, action => Logger.get('Store/action').debug(action))
+onPatch(rootStore, patch => Logger.get('Store/patch').debug(patch))
+onSnapshot(rootStore, (snapshot) => Logger.get('Store/snapshot').debug(snapshot));
 
 export const AppContext = createContext();
 export const Provider = AppContext.Provider;
@@ -69,7 +70,7 @@ onSnapshot(rootStore, _debounce((snapshot) => {
     }
 
     logger('saving snapshot', snapshot);
-    // rootStore.setSaving(true);
+    rootStore.setSaving(true);
     api.onSnapshot(snapshot)
         .then(data => logger('saved', data))
         // .then(msg => rootStore.setSaving(false))
