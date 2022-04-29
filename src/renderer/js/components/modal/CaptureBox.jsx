@@ -4,7 +4,7 @@ import { get_kb_string, is_single_key, is_tab_key, oops_handler } from 'utils/do
 
 import ShortcutKey from 'components/card/ShortcutKey.jsx';
 
-const HK_SCOPE = 'new-shortcut';
+const HK_SCOPE = 'capture-box';
 
 const HOTKEYS_CONFIG = {
     scope: HK_SCOPE,
@@ -116,7 +116,7 @@ export default class CaptureBox extends Component {
 
         if (kb_string == null && defaultValue) {
             return (
-                <div className="new-shortcut-box text-gray" tabIndex="0" 
+                <div className="new-shortcut-box text-gray" tabIndex="0" id="capture-box"
                     onFocus={this.start_capture}
                     onBlur={this.stop_capture}>
                     <ShortcutKey command={defaultValue} />
@@ -125,7 +125,7 @@ export default class CaptureBox extends Component {
         }
 
         return (
-            <div className="new-shortcut-box text-gray" tabIndex="0" 
+            <div className="new-shortcut-box text-gray" tabIndex="0" id="capture-box"
                 onFocus={this.start_capture}
                 onBlur={this.stop_capture}>
                 {kb_string != null 

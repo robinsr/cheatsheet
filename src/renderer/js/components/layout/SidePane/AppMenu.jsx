@@ -4,11 +4,12 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { FaKeyboard, FiFilePlus, FiEdit } from "react-icons/all";
 import { useMst } from 'context/Store';
+import classnames from 'classnames';
 
 const AppMenu = observer(({
     onSelect=() => {}
 }) => {
-    let { apps } = useMst();
+    let { apps, cursor, setCursor } = useMst();
 
     function addNewApp() {
         apps.addNewApp()
@@ -23,6 +24,16 @@ const AppMenu = observer(({
         apps.setEditApp(appId);
     }
 
+    function makeActive(id) {
+        setCursor(id);
+    }
+
+    function getListItemClasses(id) {
+        return classnames('app-menu-list-item', {
+            'active': id === cursor
+        });
+    }
+
     return (
         <nav className="app-menu">
             <div className="app-menu-title">
@@ -33,7 +44,7 @@ const AppMenu = observer(({
             </div>
             <ul className="app-menu-list">
                 {apps.appList.map(a => (
-                    <li key={'sidepane_app_' + a.id} className="app-menu-list-item">
+                    <li key={'sidepane_app_' + a.id} className={getListItemClasses(a.id)} onMouseEnter={() => makeActive(a.id)}>
                         <div onClick={() => selectApp(a.id)}><span><FaKeyboard/> {a.name}</span></div>
                         <div onClick={() => editApp(a.id)}><FiEdit/></div>
                     </li>

@@ -4,7 +4,8 @@ import { Provider, rootStore } from 'context/Store.jsx'
 
 import { BottomDrawer, ErrorAlert, AppGroups, SidePane } from 'components/layout/index';
 import { ExportModal, ImageModal, EditItemModal, EditAppModal } from 'components/modal/index'
-import Nav from 'components/menu/Nav.jsx'
+import Nav from 'components/menu/Nav.jsx';
+import KeyActions from "./providers/KeyActions.js";
 
 
 // TODO; figure out error boundary. Not possible in function componant
@@ -27,24 +28,26 @@ export default function App() {
 
     return (
         <Provider value={rootStore}>
-            <Nav onMenuClick={toggleMenu} isMenuOpen={isMenuOpen}/>
-            <div className="app-container">
-                <div className="app-content">
-                    <div className="container grid-lg">
-                        <AppGroups/>
-                        <ErrorAlert error={error} onClear={clearError}>
-                        </ErrorAlert>
-                        
+            <KeyActions>
+                <Nav onMenuClick={toggleMenu} isMenuOpen={isMenuOpen}/>
+                <div className="app-container">
+                    <div className="app-content">
+                        <div className="container grid-lg">
+                            <AppGroups/>
+                            <ErrorAlert error={error} onClear={clearError}>
+                            </ErrorAlert>
+
+                        </div>
                     </div>
+                    <SidePane isOpen={isMenuOpen} onClose={() => setMenuOpen(false)}/>
                 </div>
-                <SidePane isOpen={isMenuOpen} onClose={() => setMenuOpen(false)}/>
-            </div>
-            {/*<ExportModal/>*/}
-            <ImageModal/>
-            <EditItemModal/>
-            <EditAppModal/>
-            <BottomDrawer/>
-            {/*<BottomDrawer/>*/}
+                {/*<ExportModal/>*/}
+                <ImageModal/>
+                <EditItemModal/>
+                <EditAppModal/>
+                <BottomDrawer/>
+                {/*<BottomDrawer/>*/}
+            </KeyActions>
         </Provider>
     );
 }

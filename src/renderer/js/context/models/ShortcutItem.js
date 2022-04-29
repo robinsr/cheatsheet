@@ -43,7 +43,7 @@ export const MobxShortcutItem = types
                 });
             },
             beforeDestroy: () => {
-                console.log('I am being destroyed! ', self.label)
+                console.log('I am being destroyed! ', self.label, self.id)
             }
         }
     })

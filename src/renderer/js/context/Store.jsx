@@ -29,7 +29,8 @@ const initialData = {
         showModal: false
     },
     isLoading: true,
-    isSaving: false
+    isSaving: false,
+    cursor: '/items/itemList/0'
 };
 const env = { api };
 
@@ -42,8 +43,8 @@ rootStore.getInitialData().then(() => logger('data:loaded'));
 rootStore.listenToWindowChange();
 
 onAction(rootStore, action => logger('action', action))
-//onPatch(rootStore, patch => logger('patch', patch))
-onSnapshot(rootStore, (snapshot) => logger('data:snapshot', snapshot));
+// onPatch(rootStore, patch => logger('patch', patch))
+// onSnapshot(rootStore, (snapshot) => logger('data:snapshot', snapshot));
 
 export const AppContext = createContext();
 export const Provider = AppContext.Provider;

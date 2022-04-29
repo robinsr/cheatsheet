@@ -1,3 +1,5 @@
+$hover-color: #5755d9;
+
 .shortcut-table {
     .large-font {
         kbd {
@@ -24,6 +26,10 @@
 
     .remove-shortcut {
         color: #f00;
+    }
+
+    .shortcut-table-item.active {
+        color: $hover-color;
     }
 }
 

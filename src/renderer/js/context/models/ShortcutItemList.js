@@ -43,6 +43,10 @@ export const MobxShortcutItemList = types
         },
         removeItemsByCategory(id) {
             self.itemList = self.itemList.filter(i => i.category.id !== id);
+        },
+        getNext(id) {
+            let item = self.itemList.find(i => i.id === id);
+            return self.itemList.indexOf(item) + 1;
         }
     }))
     .views(self => ({

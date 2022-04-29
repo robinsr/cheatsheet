@@ -10,13 +10,19 @@ import ShortcutKey from 'components/card/ShortcutKey.jsx';
 const SearchBox = observer(({
     isMenuOpen=false
 }) => {
-    let { items } = useMst();
+    let { items, cursor } = useMst();
 
     let searchRef = useRef();
 
     let [ query, setQuery ] = useState('')
     let [ focusClass, setFocusClass ] = useState('');
     let [ result, setResult ] = useState([]);
+
+    useEffect(() => {
+        if (cursor === 'SEARCH') {
+            searchRef.current.focus();
+        }
+    }, [ cursor ])
 
     useEffect(function clearOnMenuOopen() {
         if (isMenuOpen) {
@@ -33,6 +39,18 @@ const SearchBox = observer(({
         setFocusClass('');
     }
 
+    function reset() {
+        setQuery('');
+        setResult([]);
+    }
+
+    function escape(e) {
+        if (e.key === "Escape") {
+            searchRef.current.blur();
+            reset();
+        }
+    }
+
     function onSearch(e) {
         setQuery(e.target.value)
         let results = items.find(e.target.value);
@@ -45,25 +63,15 @@ const SearchBox = observer(({
         items.setEditItem(id);
     }
 
-    // TODO: will get registered as event listeners on every
-    //  render pass, causing a memory leak
-    // window.cheatsheetAPI.handleFocus(() => {
-    //     searchRef.current.focus();
-    // });
-    //
-    // window.cheatsheetAPI.handleBlur(() => {
-    //     setQuery('');
-    //     setResult([]);
-    // });
-
     return (
         <div className="form-autocomplete search-box mx-2">
             <div className={'form-autocomplete-input form-input ' + focusClass}>
-                <input className="form-input"
+                <input className="form-input" id="app-search-input"
                     type="text"
                     placeholder="Search Shortcuts"
                     onChange={onSearch}
                     onFocus={onFocus}
+                    onKeyUp={escape}
                     onBlur={onBlur}
                     value={query}
                     ref={searchRef}

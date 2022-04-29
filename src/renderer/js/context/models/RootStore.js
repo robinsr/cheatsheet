@@ -19,7 +19,8 @@ const MobxStore = types
         apps: MobxAppList,
         imageModal: MobxImageModal,
         isLoading: types.boolean,
-        isSaving: types.boolean
+        isSaving: types.boolean,
+        cursor: types.maybeNull(types.string)
     })
     .actions(self => ({
         setLoading(val) {
@@ -62,6 +63,9 @@ const MobxStore = types
         },
         isEmpty() {
             return self.items.isEmpty();
+        },
+        setCursor(val) {
+            self.cursor = val;
         }
     }));
 
