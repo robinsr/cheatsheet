@@ -22,11 +22,12 @@ Logger.useDefaults({
 });
 
 
-Logger.get('KeyActions').setLevel(DEBUG);
-Logger.get('Store').setLevel(OFF);
+Logger.get('KeyActions').setLevel(OFF);
+Logger.get('Store').setLevel(DEBUG);
 Logger.get('Store/action').setLevel(DEBUG);
 Logger.get('Store/patch').setLevel(OFF);
-Logger.get('Store/snapshot').setLevel(DEBUG);
+Logger.get('Store/snapshot').setLevel(OFF);
+Logger.get('AppStore').setLevel(DEBUG);
 
 
 

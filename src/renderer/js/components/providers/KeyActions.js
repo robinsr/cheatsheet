@@ -13,7 +13,7 @@ const log = Logger.get('KeyActions');
 
 const scopes = {
     APP: {
-        scope: 'APP', keydown: false, keyup: true
+        scope: 'APP', keydown: true, keyup: false
     },
     SEARCH: {
         scope: 'SEARCH', keydown: false, keyup: true
@@ -68,7 +68,7 @@ class KeyEmitter extends EventEmitter {
             return true;
         }
 
-        hotkeys('S', scopes.APP, (e, h) => {
+        hotkeys('S,/', scopes.APP, (e, h) => {
             log.debug('Trigger Action', 'FOCUS_SEARCH');
             this.emit('key', [ 'setCursor', '', ['SEARCH'] ]);
         })
@@ -78,15 +78,22 @@ class KeyEmitter extends EventEmitter {
             this.emit('key', undefined,'ADD_TO_FAV');
         })
 
-        hotkeys('E', scopes.APP, (e, h) => {
+        hotkeys('E, enter', scopes.APP, (e, h) => {
             log.debug('Trigger Action', 'EDIT_ITEM');
-            this.emit('key', ['setEditItem', '/items']);
+            this.emit('key', ['setEditItem', '/edit']);
         })
 
-        hotkeys('command+n', scopes.APP, (e, h) => {
+        hotkeys('command + n', scopes.APP, (e, h) => {
             log.debug('Trigger Action', 'NEW_SHORTCUT');
-            this.emit('key', [ 'addItem', '/items', (root) => {
-                return [ root.apps.selectedApp, root.apps.selectedApp.categories[0] ]
+            this.emit('key', [ 'addItem', '/apps', (root) => {
+                return [ root.cursor ]
+            } ]);
+        })
+
+        hotkeys('n', scopes.APP, (e, h) => {
+            log.debug('Trigger Action', 'NEW_CATEGORY');
+            this.emit('key', [ 'addItem', '/apps', (root) => {
+                return [ root.cursor ]
             } ]);
         })
 
@@ -95,21 +102,46 @@ class KeyEmitter extends EventEmitter {
             this.emit('key', undefined,'FOCUS_SEARCH + START_COMMAND');
         })
 
+
+
         hotkeys('esc', scopes.APP, (e, h) => {
             log.debug('Trigger Action', 'ESCAPE');
-            this.emit('key', [ 'clearEditItem', '/items' ]);
+            this.emit('key', [ 'clearEditItem', '/edit' ]);
         })
 
-        hotkeys('shift+/', scopes.APP, (e, h) => {
+        hotkeys('shift+/,?', scopes.APP, (e, h) => {
             log.debug('Trigger Action', 'SHOW_HELP_MODAL');
-            this.emit('key', undefined, ['SHOW_HELP_MODAL', '', [] ]);
+            this.emit('key', ['setCursor', '', [ 'HELP' ] ]);
         })
 
-        hotkeys('up,down', scopes.APP, (e, h) => {
+        hotkeys('up, down', scopes.APP, (e, h) => {
             let direction = ( e.key === 'ArrowUp' ? 'UP' : 'DOWN');
             log.debug('Trigger Action', 'MOVE_SELECTION_' + direction);
-            this.emit('key', undefined,'MOVE_SELECTION_' + direction);
+
+            if (direction === 'DOWN') {
+                this.emit('key', ['cursorDown', '', [] ]);
+            } else if (direction === 'UP') {
+                this.emit('key', ['cursorUp', '', [] ]);
+            }
         });
+
+        hotkeys('right, left', scopes.APP, (e, h) => {
+            let direction = ( e.key === 'ArrowRight' ? 'NEXT' : 'PREV');
+            log.debug('Trigger Action', 'CHANGE_APP_' + direction);
+
+            if (direction === 'NEXT') {
+                 this.emit('key', ['nextApp', '/apps', [] ]);
+                 this.emit('key', ['setCursor', '', (root) => [ root.apps.topItem.id ] ]);
+            } else if (direction === 'PREV') {
+                 this.emit('key', ['prevApp', '/apps', [] ])
+                 this.emit('key', ['setCursor', '', (root) => [ root.apps.topItem.id ] ]);
+            }
+        })
+
+        // hotkeys('enter', scopes.APP, (e, h) => {
+        //     log.debug('Trigger Action', 'ENTER');
+        //     this.emit('key', [ 'setEditItem','ENTER');
+        // });
 
         hotkeys('up,down', scopes.SEARCH, (e, h) => {
             let direction = ( e.key === 'ArrowUp' ? 'UP' : 'DOWN');

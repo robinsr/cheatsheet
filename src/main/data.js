@@ -248,11 +248,16 @@ module.exports = {
       },
       {
         "id": "7XrP6QeEuC3mKnoR9x91Y8",
+
         "name": "iTerm",
         "categories": [
           {
             "id": "39vQxbsVa4MtkdiUummD7p",
-            "name": "iTerm do things"
+            "name": "iTerm do things",
+            "items": [
+              "oLWsm8faJ28vz97dWnRiZG",
+              "1VhA3TX1gCT7j221rkgJdw"
+            ],
           }
         ],
         "windowName": "iTerm"

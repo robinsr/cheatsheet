@@ -9,23 +9,12 @@ import { useMst } from 'context/Store.jsx';
 const HELP_MSG = 'Not all keyboard shortcuts can be captured.\nExamples include:\n- Cmd-W (close window)\n- Cmd-Q (quit)';
 
 const EditModal = observer(() => {
-    let { items } = useMst();
-
-    let itemGroups = items.itemGroups;
-    let editItem = items.editItem;
+    let { editItem, categoryOptions, saveEditItem, clearEditItem } = useMst().edit;
 
     let saveRef = useRef();
 
-    function save () {
-        items.saveEditItem();
-    }
-
-    function close () {
-        items.clearEditItem();
-    }
-
-    function onCapture (data) {
-        editItem.update('command', data.capture);
+    function onCapture(data) {
+        editItem.updateCommand(data.capture);
 
         if (data.tab_out) {
             saveRef.current.focus();
@@ -34,7 +23,7 @@ const EditModal = observer(() => {
 
     if (editItem) {
 
-        let { label, category, command, app } = editItem;
+        let { label, category, command } = editItem;
 
         return (
             <Modal 
@@ -42,7 +31,7 @@ const EditModal = observer(() => {
                 name={'new-shortcut-modal'}
                 title={'Add/Edit Shortcut'}
                 active={true}
-                onClose={close}
+                onClose={clearEditItem}
                 content={
                     <div className="content">
                         <form>
@@ -53,7 +42,7 @@ const EditModal = observer(() => {
                                     type="text"
                                     placeholder="Shortcut name"
                                     value={label}
-                                    onChange={e => { editItem.update('label', e.target.value) }}
+                                    onChange={e => { editItem.updateLabel(target.value) }}
                                     tabIndex="0"
                                 />
                             </FormGroup>
@@ -62,9 +51,9 @@ const EditModal = observer(() => {
                                 <select className="form-select"
                                     name="category"
                                     value={category.id}
-                                    onChange={e => { editItem.update('category', e.target.value) }}
+                                    onChange={e => { editItem.changeCategory(e.target.value) }}
                                     tabIndex="0">
-                                        {app.categories.map(i => (
+                                        {categoryOptions.map(i => (
                                             <option value={i.id} key={'edit_cat_' + i.id}>{i.name}</option>
                                         ))}
                                 </select>
@@ -78,7 +67,7 @@ const EditModal = observer(() => {
                     </div>
                 }
                 footer={
-                    <button type="button" className="btn btn-primary mx-1" onClick={save} ref={saveRef}>Save</button> 
+                    <button type="button" className="btn btn-primary mx-1" onClick={saveEditItem} ref={saveRef}>Save</button>
                 }
             />
         );

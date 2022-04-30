@@ -44,9 +44,15 @@ const AppMenu = observer(({
             </div>
             <ul className="app-menu-list">
                 {apps.appList.map(a => (
-                    <li key={'sidepane_app_' + a.id} className={getListItemClasses(a.id)} onMouseEnter={() => makeActive(a.id)}>
-                        <div onClick={() => selectApp(a.id)}><span><FaKeyboard/> {a.name}</span></div>
-                        <div onClick={() => editApp(a.id)}><FiEdit/></div>
+                    <li key={'sidepane_app_' + a.id}
+                        className={getListItemClasses(a.id)}
+                        onMouseEnter={() => makeActive(a.id)}>
+                            <div onClick={() => selectApp(a.id)}>
+                                <span><FaKeyboard/> {a.name}</span>
+                            </div>
+                            <div onClick={() => editApp(a.id)}>
+                                <FiEdit/>
+                            </div>
                     </li>
                 ))}
             </ul>

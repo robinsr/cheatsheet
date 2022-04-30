@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Provider, rootStore } from 'context/Store.jsx'
 
 import { BottomDrawer, ErrorAlert, AppGroups, SidePane } from 'components/layout/index';
-import { ExportModal, ImageModal, EditItemModal, EditAppModal } from 'components/modal/index'
+import { ExportModal, HelpModal, ImageModal, EditItemModal, EditAppModal } from 'components/modal/index'
 import Nav from 'components/menu/Nav.jsx';
 import KeyActions from "./providers/KeyActions.js";
 
@@ -46,7 +46,7 @@ export default function App() {
                 <EditItemModal/>
                 <EditAppModal/>
                 <BottomDrawer/>
-                {/*<BottomDrawer/>*/}
+                <HelpModal/>
             </KeyActions>
         </Provider>
     );

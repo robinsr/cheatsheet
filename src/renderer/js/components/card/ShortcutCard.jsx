@@ -10,7 +10,7 @@ import ShortcutTable from './ShortcutTable.jsx';
 
 
 const ShortcutCard = observer(({ 
-    group, app, onDelete
+    group, app
 }) => {
     let { items, imageModal, removeCategory } = useMst();
 
@@ -21,22 +21,20 @@ const ShortcutCard = observer(({
     let [ edit, setEdit ] = useState(false);
     let [ editGroupName, setEditGroupName ] = useState(group.name);
 
-    let tableItems = items.getItems(app.id, group.id);
-
     useEffect(editing => {
         if (editing) {
             return;
         }
 
-        if (editGroupName != group) {
+        if (editGroupName !== group) {
             group.updateName(editGroupName);
         }
     }, [edit]);
 
     function render(type) {
-        if (type == 'SVG') {
+        if (type === 'SVG') {
             return renderSVG(cardRef.current);
-        } else if (type == 'PNG') {
+        } else if (type === 'PNG') {
             return renderPNG(cardRef.current);
         } else {
             return Promise.reject('Image type must be SVG on PNG')
@@ -125,9 +123,9 @@ const ShortcutCard = observer(({
                     </CardTitle>
                 </CardHeader>
                 <CardBody>
-                    <ShortcutTable items={tableItems} editing={edit}/>
+                    <ShortcutTable group={group} editing={edit}/>
                     <div className="row-new-cmd text-center" ref={addItemRef}>
-                        <a onClick={() => items.addItem(app, group)} className="btn btn-link">+</a>
+                        <a onClick={() => group.addItem()} className="btn btn-link">+</a>
                     </div>
                 </CardBody>
             </Card>

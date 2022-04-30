@@ -1,10 +1,12 @@
 import 'regenerator-runtime/runtime';
 import { debounce as _debounce } from 'lodash';
-import { types, flow, getEnv, getSnapshot, onSnapshot } from "mobx-state-tree";
+import Optional from 'optional-js';
+import { types, flow, getEnv, getSnapshot, onSnapshot, resolveIdentifier } from "mobx-state-tree";
 import { UIStore } from "context/models/UIStore.js";
 import { MobxAppList } from "context/models/AppStore";
-import { MobxShortcutItemList } from "context/models/ShortcutItemList.js";
+import { MobxEditItemStore } from "context/models/EditItemStore.js";
 import { MobxImageModal } from "context/models/ImageModal.js";
+import { MobxShortcutItem } from "context/models/ShortcutItem";
 import { gate } from 'utils/uuid';
 import { getDebugLogger } from "utils/logger";
 
@@ -15,13 +17,18 @@ const logger = getDebugLogger('RootStore')
 const MobxStore = types
     .model('MobxStore', {
         ui: UIStore,
-        items: MobxShortcutItemList,
+        edit: MobxEditItemStore,
         apps: MobxAppList,
         imageModal: MobxImageModal,
         isLoading: types.boolean,
         isSaving: types.boolean,
         cursor: types.maybeNull(types.string)
     })
+    .views(self => ({
+        get isEmpty() {
+            return self.apps.isEmpty;
+        }
+    }))
     .actions(self => ({
         setLoading(val) {
             self.isLoading = val;
@@ -50,26 +57,44 @@ const MobxStore = types
             self.isLoading = false;
         },
         removeApp(appId) {
-            self.items.removeByApp(appId);
             self.apps.removeApp(appId);
         },
         removeCategory(appId, groupId) {
-            self.items.removeItemsByCategory(groupId);
-
-            self.apps.getById(appId).removeCategory(groupId);
+            self.apps.item(appId).removeCategory(groupId);
         },
         backup() {
             return getSnapshot(self);
         },
-        isEmpty() {
-            return self.items.isEmpty();
-        },
+
         setCursor: _debounce(val => self._setCursor(val), 10),
-        // setCursor(val) {
-        //     self.cursor = val;
-        // },
         _setCursor(val) {
             self.cursor = val;
+        },
+        getCursor() {
+            return Optional.ofNullable(self.cursor);
+        },
+        resolveCursor(val) {
+            // Currently only looks up shortcutitems, but can be
+            // extended to check for other model types
+            try {
+                let item = resolveIdentifier(MobxShortcutItem, self, val);
+                logger('resolved item:', val)
+                return item
+            } catch (e) {
+                return null;
+            }
+        },
+        cursorDown() {
+            self.cursor = Optional.ofNullable(self.cursor)
+                .map(val => self.resolveCursor(val))
+                .map(item => item.next?.id)
+                .orElse(self.apps.topItem.id);
+        },
+        cursorUp() {
+            self.cursor = Optional.ofNullable(self.cursor)
+                .map(self.resolveCursor)
+                .map(item => item.prev?.id)
+                .orElse(self.apps.topItem.id);
         }
     }));
 

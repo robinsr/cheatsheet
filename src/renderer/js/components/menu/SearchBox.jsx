@@ -10,7 +10,7 @@ import ShortcutKey from 'components/card/ShortcutKey.jsx';
 const SearchBox = observer(({
     isMenuOpen=false
 }) => {
-    let { items, cursor } = useMst();
+    let { edit, apps, cursor } = useMst();
 
     let searchRef = useRef();
 
@@ -24,7 +24,7 @@ const SearchBox = observer(({
         }
     }, [ cursor ])
 
-    useEffect(function clearOnMenuOopen() {
+    useEffect(function clearOnMenuOpen() {
         if (isMenuOpen) {
             setQuery('');
             setResult([]);
@@ -53,14 +53,15 @@ const SearchBox = observer(({
 
     function onSearch(e) {
         setQuery(e.target.value)
-        let results = items.find(e.target.value);
+        let results = apps.query(e.target.value);
         setResult(results);
     }
 
     function onItemClick(id) {
         setQuery('');
         setResult([]);
-        items.setEditItem(id);
+        // TODO, this should just change the cursor, not edit the item
+        edit.setEditItem(id);
     }
 
     return (
@@ -79,7 +80,12 @@ const SearchBox = observer(({
             </div>
             {result.length > 0 ?
                 <ul className="menu">
-                    {result.map(r => <SearchBoxResult key={'search_' + r.id} result={r} query={query} onClick={onItemClick} />)}
+                    {result.map(r => (
+                        <SearchBoxResult key={'search_' + r.id}
+                                         result={r}
+                                         query={query}
+                                         onClick={onItemClick}
+                        />))}
                 </ul>
             : null}
         </div>

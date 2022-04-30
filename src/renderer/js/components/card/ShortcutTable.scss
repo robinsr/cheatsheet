@@ -1,4 +1,5 @@
 $hover-color: #5755d9;
+$hover-bg: #f1f1fc;
 
 .shortcut-table {
     .large-font {
@@ -8,16 +9,15 @@ $hover-color: #5755d9;
     }
 
     th {
-        background-color: #f7f8f9;
-    }
-
-    td, th  {
-        padding: 0.2rem 0.2rem;
         background-color: #fff;
     }
 
+    td, th {
+        padding: 0.2rem 0.2rem;
+    }
+
     tr:last-child td {
-        border-bottom:  none;
+        border-bottom: none;
     }
 
     .shortcut-table-item {
@@ -30,6 +30,7 @@ $hover-color: #5755d9;
 
     .shortcut-table-item.active {
         color: $hover-color;
+        background-color: #f1f1fc !important;
     }
 }
 

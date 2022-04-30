@@ -6,31 +6,24 @@ import classnames from 'classnames';
 
 import { useMst } from 'context/Store.jsx';
 import ShortcutKey from './ShortcutKey.jsx';
-import {getPath} from "mobx-state-tree";
 
 
-const Row = observer(({ item, editing }) => {
-    let { items, cursor, setCursor } = useMst()
+const Row = observer(({
+    item, editing, onMoveUp, onMoveDown, onDelete
+}) => {
+    let { apps, edit, cursor, setCursor } = useMst();
 
     let { id, label, command } = item;
-    let itemPath = getPath(item);
 
-    function onClick(e) {
-        console.log(e);
+    function onRightClick(e) {
         if (e.nativeEvent.which === 3) {
-            if (e.nativeEvent.shiftKey) {
-                items.moveItemUp(id);
-            } else {
-                items.moveItemDown(id);
-            }
-            return
+            e.nativeEvent.shiftKey ? onMoveUp(id) : onMoveDown(id);
         }
+    }
 
-        if (editing) {
-            return;
-        } else {
-            items.setEditItem(id)
-        }
+    function onClick() {
+        if (editing) return;
+        edit.setEditItem(item);
     }
 
     let cls = classnames('shortcut-table-item', {
@@ -38,13 +31,14 @@ const Row = observer(({ item, editing }) => {
     });
 
     return (
-        <tr key={id} className={cls}
+        <tr className={cls}
             onClick={onClick}
-            onAuxClick={onClick}
+            onAuxClick={onRightClick}
             onMouseEnter={() => setCursor(id)}
             onMouseLeave={() => setCursor(null)}>
             <td>
-                {editing ? <i className="icon icon-cross remove-shortcut" onClick={e => items.removeItem(id)}></i> : null}
+                {editing ? <i className="icon icon-cross remove-shortcut"
+                              onClick={() => onDelete(id)}></i> : null}
                 <span>{label}</span>
             </td>
             <td className="text-right">
@@ -54,7 +48,8 @@ const Row = observer(({ item, editing }) => {
     )
 });
 
-const ShortcutTable = ({ items, editing }) => {
+const ShortcutTable = observer(({ group, editing }) => {
+
     return (
         <table className="table shortcut-table">
             <thead>
@@ -64,10 +59,18 @@ const ShortcutTable = ({ items, editing }) => {
             </tr>
             </thead>
             <tbody>
-            {items.map(item => <Row item={item} key={item.id} editing={editing} />)}
+            {group.items.map(item => (
+                <Row item={item}
+                     key={'table_item_' + item.id}
+                     editing={editing}
+                     onMoveUp={() => group.moveItemUp(item.id)}
+                     onMoveDown={() => group.moveItemDown(item.id)}
+                     onDelete={() => group.removeItem(item.id)}
+                />
+            ))}
             </tbody>
         </table>
     )
-};
+});
 
 export default ShortcutTable

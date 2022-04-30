@@ -14,9 +14,8 @@ const initialData = {
         activeWindow: 'Cheat',
         activeFollow: true
     },
-    items: {
-        itemList: [],
-        editItem: null // todo; get from electron window api
+    edit: {
+        item: null // todo; get from electron window api
     },
     apps: {
         appList: [],
@@ -69,11 +68,11 @@ onSnapshot(rootStore, _debounce((snapshot) => {
         return;
     }
 
-    logger('saving snapshot', snapshot);
-    rootStore.setSaving(true);
-    api.onSnapshot(snapshot)
-        .then(data => logger('saved', data))
-        // .then(msg => rootStore.setSaving(false))
-        .catch(console.error);
+    // logger('saving snapshot', snapshot);
+    // rootStore.setSaving(true);
+    // api.onSnapshot(snapshot)
+    //     .then(data => logger('saved', data))
+    //     // .then(msg => rootStore.setSaving(false))
+    //     .catch(console.error);
 }, 750));
 

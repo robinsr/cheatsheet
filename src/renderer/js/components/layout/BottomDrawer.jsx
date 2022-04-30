@@ -14,15 +14,13 @@ const BottomDrawer = observer(() => {
 
     let { unknownApp } = apps;
 
-    function onClose() {
-        apps.ignoreApp(unknownApp);
+    function onIgnore() {
+        apps.addIgnoreApp(unknownApp);
         apps.clearUnknownAppName();
     }
 
     function onYesResponse() {
-        let app = apps.addNewApp(unknownApp, unknownApp);
-        app.addCategory();
-
+        apps.addNewApp(unknownApp, unknownApp);
         apps.clearUnknownAppName();
     }
 
@@ -33,12 +31,12 @@ const BottomDrawer = observer(() => {
             isOpen={isOpen}
             from="bottom"
             width="100%"
-            onRequestClose={onClose}>
+            onRequestClose={onIgnore}>
             <div>
                 <p>Add shortcuts for {unknownApp}?</p>
                 <div>
                     <button className={"btn btn-success"} onClick={onYesResponse}>Yes</button>
-                    <button className={"btn btn-error"} onClick={onClose}>Ignore</button>
+                    <button className={"btn btn-error"} onClick={onIgnore}>Ignore</button>
                 </div>
             </div>
         </SlidingPane>

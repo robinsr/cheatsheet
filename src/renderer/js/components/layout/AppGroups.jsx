@@ -13,7 +13,7 @@ const fullScreenCenter = {
 
 const SingleApp = ({ app }) => {
     return (
-        <div key={'app_' + app.name}>
+        <div key={'app_' + app.id}>
             <div className="my-2">
                 <figure className="avatar avatar-md" data-initial={app.name[0].toUpperCase()} />
                 <em className="h3 mx-2">{app.name}</em>
