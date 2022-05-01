@@ -14,7 +14,8 @@ const ImageModal = observer(() => {
     if (imageModal.data) {
 
         return (
-            <Modal 
+            <Modal
+                type="full"
                 name="image-modal"
                 title={'Export ' + imageModal.data.type}
                 active={imageModal.showModal}

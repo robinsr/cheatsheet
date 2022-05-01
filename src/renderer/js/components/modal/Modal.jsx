@@ -1,32 +1,52 @@
 import React from 'react';
 import classnames from 'classnames';
 
+const Modal = ({
+    type='small',
+    active=false,
+    name, title,
+    keyscope='APP',
+    content,
+    footer,
+    onClose,
 
-const Modal = (props) => {
+}) => {
 
-    let cns = classnames(
-        'modal',
-        props.type || 'modal-lg', 
-        props.active ? 'active' : '',
-        props.name
-    )
+    let cns = classnames('modal', name, {
+        'modal-lg': type === 'full',
+        'modal-sm': type === 'small',
+        'active': active
+    });
+
 
     return (
         <div className={cns}>
-            <a href="#close" className="modal-overlay" aria-label="Close" onClick={props.onClose}></a>
+            <a href="#close"
+               className="modal-overlay"
+               aria-label="Close"
+               onClick={onClose}></a>
             <div className="modal-container">
                 <div className="modal-header">
-                    <a href="#close" className="btn btn-clear float-right" aria-label="Close" onClick={props.onClose}></a>
-                    <div className="modal-title h5">{props.title}</div>
+                    <a href="#close"
+                       className="btn btn-clear float-right"
+                       aria-label="Close"
+                       onClick={onClose}
+                       data-keyscope={keyscope}></a>
+                    <div className="modal-title h5">{title}</div>
                 </div>
                 <div className="modal-body">
-                    {props.content}
+                    {content}
                 </div>
                 <div className="modal-footer">
                     <div className="docs-demo columns">
                         <div className="column col-12">
-                            {props.footer}
-                            <button className="btn btn-default" onClick={props.onClose}>Close</button>
+                            {footer}
+                            <button
+                                className="btn btn-default"
+                                onClick={onClose}
+                                data-keyscope={keyscope}>
+                                    Close
+                            </button>
                         </div>
                     </div>
                 </div>

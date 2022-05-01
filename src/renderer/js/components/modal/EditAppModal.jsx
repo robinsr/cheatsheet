@@ -1,6 +1,7 @@
 import React from 'react';
 import { observer } from "mobx-react-lite";
 import { Button, FormGroup, Input } from 'spectre-react';
+import { CursorFocusableInput } from 'components/inputs';
 
 import { useMst } from "context/Store";
 import Modal from "components/modal/Modal";
@@ -20,8 +21,8 @@ const EditAppModal = observer(() => {
 
     return (
         <Modal
-            type={'modal-sm'}
-            name={'edit-app-modal'}
+            type="small"
+            name="edit-app-modal"
             title={'Edit ' + name}
             active={true}
             onClose={onClose}
@@ -30,7 +31,8 @@ const EditAppModal = observer(() => {
                      <form>
                          <FormGroup>
                              <label className="form-label">App name:</label>
-                             <input className="form-input"
+                             <CursorFocusableInput cursorName="edit-form-label"
+                                 className="form-input"
                                  type="text"
                                  placeholder="Shortcut name"
                                  value={name}

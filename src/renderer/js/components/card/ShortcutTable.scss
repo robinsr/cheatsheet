@@ -28,9 +28,11 @@ $hover-bg: #f1f1fc;
         color: #f00;
     }
 
-    .shortcut-table-item.active {
-        color: $hover-color;
-        background-color: #f1f1fc !important;
+    .shortcut-table-item {
+        &.active, &:hover {
+            color: $hover-color;
+            background-color: #f1f1fc !important;
+        }
     }
 }
 

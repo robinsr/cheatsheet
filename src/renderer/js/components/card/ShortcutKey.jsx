@@ -1,3 +1,5 @@
+import './ShortcutKey.scss';
+
 import React, { useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 
@@ -15,7 +17,7 @@ const keyStyles = {
     }
 };
 
-const ShortcutKey = observer(({ item, command, capture=false }) => {
+const ShortcutKey = observer(({ item, command, capture=false, splitKey='-', useRaw=false, onClick }) => {
     let { ui } = useMst();
 
     let ref = useRef(null);
@@ -30,9 +32,10 @@ const ShortcutKey = observer(({ item, command, capture=false }) => {
 
     return(
         <span>
-            <span id={'kbd-' + command} className="label shortcut" ref={ref}>
-                {command.split('-')
-                    .map(key => <kbd style={keyStyles[ui.theme]} key={command + key}>{get_for_key(key)}</kbd>)
+            <span id={'kbd-' + command} className="label shortcut" ref={ref} onClick={onClick}>
+                {command.split(splitKey)
+                    .map(key => useRaw ? key : get_for_key(key))
+                    .map(key => <kbd style={keyStyles[ui.theme]} key={command + key}>{key}</kbd>)
                     .reduce((prev, curr) => [prev, ' + ', curr])
                 }
             </span>

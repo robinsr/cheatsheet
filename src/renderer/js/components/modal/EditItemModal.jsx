@@ -1,73 +1,106 @@
-import React, { useRef } from 'react';
+import React, {useRef, useState} from 'react';
 import { observer } from 'mobx-react-lite';
-import { Button, FormGroup, Input } from 'spectre-react';
-
+import { FormGroup } from 'spectre-react';
 import Modal from 'components/modal/Modal.jsx';
-import CaptureBox from 'components/modal/CaptureBox.jsx';
+import {CaptureBox, CursorFocusableInput, CursorNavigableForm, Toggle} from "components/inputs";
 import { useMst } from 'context/Store.jsx';
+import { key_scopes } from 'utils/key_config';
+import Logger from 'js-logger';
+
+const log = Logger.get('JSX/EditItemModal');
 
 const HELP_MSG = 'Not all keyboard shortcuts can be captured.\nExamples include:\n- Cmd-W (close window)\n- Cmd-Q (quit)';
+const KEY_SCOPE = key_scopes.EDIT_ITEM.config.scope;
 
 const EditModal = observer(() => {
     let { editItem, categoryOptions, saveEditItem, clearEditItem } = useMst().edit;
 
-    let saveRef = useRef();
-
-    function onCapture(data) {
-        editItem.updateCommand(data.capture);
-
-        if (data.tab_out) {
-            saveRef.current.focus();
-        }
-    }
-
     if (editItem) {
+        let {
+            label,
+            category,
+            command,
+            commandDefault,
+            secondary,
+            secondaryDefault,
+            enableSecondary
+        } = editItem;
 
-        let { label, category, command } = editItem;
 
         return (
             <Modal 
-                type={'modal-sm'}
-                name={'new-shortcut-modal'}
-                title={'Add/Edit Shortcut'}
+                type="small"
+                name="new-shortcut-modal"
+                title="Add/Edit Shortcut"
                 active={true}
                 onClose={clearEditItem}
+                keyscope={KEY_SCOPE}
                 content={
                     <div className="content">
-                        <form>
+                        <CursorNavigableForm
+                            cursorNames={['edit-form-label', 'edit-form-category', 'capture-box' ]}>
                             <FormGroup>
                                 <label className="form-label">Shortcut name:</label>
-                                <input className="form-input" 
+                                <CursorFocusableInput
+                                    data-keyscope={KEY_SCOPE}
+                                    cursorName="edit-form-label"
+                                    className="form-input"
                                     name="label"
                                     type="text"
                                     placeholder="Shortcut name"
                                     value={label}
-                                    onChange={e => { editItem.updateLabel(target.value) }}
+                                    onChange={e => { editItem.updateLabel(e.target.value) }}
                                     tabIndex="0"
                                 />
                             </FormGroup>
                             <FormGroup>
                                 <label className="form-label">Group:</label>
-                                <select className="form-select"
-                                    name="category"
-                                    value={category.id}
-                                    onChange={e => { editItem.changeCategory(e.target.value) }}
-                                    tabIndex="0">
-                                        {categoryOptions.map(i => (
-                                            <option value={i.id} key={'edit_cat_' + i.id}>{i.name}</option>
-                                        ))}
-                                </select>
+                                <CursorFocusableInput
+                                        type="select"
+                                        className="form-select"
+                                        data-keyscope={KEY_SCOPE}
+                                        cursorName="edit-form-category"
+                                        name="category"
+                                        value={category.id}
+                                        onChange={e => { editItem.changeCategory(e.target.value) }}
+                                        tabIndex="0">
+                                            {categoryOptions.map(i => (
+                                                <option value={i.id} key={'edit_cat_' + i.id}>{i.name}</option>
+                                            ))}
+                                </CursorFocusableInput>
                             </FormGroup>
                             <FormGroup>
                                 <label className="form-label tooltip" data-tooltip={HELP_MSG}>Keys:</label>
-                                <input type="hidden" name="cmd" value={command} />
-                                <CaptureBox defaultValue={command} onData={onCapture} />
+                                <CaptureBox
+                                    defaultValue={commandDefault}
+                                    command={command}
+                                    onData={data => editItem.updateCommand(data)}
+                                    cursorName="capture-box"/>
                             </FormGroup>
-                        </form>
+                            <Toggle name={'second-stroke'}
+                                    label={'Second stroke'}
+                                    checked={enableSecondary}
+                                    onChange={val => editItem.updateEnableSecondary(val)}
+                                    tabIndex={0}>
+                                        <FormGroup>
+                                            <CaptureBox
+                                                defaultValue={secondaryDefault}
+                                                command={secondary}
+                                                onData={data => editItem.updateSecondary(data)}
+                                                cursorName="capture-box-2" />
+                                        </FormGroup>
+                            </Toggle>
+                        </CursorNavigableForm>
                     </div>
                 }
                 footer={
-                    <button type="button" className="btn btn-primary mx-1" onClick={saveEditItem} ref={saveRef}>Save</button>
+                    <button
+                        type="button"
+                        data-keyscope={KEY_SCOPE}
+                        className="btn btn-primary mx-1"
+                        onClick={saveEditItem}>
+                            Save
+                    </button>
                 }
             />
         );

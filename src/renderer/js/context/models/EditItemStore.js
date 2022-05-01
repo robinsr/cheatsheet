@@ -1,6 +1,6 @@
-import { getParent, getType, types } from 'mobx-state-tree';
-import { MobxShortcutItem, } from "context/models/ShortcutItem";
-import { MobxAppItem, MobxCategoryItem } from "context/models/AppStore";
+import { getParent, types } from 'mobx-state-tree';
+import { MobxCategoryItem } from "context/models/AppStore";
+import { isEmpty } from 'lodash';
 
 const EDIT = '__edit__';
 
@@ -9,8 +9,17 @@ export const MobxEditableShortcutItem = types
         id: types.identifier,
         label: types.maybeNull(types.string),
         command: types.maybeNull(types.string),
+        commandDefault: types.maybeNull(types.string),
+        enableSecondary: types.maybeNull(types.boolean),
+        secondary: types.maybeNull(types.string),
+        secondaryDefault: types.maybeNull(types.string),
         category: types.maybeNull(types.reference(MobxCategoryItem))
     })
+    .views(self => ({
+        get hasSecondStroke() {
+            return typeof self.secondary === 'string';
+        }
+    }))
     .actions(self => ({
         updateLabel(val) {
             self.label = val;
@@ -18,9 +27,19 @@ export const MobxEditableShortcutItem = types
         updateCommand(val) {
             self.command = val;
         },
+        updateSecondary(val) {
+            self.secondary = val;
+        },
         changeCategory(category) {
             self.category = category;
         },
+        updateEnableSecondary(val) {
+            self.enableSecondary = val;
+
+            if (val === false) {
+                self.secondary = null;
+            }
+        }
     }))
 
 export const MobxEditItemStore = types
@@ -59,6 +78,10 @@ export const MobxEditItemStore = types
                     id: target.id + EDIT,
                     label: target.label,
                     command: target.command,
+                    commandDefault: target.command,
+                    secondary: target.secondary,
+                    secondaryDefault: target.secondary,
+                    enableSecondary: !isEmpty(target.secondary),
                     category: target.category
                 };
 
@@ -74,10 +97,11 @@ export const MobxEditItemStore = types
                     throw new Error('Target item was lost before save');
                 }
 
-                let { label, command, category } = self.editItem;
+                let { label, command, secondary, category } = self.editItem;
 
                 targetItem.update('label', label);
                 targetItem.update('command', command);
+                targetItem.update('secondary', secondary);
 
                 if (category !== targetItem.category) {
                     targetItem = targetItem.category.removeItem(targetItem.id);

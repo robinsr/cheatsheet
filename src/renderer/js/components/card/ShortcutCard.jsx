@@ -1,3 +1,5 @@
+import './ShortcutCard.scss';
+
 import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { Button, Card, CardHeader, CardTitle, CardBody } from 'spectre-react';

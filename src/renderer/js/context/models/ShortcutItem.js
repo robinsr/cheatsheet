@@ -4,7 +4,8 @@ export const MobxShortcutItem = types
     .model('MobxShortcutItem', {
         id: types.identifier,
         label: types.maybeNull(types.string),
-        command: types.maybeNull(types.string)
+        command: types.maybeNull(types.string),
+        second: types.maybeNull(types.string)
     })
     .views(self => {
         let app, category = null;

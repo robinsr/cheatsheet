@@ -1,0 +1,26 @@
+$hover-color: #5755d9;
+$hover-bg: #f1f1fc;
+
+.new-shortcut-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 3rem;
+
+    color: rgb(238, 238, 238);
+    background-color: rgb(245, 245, 245);
+    border: 0.05rem dashed rgba(34, 34, 34, 0.40);
+    border-radius: 0.1rem;
+
+    /*text-shadow: 0.02rem 0.02rem #00000061;*/
+    font-size: 0.8rem;
+    cursor: pointer;
+
+    &:focus-visible {
+        outline: none;
+    }
+
+    &.focus {
+        outline: $hover-color auto 1px;
+    }
+}

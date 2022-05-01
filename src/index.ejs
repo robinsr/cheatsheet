@@ -12,7 +12,7 @@
 	
 	<%= htmlWebpackPlugin.files.css %>
 </head>
-<body>
+<body class="__show-debug-viz">
 	<div id="app"></div>
     <% for(var i=0; i < htmlWebpackPlugin.files.js.length; i++) {%>
         <script defer src="<%= htmlWebpackPlugin.files.js[i] %>"></script>

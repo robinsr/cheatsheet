@@ -47,7 +47,8 @@ export default class ExportModal extends Component {
         let { markdown_val, show_markdown } = this.context.items;
 
         return (
-            <Modal 
+            <Modal
+                type="full"
                 title={'Export to Markdown'}
                 active={show_markdown}
                 onClose={() => this.close()}

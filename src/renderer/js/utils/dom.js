@@ -1,5 +1,9 @@
-import { macos_symbols } from 'utils/macos_symbols';
 import { pick as _pick } from 'lodash';
+import Logger from 'js-logger';
+
+import {get_for_key, macos_symbols} from 'utils/macos_symbols';
+
+const log = Logger.get('DomUtils');
 
 export class ShowHideElement {
     constructor(e, display_type = 'block') {
@@ -14,9 +18,9 @@ export class ShowHideElement {
 const letter_key = new RegExp(/^Key[\w]{1}$/);
 
 
-export const get_kb_string = (e) => {
+export const getKeyString = (e) => {
 
-    console.debug('keyevent in:', _pick(e, ['altKey', 'shiftKey', 'ctrlKey', 'metaKey', 'code', 'keyCode', 'key']));
+    log.debug('keyevent in:', _pick(e, ['altKey', 'shiftKey', 'ctrlKey', 'metaKey', 'code', 'keyCode', 'key']));
 
     let kbString = [];
 
@@ -42,29 +46,74 @@ export const get_kb_string = (e) => {
             kbString.push(e.key.toLowerCase());
         } else if (letter_key.test(e.code)) {
             kbString.push(e.code.substr(-1));
+        } else if (get_for_key(e.key)) {
+            kbString.push(get_for_key(e.key));
         } else {
             kbString.push(e.key);
         }
     }
 
-    console.debug('key out:', kbString)
+    log.debug('key out:', kbString);
 
     return kbString.join('-');
 }
 
-
-export const is_tab_key = (e) => {
-    return (e.keyCode == 9 || e.key == 'Tab');
+export const captureActions = {
+    CAPTURE: 'CAPTURE',
+    IGNORE: 'IGNORE',
+    EXIT: 'EXIT',
+    SAVE: 'SAVE'
 }
 
-export const is_single_key = (e) => {
+export const getCaptureAction = (e) => {
+    if (isKeyDown(e) && isTabKey(e) && isSingleKeyPress(e)) {
+        return captureActions.EXIT;
+    }
+
+    if (isKeyDown(e) && isEscKey(e) && isSingleKeyPress(e)) {
+        return captureActions.EXIT;
+    }
+
+    if (isKeyUp(e) && isTabKey(e) && isSingleKeyPress(e)) {
+        return captureActions.IGNORE;
+    }
+
+    if (isKeyDown(e)) {
+        return captureActions.CAPTURE;
+    }
+
+    if (isKeyUp(e)) {
+        return captureActions.SAVE;
+    }
+
+    return captureActions.IGNORE;
+}
+
+
+export const isTabKey = (e) => {
+    return (e.keyCode === 9 || e.key === 'Tab');
+}
+
+export const isEscKey = (e) => {
+    return (e.keyCode === 27 || e.key === 'Escape');
+}
+
+export const isKeyDown = (e) => {
+    return e.type === 'keydown';
+}
+
+export const isKeyUp = (e) => {
+    return e.type === 'keyup';
+}
+
+export const isSingleKeyPress = (e) => {
     return [ 'metaKey', 'ctrlKey', 'altKey', 'shiftKey' ]
-        .map(key => e && e[key] && e[key] == true)
+        .map(key => e && e[key] && e[key] === true)
         .filter(i => i)
-        .length == 0;
+        .length === 0;
 }
 
-export const oops_handler = (e) => {
+export const beforeUnloadHandler = (e) => {
     e.preventDefault();
     return event.returnValue = "Are you sure you want to exit?";
 }
