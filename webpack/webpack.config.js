@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
     mode: 'development',
     entry: {
-        main: ['regenerator-runtime/runtime.js', './renderer/js/index.js']
+        main: ['regenerator-runtime/runtime.js', './renderer/index.js']
     },
     // target: 'electron-main',
     devtool: 'inline-source-map',
@@ -42,9 +42,9 @@ module.exports = {
     resolve: {
         extensions: ['', '.js', '.jsx'],
         alias: {
-            components: path.resolve(__dirname, '../src/renderer/js/components/'),
-            context: path.resolve(__dirname, '../src/renderer/js/context/'),
-            utils: path.resolve(__dirname, '../src/renderer/js/utils/')
+            components: path.resolve(__dirname, '../src/renderer/components/'),
+            context: path.resolve(__dirname, '../src/renderer/context/'),
+            utils: path.resolve(__dirname, '../src/renderer/utils/')
         },
         fallback: {
             "fs": false

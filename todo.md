@@ -1,27 +1,18 @@
 ## cheatsheet todos
 
-## Done
+
 
 * [x] Suggest new app button (when active app not recognized)
 * [x] auto-switch applications ("active follow")
+* [x] Add help window
+* [x] support multi-action (aka second keystroke)
 
 ### Functionality
 
 * Keep window on top with `win.alwaysOnTop` [docs](https://www.electronjs.org/docs/latest/api/browser-window#winsetalwaysontopflag-level-relativelevel)
-* Add help window
-  * how to: use across spaces (dock -> options -> (assignTo) All spaces)
 * Import keybinding files from web
 * Export app keybinding. Determine export format (yaml, json, markdown?)
-* **support multi-action** (`[ Command+K ]` + `[ Command+M ]`)
-* **support AND/OR/THEN** 
-  * OR - example switch tab left OR right:
-
-```
-  [ Cmd+Alt+LeftArrow ] OR [ Cmd+Alt+RightArrow ]`
-  or
-  [ Cmd+Alt+LeftArrow|RightArrow ] ✅
-
-```
+* **support AND/OR/THEN** (see appendix)
 * Favorite shortcuts
 * add icon to shortcuts
 * Drag shortcut from one category to another
@@ -41,6 +32,29 @@
 * "condensed" or "clean" view (hide UI elements)
 * Profiles for apps (text editors and IDEs can have multiple keymaps (default))
 
+### Style
+
+* Match desktop theme with `nativeTheme`
+
+## Bugs
+
+* Shortcuts with "+" character cause rendering error because "+" is used as key separator
+  * Since some symbols are not used in shortucts (any alt or shift symbol), can therefor be safely used
+    as separator? Examples `":", "|", "+"` ("+" is the obvious one) ✅
+* Card title, text overflows (probably other text overflows, shortcut, app list, etc)
+
+## Appendix
+
+Alternate key ideas:
+
+```
+  [ Cmd+Alt+LeftArrow ] OR [ Cmd+Alt+RightArrow ]`
+  or
+  [ Cmd+Alt+LeftArrow|RightArrow ] ✅
+```
+
+Profiles:
+
 ```js
 { 
   actions: [
@@ -54,14 +68,3 @@
   ]
 }
 ```
-
-### Style
-
-* Match desktop theme with `nativeTheme`
-
-## Bugs
-
-* Shortcuts with "+" character cause rendering error because "+" is used as key separator
-  * Since some symbols are not used in shortucts (any alt or shift symbol), can therefor be safely used
-    as separator? Examples `":", "|", "+"` ("+" is the obvious one) ✅
-* Card title, text overflows (probably other text overflows, shortcut, app list, etc)
