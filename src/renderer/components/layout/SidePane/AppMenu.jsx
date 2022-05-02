@@ -3,7 +3,7 @@ import './AppMenu.scss';
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { FaKeyboard, FiFilePlus, FiEdit } from "react-icons/all";
-import { useMst } from 'context/Store.jsx';
+import { useMst } from 'store';
 import classnames from 'classnames';
 
 const AppMenu = observer(({

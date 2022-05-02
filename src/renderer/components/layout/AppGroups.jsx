@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 
 import ShortcutCards from 'components/card/ShortcutCards.jsx';
 
-import { useMst } from 'context/Store';
+import { useMst } from 'store';
 
 const fullScreenCenter = {
     width: '100%',

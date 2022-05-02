@@ -16,7 +16,6 @@ const can_clip = () => {
 }
 
 const copy_to_clip = (clip_val) => {
-
     return new Promise((resolve, reject) => {
         can_clip().then(() => {
             navigator.clipboard.writeText(clip_val).then(function() {

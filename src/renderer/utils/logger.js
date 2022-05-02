@@ -35,10 +35,11 @@ if (stage === 'DEV') {
 }
 
 
-
-
-// const defaultDebugLog =
-export function getDebugLogger(ns) {
-    let log = Logger.get(ns);
+export function getDebugLogger(namespace) {
+    let log = Logger.get(namespace);
     return log.debug.bind(log);
+}
+
+export function getLogger(namespace) {
+    return Logger.get(namespace);
 }

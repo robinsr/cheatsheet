@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import Modal from './Modal';
 import { DataURIImage, DownloadButton } from 'components/image';
 
-import { useMst } from 'context/Store';
+import { useMst } from 'store';
 import copy_to_clip from 'utils/clipboard.js';
 
 

@@ -1,10 +1,10 @@
-import { getParent, types } from 'mobx-state-tree';
-import { MobxCategoryItem } from './AppStore';
 import { isEmpty } from 'lodash';
+import { getParent, types } from 'mobx-state-tree';
+import MobxCategoryItem from 'store/app/CategoryItem';
 
 const EDIT = '__edit__';
 
-export const MobxEditableShortcutItem = types
+const MobxEditableShortcutItem = types
     .model('MobxEditableShortcutItem', {
         id: types.identifier,
         label: types.maybeNull(types.string),
@@ -15,11 +15,6 @@ export const MobxEditableShortcutItem = types
         secondaryDefault: types.maybeNull(types.string),
         category: types.maybeNull(types.reference(MobxCategoryItem))
     })
-    .views(self => ({
-        get hasSecondStroke() {
-            return typeof self.secondary === 'string';
-        }
-    }))
     .actions(self => ({
         updateLabel(val) {
             self.label = val;
@@ -42,7 +37,7 @@ export const MobxEditableShortcutItem = types
         }
     }))
 
-export const MobxEditItemStore = types
+const MobxEditItemStore = types
     .model('MobxEditItemStore', {
         editItem: types.maybeNull(MobxEditableShortcutItem),
         categoryOptions: types.array(types.reference(MobxCategoryItem))
@@ -55,7 +50,7 @@ export const MobxEditItemStore = types
                 let root = getParent(self);
 
                 if (typeof target === 'string') {
-                    target = root.apps.find(target);
+                    target = root.apps.item(target);
                 }
 
                 if (!target) {
@@ -63,13 +58,13 @@ export const MobxEditItemStore = types
                 }
 
                 if (!target.app) {
-                    throw new Error('Cannot create item outside of app context', target);
+                    throw new Error('Cannot create item outside of app store', target);
                 }
 
                 let targetApp = root.apps.item(target.app.id);
 
                 if (!targetApp) {
-                    throw new Error('Cannot create item outside of app context', target);
+                    throw new Error('Cannot create item outside of app store', target);
                 }
 
                 self.categoryOptions = targetApp.itemGroups;
@@ -117,3 +112,5 @@ export const MobxEditItemStore = types
             }
         }
     });
+
+export default MobxEditItemStore;

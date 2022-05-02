@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { useMst } from 'context/Store';
+import { useMst } from 'store';
 import { FormGroup } from 'spectre-react';
 import { CursorFocusableInput } from 'components/inputs';
 import Modal from './Modal';

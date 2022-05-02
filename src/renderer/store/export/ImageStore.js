@@ -28,7 +28,7 @@ const MobxCustomImage = types.custom({
 })
 
 
-const MobxImageModal = types
+const MobxImageModalStore = types
     .model('MobxImageModal', {
         showModal: types.boolean,
         data: types.maybeNull(MobxCustomImage)
@@ -43,4 +43,4 @@ const MobxImageModal = types
         }
     }));
 
-export { MobxImageModal };
+export default MobxImageModalStore;

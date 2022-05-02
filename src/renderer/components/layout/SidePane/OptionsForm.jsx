@@ -2,7 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { Button } from 'spectre-react'
 import { HiOutlineSave } from "react-icons/all";
-import { useMst, Themes } from 'context/Store';
+import { useMst, Themes } from 'store';
 
 const OptionsForm = observer(() => {
     const { ui, backup } = useMst();

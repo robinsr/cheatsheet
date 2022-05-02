@@ -3,11 +3,10 @@ import { observer } from 'mobx-react-lite';
 import { FormGroup } from 'spectre-react';
 import Modal from './Modal.jsx';
 import { CaptureBox, CursorFocusableInput, CursorNavigableForm, Toggle } from 'components/inputs';
-import { useMst } from 'context/Store';
-import { key_scopes } from 'utils/key_config.js';
-import Logger from 'js-logger';
+import { useMst } from 'store';
+import { key_scopes, getLogger } from 'utils';
 
-const log = Logger.get('JSX/EditItemModal');
+const log = getLogger('JSX/EditItemModal');
 
 const HELP_MSG = 'Not all keyboard shortcuts can be captured.\nExamples include:\n- Cmd-W (close window)\n- Cmd-Q (quit)';
 const KEY_SCOPE = key_scopes.EDIT_ITEM.config.scope;

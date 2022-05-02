@@ -5,7 +5,7 @@ export const Themes = {
     dark: 'dark'
 }
 
-export const UIStore = types
+const UIStore = types
     .model('UIStore', {
         theme: types.enumeration('theme', ['light', 'dark']),
         activeWindow: types.maybeNull(types.string),
@@ -31,3 +31,4 @@ export const UIStore = types
         }
     }));
 
+export default UIStore;

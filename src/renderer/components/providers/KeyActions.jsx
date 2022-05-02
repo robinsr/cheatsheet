@@ -1,12 +1,10 @@
 import React from 'react';
-import Logger from 'js-logger';
 import { observer } from 'mobx-react-lite';
 import { applyAction } from 'mobx-state-tree';
-import KeyEmitter from 'utils/key_emitter';
-import { key_scopes } from 'utils/key_config';
-import { useMst } from 'context/Store';
+import { KeyEmitter, key_scopes, getLogger } from 'utils';
+import { useMst } from 'store';
 
-const log = Logger.get('KeyActions');
+const log = getLogger('KeyActions');
 
 /**
  * Setup keys emitter and install scopes as needed

@@ -1,21 +1,25 @@
 import './CaptureBox.scss';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { observer } from "mobx-react-lite";
-import { useMst } from "context/Store.jsx";
-import Logger from 'js-logger';
+import { FaUndo } from "react-icons/all";
 import hotkeys from 'hotkeys-js';
-import { key_scopes } from 'utils/key_config';
+import { observer } from "mobx-react-lite";
+import classnames from "classnames";
+import { useMst } from "store";
+
+import ShortcutKey from 'components/card/ShortcutKey';
+
 import {
     captureActions,
     getCaptureAction,
-    getKeyString, isTabKey
-} from 'utils/dom';
-import ShortcutKey from 'components/card/ShortcutKey.jsx';
-import classnames from "classnames";
-import { FaUndo } from "react-icons/all";
+    getKeyString,
+    getLogger,
+    isTabKey,
+    key_scopes
+} from 'utils';
 
-const log = Logger.get('JSX/CaptureBox');
+
+const log = getLogger('JSX/CaptureBox');
 const hotkeysConfig = key_scopes.CAPTURE.config;
 
 const UndoButton = ({ onClick }) => {

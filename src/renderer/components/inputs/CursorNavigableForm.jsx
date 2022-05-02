@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import Logger from 'js-logger';
 import { observer } from 'mobx-react-lite';
-import { useMst } from 'context/Store.jsx';
+import { useMst } from 'store';
+import { getLogger } from 'utils';
 
-const log = Logger.get('JSX/CursorNavigableForm');
+const log = getLogger('JSX/CursorNavigableForm');
 
 const CursorNavigableForm = observer(({
     children, cursorNames

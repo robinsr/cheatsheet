@@ -1,7 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import Modal from './Modal';
-import { useMst } from 'context/Store';
+import { useMst } from 'store';
 import { newUuid } from 'utils';
 import { key_scopes, key_config } from 'utils/key_config';
 import ShortcutKey from 'components/card/ShortcutKey';

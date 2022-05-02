@@ -4,7 +4,7 @@ import React from 'react';
 import { Button } from 'spectre-react';
 import SearchBox from './SearchBox.jsx';
 import {observer} from 'mobx-react-lite';
-import {useMst} from 'context/Store.jsx';
+import {useMst} from 'store';
 
 
 

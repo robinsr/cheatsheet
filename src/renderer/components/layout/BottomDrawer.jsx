@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { observer } from "mobx-react-lite";
-import { useMst } from "context/Store.jsx";
+import { useMst } from "store";
 import SlidingPane from "react-sliding-pane";
 
 const BottomDrawer = observer(() => {

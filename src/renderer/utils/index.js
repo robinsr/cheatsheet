@@ -25,3 +25,11 @@ export function gate(predicate, func) {
         }
     }
 }
+
+export const increment = (val) => val + 1;
+export const decrement = (val) => val - 1;
+
+export * from './logger';
+export * from './key_config';
+export { default as KeyEmitter } from './key_emitter';
+export * from './dom'

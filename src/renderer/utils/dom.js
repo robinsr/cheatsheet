@@ -1,8 +1,8 @@
 import { pick as _pick } from 'lodash';
 import { get_for_key, macos_symbols } from './macos_symbols.js';
-import Logger from 'js-logger';
+import { getLogger } from './logger';
 
-const log = Logger.get('DomUtils');
+const log = getLogger('DomUtils');
 
 export class ShowHideElement {
     constructor(e, display_type = 'block') {
@@ -18,8 +18,7 @@ const letter_key = new RegExp(/^Key[\w]{1}$/);
 
 
 export const getKeyString = (e) => {
-
-    log.debug('keyevent in:', _pick(e, ['altKey', 'shiftKey', 'ctrlKey', 'metaKey', 'code', 'keyCode', 'key']));
+    log.debug('KeyEvent in:', _pick(e, ['altKey', 'shiftKey', 'ctrlKey', 'metaKey', 'code', 'keyCode', 'key']));
 
     let kbString = [];
 
@@ -38,7 +37,6 @@ export const getKeyString = (e) => {
     if (e.shiftKey) {
         kbString.push('Shift');
     }
-
 
     if (!['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) {
         if (macos_symbols[e.key.toLowerCase()]) {
@@ -93,19 +91,19 @@ export const isTabKey = (e) => {
     return (e.keyCode === 9 || e.key === 'Tab');
 }
 
-export const isEscKey = (e) => {
+const isEscKey = (e) => {
     return (e.keyCode === 27 || e.key === 'Escape');
 }
 
-export const isKeyDown = (e) => {
+const isKeyDown = (e) => {
     return e.type === 'keydown';
 }
 
-export const isKeyUp = (e) => {
+const isKeyUp = (e) => {
     return e.type === 'keyup';
 }
 
-export const isSingleKeyPress = (e) => {
+const isSingleKeyPress = (e) => {
     return [ 'metaKey', 'ctrlKey', 'altKey', 'shiftKey' ]
         .map(key => e && e[key] && e[key] === true)
         .filter(i => i)

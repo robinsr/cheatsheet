@@ -1,10 +1,10 @@
 import React, {useEffect, useRef} from 'react';
 import { observer } from "mobx-react-lite";
-import { useMst } from "context/Store.jsx";
+import { useMst } from "store";
 import classnames from "classnames";
-import Logger from "js-logger";
+import { getLogger } from 'utils';
 
-const log = Logger.get('JSX/CursorFocusableElement');
+const log = getLogger('JSX/CursorFocusableElement');
 
 const CursorFocusableInput = observer(({
     cursorName, className, children, type, ...rest

@@ -1,11 +1,11 @@
 import { getParent, types } from 'mobx-state-tree';
 
-export const MobxShortcutItem = types
+const MobxShortcutItem = types
     .model('MobxShortcutItem', {
         id: types.identifier,
         label: types.maybeNull(types.string),
         command: types.maybeNull(types.string),
-        second: types.maybeNull(types.string)
+        secondary: types.maybeNull(types.string)
     })
     .views(self => {
         let app, category = null;
@@ -65,4 +65,7 @@ export const MobxShortcutItem = types
             }
         }
     });
+
+export default MobxShortcutItem;
+
 

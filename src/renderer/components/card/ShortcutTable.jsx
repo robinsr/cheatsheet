@@ -4,7 +4,7 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import classnames from 'classnames';
 
-import { useMst } from 'context/Store';
+import { useMst } from 'store';
 import ShortcutKey from './ShortcutKey.jsx';
 
 

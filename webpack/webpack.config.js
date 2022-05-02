@@ -43,7 +43,7 @@ module.exports = {
         extensions: ['', '.js', '.jsx'],
         alias: {
             components: path.resolve(__dirname, '../src/renderer/components/'),
-            context: path.resolve(__dirname, '../src/renderer/context/'),
+            store: path.resolve(__dirname, '../src/renderer/store/'),
             utils: path.resolve(__dirname, '../src/renderer/utils/')
         },
         fallback: {

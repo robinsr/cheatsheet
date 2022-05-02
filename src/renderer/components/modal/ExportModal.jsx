@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Modal from './Modal.jsx';
-import { AppContext } from 'context/Store';
+import { AppContext } from 'store';
 import copy_to_clip from 'utils/clipboard.js';
 
 

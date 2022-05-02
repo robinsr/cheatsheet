@@ -1,7 +1,7 @@
 import './App.scss';
 
 import React, { useState } from 'react';
-import { Provider, rootStore } from 'context/Store'
+import { Provider, rootStore } from 'store'
 import { BottomDrawer, ErrorAlert, AppGroups, SidePane } from './layout';
 import { HelpModal, ImageModal, EditItemModal, EditAppModal } from './modal'
 import Nav from './menu/Nav';

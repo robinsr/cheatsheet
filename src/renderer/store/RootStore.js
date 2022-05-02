@@ -1,25 +1,24 @@
 import 'regenerator-runtime/runtime';
 import { debounce as _debounce } from 'lodash';
 import Optional from 'optional-js';
-import { types, flow, getEnv, getSnapshot, onSnapshot, resolveIdentifier } from 'mobx-state-tree';
-import { UIStore } from './UIStore';
-import { MobxAppList } from './AppStore';
-import { MobxEditItemStore } from './EditItemStore';
-import { MobxImageModal } from './ImageModal';
-import { MobxShortcutItem } from './ShortcutItem';
-import { gate } from 'utils';
-import { getDebugLogger } from 'utils/logger';
+import { types, flow, getEnv, getSnapshot, resolveIdentifier } from 'mobx-state-tree';
+import { gate, getLogger } from 'utils';
+import UIStore from './ui/UIStore.js';
+import MobxAppStore from './app/AppStore.js';
+import MobxEditItemStore from './edit/EditItemStore.js';
+import MobxImageModalStore from './export/ImageStore.js';
+import MobxShortcutItem from './app/ShortcutItem.js';
 
 const SELF_KEY = '__self__';
 
-const logger = getDebugLogger('RootStore')
+const log = getLogger('RootStore');
 
 const MobxStore = types
     .model('MobxStore', {
         ui: UIStore,
         edit: MobxEditItemStore,
-        apps: MobxAppList,
-        imageModal: MobxImageModal,
+        apps: MobxAppStore,
+        imageModal: MobxImageModalStore,
         isLoading: types.boolean,
         isSaving: types.boolean,
         cursor: types.maybeNull(types.string)
@@ -37,12 +36,13 @@ const MobxStore = types
             self.isSaving = val;
         },
         getInitialData: flow(function* getInitialData() {
-            logger('Fetching data...');
+            log.info('Fetching data...');
             try {
                 let initialData = yield getEnv(self).api.getInitialData();
+                log.info('Fetched data:', initialData);
                 Object.assign(self, initialData);
             } catch (err) {
-                console.error(err);
+                log.error(err);
             }
             setTimeout(self.isLoaded, 1200);
         }),
@@ -78,7 +78,7 @@ const MobxStore = types
             // extended to check for other model types
             try {
                 let item = resolveIdentifier(MobxShortcutItem, self, val);
-                logger('resolved item:', val)
+                log.debug('resolved item:', val)
                 return item
             } catch (e) {
                 return null;
@@ -100,7 +100,7 @@ const MobxStore = types
 
 
 function handleWindowChange(windowName, { apps, ui }, { thisApp }) {
-    logger('Handling window change', windowName);
+    log.debug('Handling window change', windowName);
     ui.setActiveWindow(windowName);
 
     let ignoreApps = [].concat(apps.ignoreApps).concat([ SELF_KEY, thisApp ]);
@@ -110,7 +110,7 @@ function handleWindowChange(windowName, { apps, ui }, { thisApp }) {
         return;
     }
 
-    let app = apps.findByWindowName(windowName);
+    let app = apps.window(windowName);
 
     if (app) {
         apps.clearUnknownAppName();

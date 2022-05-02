@@ -1,6 +1,5 @@
-import Logger from 'js-logger';
-
-const log = Logger.get('KeyConfig');
+import { getLogger } from './logger';
+const log = getLogger('KeyConfig');
 
 const key_config = {
     CLEAR_CURSOR: {
@@ -60,7 +59,7 @@ const key_config = {
         key: 'E, enter',
         help: 'Open focused shortcut in edit pane',
         emit: () => ([
-            [ 'setEditItem', '/edit' ],
+            [ 'setEditItem', '/edit', [] ],
             [ 'setCursor', '', [ 'edit-form-label' ] ]
         ])
     },
@@ -82,14 +81,14 @@ const key_config = {
         key: 'esc',
         help: 'Exit edit shortcut pane',
         emit: () => ([
-             [ 'clearEditItem', '/edit' ]
+             [ 'clearEditItem', '/edit', [] ]
         ])
     },
     SAVE_EDIT_ITEM: {
         key: 'command+s',
         help: 'Save edit item',
         emit: () => ([
-             [ 'saveEditItem', '/edit' ]
+             [ 'saveEditItem', '/edit', [] ]
         ])
     },
     NEXT_EDIT_FIELD: {

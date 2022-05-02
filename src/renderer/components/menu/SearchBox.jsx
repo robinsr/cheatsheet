@@ -3,9 +3,9 @@ import './SearchBox.scss';
 import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { useMst } from 'context/Store';
+import { useMst } from 'store';
 
-import ShortcutKey from 'components/card/ShortcutKey.jsx';
+import SearchResult from './SearchResult';
 
 const SearchBox = observer(({
     isMenuOpen=false
@@ -91,37 +91,5 @@ const SearchBox = observer(({
         </div>
     );
 });
-
-
-const SearchBoxResult = ({ result, query, onClick }) => {
-    let r = result;
-
-    return (
-        <li className="search-box-result menu-item" key={r.id}>
-            <a href="src/renderer/components/menu/SearchBox#" onClick={e => onClick(r.id)}>
-                <div className="tile tile-centered">
-                    <div className="tile-icon">
-                        <figure className="avatar avatar-sm" data-initial={r.app.name[0].toUpperCase()} />
-                    </div>
-                    <div className="search-box-result-content tile-content">
-                        <div className="search-box-result-content-meta mx-2" >
-                            <small><em>{r.app.name}/{r.category.name}</em></small><br />
-                        </div>
-                        <div className="search-box-result-content-label mx-2">
-                            {r.getResultsSplit(query).map((partial, i) => {
-                                return i === 1 ? 
-                                    <mark key={r.id + 'query' + i}>{partial}</mark> : 
-                                    <span key={r.id + 'query' + i}>{partial}</span>
-                            })}
-                        </div>
-                        <div className="search-box-result-content-shortcut mx-2">
-                            <ShortcutKey item={r} command={r.command} />
-                        </div>
-                    </div>
-                </div>
-            </a>
-        </li>
-    )
-}
 
 export default SearchBox;

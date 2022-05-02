@@ -3,7 +3,7 @@ import './ShortcutKey.scss';
 import React, { useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { useMst, Themes } from 'context/Store';
+import { useMst, Themes } from 'store';
 import { get_for_key } from 'utils/macos_symbols.js';
 
 const keyStyles = {

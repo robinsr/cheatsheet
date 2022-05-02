@@ -6,7 +6,7 @@ import { Button, Card, CardHeader, CardTitle, CardBody } from 'spectre-react';
 
 import { renderPNG, renderSVG } from 'utils/canvas_renderer.js';
 import { ShowHideElement } from 'utils/dom.js';
-import { useMst } from 'context/Store';
+import { useMst } from 'store';
 
 import ShortcutTable from './ShortcutTable.jsx';
 
