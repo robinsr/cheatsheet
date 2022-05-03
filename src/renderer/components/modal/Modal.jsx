@@ -23,13 +23,13 @@ const Modal = ({
 
     return (
         <div className={cns}>
-            <a href="src/renderer/components/modal/Modal#close"
+            <a
                className="modal-overlay"
                aria-label="Close"
                onClick={onClose}></a>
             <div className="modal-container">
                 <div className="modal-header">
-                    <a href="src/renderer/components/modal/Modal#close"
+                    <a
                        className="btn btn-clear float-right"
                        aria-label="Close"
                        onClick={onClose}

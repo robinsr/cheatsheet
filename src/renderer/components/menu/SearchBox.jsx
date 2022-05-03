@@ -10,7 +10,7 @@ import SearchResult from './SearchResult';
 const SearchBox = observer(({
     isMenuOpen=false
 }) => {
-    let { edit, apps, cursor } = useMst();
+    let { edit, apps, cursor, setCursor } = useMst();
 
     let searchRef = useRef();
 
@@ -57,11 +57,13 @@ const SearchBox = observer(({
         setResult(results);
     }
 
-    function onItemClick(id) {
+    function onItemClick(result) {
         setQuery('');
         setResult([]);
         // TODO, this should just change the cursor, not edit the item
-        edit.setEditItem(id);
+        // edit.setEditItem(result.id);
+        apps.setActiveApp(result.app.id);
+        setCursor(result.id)
     }
 
     return (
@@ -81,7 +83,7 @@ const SearchBox = observer(({
             {result.length > 0 ?
                 <ul className="menu">
                     {result.map(r => (
-                        <SearchBoxResult key={'search_' + r.id}
+                        <SearchResult key={'search_' + r.id}
                                          result={r}
                                          query={query}
                                          onClick={onItemClick}

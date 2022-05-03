@@ -40,6 +40,11 @@ const MobxAppStore = types
         find(id) {
             return self.allItems.find(i => i.id === id) || null;
         },
+
+        isItem(id) {
+            return self.find(id) !== null;
+        },
+
         get first() {
             return self.appList[0]
         },
@@ -125,10 +130,22 @@ const MobxAppStore = types
                 if (result) {
                     log('Resolved cursor:', result)
                     result.category.addItem();
-                    return;
                 }
 
 
+            } else {
+                log('addItem, no cursor');
+            }
+        },
+        removeItem(cursor) {
+            if (cursor) {
+                log('addItem, found cursor:', cursor)
+                let result = resolveIdentifier(MobxShortcutItem, self, cursor)
+
+                if (result) {
+                    log('Resolved cursor:', result)
+                    result.category.removeItem(result.id);
+                }
             } else {
                 log('addItem, no cursor');
             }

@@ -1,13 +1,13 @@
 import React from 'react';
 
-
+import ShortcutKey from 'components/card/ShortcutKey';
 
 const SearchResult = ({ result, query, onClick }) => {
     let r = result;
 
     return (
         <li className="search-box-result menu-item" key={r.id}>
-            <a href="#" onClick={e => onClick(r.id)}>
+            <a onClick={e => onClick(r)}>
                 <div className="tile tile-centered">
                     <div className="tile-icon">
                         <figure className="avatar avatar-sm" data-initial={r.app.name[0].toUpperCase()} />

@@ -30,7 +30,7 @@ const EditAppModal = observer(() => {
                      <form>
                          <FormGroup>
                              <label className="form-label">App name:</label>
-                             <CursorFocusableInput cursorName="edit-form-label"
+                             <CursorFocusableInput cursorName="edit-app-name"
                                  className="form-input"
                                  type="text"
                                  placeholder="Shortcut name"
@@ -41,7 +41,8 @@ const EditAppModal = observer(() => {
                          </FormGroup>
                          <FormGroup>
                              <label className="form-label">Window name:</label>
-                             <input className="form-input"
+                             <CursorFocusableInput cursorName="edit-app-window"
+                                 className="form-input"
                                  type="text"
                                  placeholder="Shortcut name"
                                  value={windowName}

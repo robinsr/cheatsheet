@@ -1,4 +1,4 @@
-import { detach, getParent, getType, types } from 'mobx-state-tree';
+import { detach, getParent, getPath, getType, types } from 'mobx-state-tree';
 import { getLogger, newUuid, increment, decrement } from 'utils';
 import MobxShortcutItem from './ShortcutItem';
 import Optional from 'optional-js';
@@ -42,6 +42,9 @@ const MobxCategoryItem = types
         },
         get last() {
             return self.items[self.items.length - 1];
+        },
+        get path() {
+            return getPath(self);
         }
     }))
     .actions(self => ({
@@ -84,11 +87,15 @@ const MobxCategoryItem = types
             let i1 = self.index(item1.id);
             let i2 = self.index(item2.id);
 
-            let tmp1 = detach(item1);
-            let tmp2 = detach(item2);
+            if (item1.category === item2.category) {
+                let tmp1 = detach(item1);
+                let tmp2 = detach(item2);
 
-            self.items.splice(i1, 0, tmp2);
-            self.items.splice(i2, 0, tmp1);
+                self.items.splice(i1, 0, tmp2);
+                self.items.splice(i2, 0, tmp1);
+            } else {
+                // TODO; swap items between categories?
+            }
         }
     }))
 

@@ -50,7 +50,7 @@ const MobxEditItemStore = types
                 let root = getParent(self);
 
                 if (typeof target === 'string') {
-                    target = root.apps.item(target);
+                    target = root.apps.find(target);
                 }
 
                 if (!target) {

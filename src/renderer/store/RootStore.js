@@ -1,7 +1,7 @@
 import 'regenerator-runtime/runtime';
 import { debounce as _debounce } from 'lodash';
 import Optional from 'optional-js';
-import { types, flow, getEnv, getSnapshot, resolveIdentifier } from 'mobx-state-tree';
+import {  types,  flow,  getEnv,  getSnapshot,  resolveIdentifier } from 'mobx-state-tree';
 import { gate, getLogger } from 'utils';
 import UIStore from './ui/UIStore.js';
 import MobxAppStore from './app/AppStore.js';
@@ -19,9 +19,10 @@ const MobxStore = types
         edit: MobxEditItemStore,
         apps: MobxAppStore,
         imageModal: MobxImageModalStore,
-        isLoading: types.boolean,
+        isLoading: types.optional(types.boolean, true),
         isSaving: types.boolean,
-        cursor: types.maybeNull(types.string)
+        cursor: types.maybeNull(types.string),
+        keyScope: types.maybeNull(types.string)
     })
     .views(self => ({
         get isEmpty() {
@@ -65,7 +66,9 @@ const MobxStore = types
         backup() {
             return getSnapshot(self);
         },
-
+        setKeyScope(val) {
+            self.keyScope = val;
+        },
         setCursor: _debounce(val => self._setCursor(val), 10),
         _setCursor(val) {
             self.cursor = val;
@@ -128,5 +131,5 @@ const hasWindowChanged = (memo, args) => {
     }
 }
 
-
 export default MobxStore;
+

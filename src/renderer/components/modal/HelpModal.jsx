@@ -5,6 +5,7 @@ import { useMst } from 'store';
 import { newUuid } from 'utils';
 import { key_scopes, key_config } from 'utils/key_config';
 import ShortcutKey from 'components/card/ShortcutKey';
+import KeyScope from 'components/providers/KeyScope';
 
 const installedScopes = [
     { scope: key_scopes.APP, title: 'General shortcuts' },
@@ -22,6 +23,7 @@ const HelpTable = ({ scope, title }) => {
                 <tbody>
                 {scope.actions
                     .map(action => key_config[action])
+                    .filter(({ key, help}) => help)
                     .map(({ key, help }) => {
                         return (
                             <tr key={newUuid()}>
@@ -52,26 +54,27 @@ const HelpModal = observer(() => {
     }
 
     return (
-        <Modal
-            type="medium"
-            name="help-modal"
-            title={'Help'}
-            active={true}
-            onClose={() => setCursor(null)}
-            content={
-                 <div className="content">
-                    <div className="">
-                        <div className="p-centered">
-                            <h4>Keys</h4>
-                            {installedScopes.map(i => <HelpTable
-                                key={newUuid()}
-                                scope={i.scope}
-                                title={i.title} />)}
+        <KeyScope scope={'HELP'} prevScope={'APP'}>
+            <Modal
+                type="medium"
+                name="help-modal"
+                title={'Help'}
+                active={true}
+                onClose={() => setCursor(null)}
+                content={
+                     <div className="content">
+                        <div className="">
+                            <div className="p-centered">
+                                <h4>Keys</h4>
+                                {installedScopes.map(i => <HelpTable
+                                    key={newUuid()}
+                                    scope={i.scope}
+                                    title={i.title} />)}
+                            </div>
                         </div>
                     </div>
-                </div>
-            }/>
-
+                }/>
+        </KeyScope>
     );
 });
 

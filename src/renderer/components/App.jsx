@@ -8,7 +8,7 @@ import Nav from './menu/Nav';
 import KeyActions from './providers/KeyActions.jsx';
 
 
-// TODO; figure out error boundary. Not possible in function componant
+// TODO; figure out error boundary. Not possible in function component
 export default function App() {
 
     const [ error, setError ] = useState(null);

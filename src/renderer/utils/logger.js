@@ -23,13 +23,13 @@ Logger.useDefaults({
 if (stage === 'DEV') {
     Logger.get('AppStore').setLevel(INFO);
     Logger.get('JSX/CursorNavigableForm').setLevel(INFO);
-    Logger.get('JSX/CaptureBox').setLevel(INFO);
+    Logger.get('JSX/CaptureBox').setLevel(DEBUG);
     Logger.get('JSX/EditItemModal').setLevel(INFO);
-    Logger.get('KeyActions').setLevel(INFO);
-    Logger.get('KeyConfig').setLevel(INFO);
-    Logger.get('KeyEmitter').setLevel(INFO);
+    Logger.get('KeyActions').setLevel(DEBUG);
+    Logger.get('KeyConfig').setLevel(DEBUG);
+    Logger.get('KeyEmitter').setLevel(DEBUG);
     Logger.get('Store').setLevel(INFO);
-    Logger.get('Store/action').setLevel(DEBUG);
+    Logger.get('Store/action').setLevel(INFO);
     Logger.get('Store/patch').setLevel(INFO);
     Logger.get('Store/snapshot').setLevel(INFO);
 }

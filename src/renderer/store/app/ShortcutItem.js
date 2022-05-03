@@ -11,10 +11,6 @@ const MobxShortcutItem = types
         let app, category = null;
 
         return {
-            afterCreate() {
-                // app = getParent(self, 4);
-                // category = getParent(self, 2);
-            },
             get app() {
                 return getParent(self, 4);
                 //return app;

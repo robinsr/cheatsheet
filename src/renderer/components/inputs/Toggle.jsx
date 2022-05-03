@@ -1,6 +1,6 @@
 import React  from 'react';
 
-const Toggle = ({ name, label, checked, onChange, tabIndex = -1, children }) => {
+const Toggle = ({ name, label, checked, keyScope, onChange, tabIndex = -1, children }) => {
 
 
     return (
@@ -11,6 +11,7 @@ const Toggle = ({ name, label, checked, onChange, tabIndex = -1, children }) => 
                    name={name}
                    checked={checked}
                    onChange={(e) => onChange(!checked)}
+                   data-keyscope={keyScope}
                    />
                 <i className="form-icon"></i> {label}
             </label>

@@ -1,6 +1,6 @@
 import { debounce as _debounce } from 'lodash';
 import { createContext, useContext } from 'react';
-import { onAction, onPatch, onSnapshot } from 'mobx-state-tree';
+import { addMiddleware, onAction, onPatch, onSnapshot, unprotect } from 'mobx-state-tree';
 import { getLogger } from 'utils';
 import MobxStore from "./RootStore.js";
 
@@ -29,7 +29,8 @@ const initialData = {
     },
     isLoading: true,
     isSaving: false,
-    cursor: '/items/itemList/0'
+    cursor: '/items/itemList/0',
+    keyScope: null
 };
 const env = { api };
 
@@ -58,7 +59,7 @@ export function useMst() {
 
 export { Themes } from './ui/UIStore';
 
-onSnapshot(rootStore, _debounce((snapshot) => {
+onSnapshot(rootStore.apps, _debounce((snapshot) => {
     if (rootStore.isLoading) {
         return;
     }
@@ -69,11 +70,19 @@ onSnapshot(rootStore, _debounce((snapshot) => {
 
     log.info('saving snapshot', snapshot);
     rootStore.setSaving(true);
-    api.onSnapshot(snapshot)
-        .then(data => log.info('saved', data))
+    // api.onSnapshot(preSave(snapshot))
+    //     .then(data => log.info('saved', data))
         // .then(msg => rootStore.setSaving(false))
-        .catch(err => {
-            log.error(err);
-        });
+        // .catch(err => {
+        //     log.error(err);
+        // });
 }, 750));
 
+const preSave = (snapshot) => {
+    unprotect(snapshot);
+    snapshot.isLoading = null;
+    snapshot.isSaving = null;
+    snapshot.ui.activeWindow = null;
+
+    return snapshot;
+}

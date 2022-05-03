@@ -15,7 +15,8 @@ import {
     getKeyString,
     getLogger,
     isTabKey,
-    key_scopes
+    key_scopes,
+    KeyEmitter
 } from 'utils';
 
 
@@ -69,19 +70,13 @@ const CaptureBox = observer(({
         log.debug("Capturing");
 
         let kb_string = '';
-
-        if (hotkeys.getScope() === hotkeysConfig.scope) {
-            log.warn('Already capturing, returning');
-            return;
-        }
         
         hotkeys('*', hotkeysConfig, (e) => {
-
             log.debug('Found event:', getKeyString(e))
 
             switch (getCaptureAction(e)) {
                 case captureActions.EXIT:
-                    //handleTabEvent(e); // let the tab event bubble up (causing a onBlur?)
+                    // let the tab event bubble up
                     log.debug('tab out', status);
                     break;
                 case captureActions.CAPTURE:
@@ -100,6 +95,7 @@ const CaptureBox = observer(({
             }
         });
 
+        KeyEmitter.setScope('CAPTURE');
         setStatus('focus');
     }
 
@@ -107,7 +103,9 @@ const CaptureBox = observer(({
         log.debug("End capturing", {
             status, keyString, defaultValue
         });
-        hotkeys.deleteScope(hotkeysConfig.scope);
+        hotkeys.unbind('*' ,'CAPTURE');
+        // hotkeys.deleteScope('CAPTURE')
+        KeyEmitter.setScope('EDIT_ITEM');
 
         if (discard) return;
 

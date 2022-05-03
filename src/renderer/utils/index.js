@@ -32,4 +32,5 @@ export const decrement = (val) => val - 1;
 export * from './logger';
 export * from './key_config';
 export { default as KeyEmitter } from './key_emitter';
+export { default as KeyAction } from './key_action';
 export * from './dom'
