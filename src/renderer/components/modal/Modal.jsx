@@ -32,8 +32,7 @@ const Modal = ({
                     <a
                        className="btn btn-clear float-right"
                        aria-label="Close"
-                       onClick={onClose}
-                       data-keyscope={keyscope}></a>
+                       onClick={onClose}></a>
                     <div className="modal-title h5">{title}</div>
                 </div>
                 <div className="modal-body">
@@ -45,8 +44,7 @@ const Modal = ({
                             {footer}
                             <button
                                 className="btn btn-default"
-                                onClick={onClose}
-                                data-keyscope={keyscope}>
+                                onClick={onClose}>
                                     Close
                             </button>
                         </div>

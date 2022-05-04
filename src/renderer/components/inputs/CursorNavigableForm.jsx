@@ -5,8 +5,14 @@ import { getLogger } from 'utils';
 
 const log = getLogger('JSX/CursorNavigableForm');
 
+/**
+ * Navigate a form with cursor values
+ *
+ * @param {string[]} cursorNames - list of cursor values present in this form
+ *
+ */
 const CursorNavigableForm = observer(({
-    children, cursorNames
+    cursorNames, children, ...rest
 }) => {
     let { cursor, setCursor } = useMst();
 
@@ -29,7 +35,7 @@ const CursorNavigableForm = observer(({
     log.debug(children);
 
     return (
-        <form onSubmit={e => e.preventDefault()}>
+        <form onSubmit={e => e.preventDefault()} {...rest}>
             {children}
         </form>
     );

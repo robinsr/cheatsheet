@@ -95,7 +95,7 @@ const CaptureBox = observer(({
             }
         });
 
-        KeyEmitter.setScope('CAPTURE');
+        KeyEmitter.setScope('CAPTURE', 'JSX/CaptureBox');
         setStatus('focus');
     }
 
@@ -105,7 +105,7 @@ const CaptureBox = observer(({
         });
         hotkeys.unbind('*' ,'CAPTURE');
         // hotkeys.deleteScope('CAPTURE')
-        KeyEmitter.setScope('EDIT_ITEM');
+        KeyEmitter.setScope('EDIT_ITEM', 'JSX/CaptureBox');
 
         if (discard) return;
 

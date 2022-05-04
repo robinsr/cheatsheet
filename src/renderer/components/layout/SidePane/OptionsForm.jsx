@@ -1,6 +1,5 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { Button } from 'spectre-react'
 import { HiOutlineSave } from "react-icons/all";
 import { useMst, Themes } from 'store';
 
@@ -40,7 +39,7 @@ const OptionsForm = observer(() => {
             </div>
 
             <div className="form-control my-2">
-                <Button small={true} onClick={onBackup}><HiOutlineSave /> Backup now</Button>
+                <button clsssName="btn btn-sm" onClick={onBackup}><HiOutlineSave /> Backup now</button>
             </div>
         </nav>
     );

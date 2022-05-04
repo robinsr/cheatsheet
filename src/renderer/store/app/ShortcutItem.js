@@ -1,4 +1,4 @@
-import { getParent, types } from 'mobx-state-tree';
+import { getParent, getPath, types } from 'mobx-state-tree';
 
 const MobxShortcutItem = types
     .model('MobxShortcutItem', {
@@ -25,6 +25,14 @@ const MobxShortcutItem = types
             get prev() {
                 return getParent(self, 2).prev(self.id);
             },
+
+            get link() {
+                console.log(getPath(self));
+                let path = `/apps/${self.app.id}/category/${self.category.id}/item/${self.id}`;
+                console.log(path);
+                return path;
+            },
+
             get markdown() {
                 return `|${self.label}|${self.command}|`; // todo; complete md string
             },

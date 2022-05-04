@@ -13,11 +13,11 @@ const KeyScope = ({ scope='APP', prevScope='APP', children }) => {
 
     useEffect(() => {
         log.info('Setting key scope:', scope);
-        KeyEmitter.setScope(scope);
+        KeyEmitter.setScope(scope, 'JSX/KeyScope::setup');
 
         return () => {
             log.info('Setting key scope:', prevScope);
-            KeyEmitter.setScope(prevScope);
+            KeyEmitter.setScope(prevScope, 'JSX/KeyScope::cleanup');
         }
     }, [])
 

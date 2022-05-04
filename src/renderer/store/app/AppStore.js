@@ -122,14 +122,14 @@ const MobxAppStore = types
                 self.selectedApp = self.last;
             }
         },
-        addItem(itemId) {
+        addItem(itemId, label) {
             if (itemId) {
                 log('addItem, found cursor:', itemId)
                 let result = resolveIdentifier(MobxShortcutItem, self, itemId)
 
                 if (result) {
                     log('Resolved cursor:', result)
-                    result.category.addItem();
+                    return result.category.addItem(label);
                 }
 
 

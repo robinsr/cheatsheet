@@ -46,10 +46,12 @@ export const CategoryItemActions = (self) => ({
     updateName(name) {
         self.name = name
     },
-    addItem() {
+    addItem(label) {
+        let id = newUuid();
         self.items.push(MobxShortcutItem.create({
-            id: newUuid(), label: 'New Shortcut', command: 'Space'
+            id, label: label || 'New Shortcut', command: ''
         }));
+        return id;
     },
     removeItem(id) {
         // self.items.splice(self.index(id), 1);

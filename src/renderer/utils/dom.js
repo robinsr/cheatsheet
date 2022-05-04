@@ -38,7 +38,26 @@ const keyStringOpts = {
     }
 }
 
+export const getElementMatcher = (selector) => {
+    return (e) => elementMatcher(e, selector);
+}
 
+export const elementMatcher = (e, selector) => {
+    if (selector.startsWith('#')) {
+        return (e.target || e.srcElement).id && (e.target || e.srcElement).id === selector.replace('#', '');
+    } else if (selector.startsWith('.')) {
+        return (e.target || e.srcElement).classList
+            && (e.target || e.srcElement).classList.split(' ').includes(selector.replace('.', ''));
+    } else {
+        return false;
+    }
+}
+
+export const onEnterKey = (handler) => {
+    return (e) => {
+        if (isEnterKey(e)) handler(e);
+    }
+}
 
 export const getKeyString = (e, mode='cheatsheet') => {
     log.debug('KeyEvent in:', _pick(e, ['altKey', 'shiftKey', 'ctrlKey', 'metaKey', 'code', 'keyCode', 'key']));
@@ -118,6 +137,10 @@ export const isTabKey = (e) => {
 
 const isEscKey = (e) => {
     return (e.keyCode === 27 || e.key === 'Escape');
+}
+
+export const isEnterKey = (e) => {
+    return (e.keyCode === 13 || e.key === 'Enter');
 }
 
 const isKeyDown = (e) => {

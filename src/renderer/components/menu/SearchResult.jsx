@@ -8,7 +8,7 @@ import ShortcutKey from 'components/card/ShortcutKey';
 import { useMst } from 'store';
 
 const SearchResult = observer(({ result, query }) => {
-    let { id, label, app, category, command } = result;
+    let { id, label, app, category, command, link } = result;
 
     let { cursor, setCursor, search, apps } = useMst();
 
@@ -34,7 +34,7 @@ const SearchResult = observer(({ result, query }) => {
 
     return (
         <li className="search-box-result menu-item" key={id}>
-            <a onClick={onClick} className={cns}>
+            <a href={'#' + link} onClick={onClick} className={cns} >
                 <div className="tile tile-centered">
                     <div className="tile-icon">
                         <figure className="avatar avatar-sm" data-initial={app.name[0].toUpperCase()} />

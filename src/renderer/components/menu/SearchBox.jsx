@@ -1,28 +1,28 @@
 import './SearchBox.scss';
+import classnames from 'classnames';
+import { CursorFocusableInput } from 'components/inputs';
 import KeyScope from 'components/providers/KeyScope';
 
 import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import { useMst } from 'store';
+import { isEnterKey, KeyEmitter } from 'utils';
+import { macos_symbols } from 'utils/macos_symbols';
 
 import SearchResult from './SearchResult';
 
 const SearchBox = observer(({
     isMenuOpen=false
 }) => {
-    let { search, cursor } = useMst();
-    let { query, results, updateQuery, clearQuery } = search
+    let { apps, cursor, setCursor, search, edit } = useMst();
+    let { query, results, updateQuery, clearQuery } = search;
 
-    let searchRef = useRef();
+    let [ focused, isFocused ] = useState(false);
 
-    let [ focusClass, setFocusClass ] = useState('');
-
-    useEffect(() => {
-        if (cursor === 'SEARCH') {
-            searchRef.current.focus();
-        }
-    }, [ cursor ])
+    let cns = classnames('form-autocomplete-input form-input', {
+        'is-focused': focused === true
+    })
 
     useEffect(function clearOnMenuOpen() {
         if (isMenuOpen) {
@@ -30,19 +30,40 @@ const SearchBox = observer(({
         }
     }, [ isMenuOpen ]);
 
+    const handleKeyPress = (e) => {
+        if (isEnterKey(e) && query.length > 5) {
+            onNewKeyClick()
+        }
+    }
+
+    const onNewKeyClick = (e) => {
+        let app = apps.selectedApp;
+        let cat = app.categories[0];
+        let id = cat.addItem(query);
+        edit.setEditItem(id);
+        clearQuery();
+        setCursor('edit-form-label');
+    }
 
     return (
         <div className="form-autocomplete search-box mx-2">
-            <div className={'form-autocomplete-input form-input ' + focusClass}>
-                <input className="form-input" id="app-search-input"
+            <div className={cns}>
+                <CursorFocusableInput
+                    cursorName={'SEARCH'}
+                    blur={true}
+                    className="form-input"
+                    id="app-search-input"
                     type="text"
-                    placeholder="Search Shortcuts"
+                    placeholder="Search Shortcuts or add new"
                     onChange={e => updateQuery(e.target.value)}
-                    onFocus={() => setFocusClass('is-focused')}
-                    onBlur={() => setFocusClass('')}
+                    onFocus={() => isFocused(true)}
+                    onBlur={() => isFocused(false)}
+                    onKeyPress={handleKeyPress}
                     value={search.query}
-                    ref={searchRef}
                 />
+                {query.length > 5 &&
+                    <small className="float-right"><em>{macos_symbols.return.symbol} to create new</em></small>
+                }
             </div>
             {results.length > 0 &&
                 <KeyScope scope={'SEARCH'} prevScope={'APP'}>

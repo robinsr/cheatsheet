@@ -1,13 +1,23 @@
 import React, {useEffect, useRef} from 'react';
 import { observer } from "mobx-react-lite";
 import { useMst } from "store";
-import classnames from "classnames";
 import { getLogger } from 'utils';
 
 const log = getLogger('JSX/CursorFocusableElement');
 
+/**
+ * Sets active element to a specific input when cursor
+ * value equals a given name.
+ *
+ * @param cursorName - value to match to trigger focus
+ * @param {('text'|'select')} type - type of input (text or focus)
+ * @param {boolean} [focus=false] - change cursor to value when element receives focus
+ * @param {boolean} [blur=false] - active element should blur on cursor mismatch
+ * @param {string} [keyscope] - set keyscope on focus
+ *
+ */
 const CursorFocusableInput = observer(({
-    cursorName, className, children, type, ...rest
+    cursorName, type, focus=false, blur=false, children, ...rest
 }) => {
     let inputRef = useRef();
     let { cursor, setCursor } = useMst();
@@ -16,16 +26,14 @@ const CursorFocusableInput = observer(({
         if (cursor === cursorName) {
             log.debug('setting focus', cursorName);
             inputRef.current.focus();
-        } else {
+        } else if (blur) {
             inputRef.current.blur();
         }
     }, [ cursor ]);
 
     function onFocus(e) {
-        setCursor(cursorName);
+        if (focus) setCursor(cursorName);
     }
-
-    rest.className = classnames('cursor-focusable-element', className);
 
     if (type === 'text') {
         return (

@@ -1,7 +1,6 @@
 import KeyScope from 'components/providers/KeyScope';
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { FormGroup } from 'spectre-react';
 import Modal from './Modal.jsx';
 import { CaptureBox, CursorFocusableInput, CursorNavigableForm, Toggle } from 'components/inputs';
 import { useMst } from 'store';
@@ -40,7 +39,7 @@ const EditModal = observer(() => {
                         <div className="content">
                             <CursorNavigableForm
                                 cursorNames={['edit-form-label', 'edit-form-category', 'capture-box' ]}>
-                                <FormGroup>
+                                <div className="form-group">
                                     <label className="form-label">Shortcut name:</label>
                                     <CursorFocusableInput
                                         data-keyscope={KEY_SCOPE}
@@ -53,8 +52,8 @@ const EditModal = observer(() => {
                                         onChange={e => { editItem.updateLabel(e.target.value) }}
                                         tabIndex="0"
                                     />
-                                </FormGroup>
-                                <FormGroup>
+                                </div>
+                                <div className="form-group">
                                     <label className="form-label">Group:</label>
                                     <CursorFocusableInput
                                             type="select"
@@ -69,28 +68,28 @@ const EditModal = observer(() => {
                                                     <option value={i.id} key={'edit_cat_' + i.id}>{i.name}</option>
                                                 ))}
                                     </CursorFocusableInput>
-                                </FormGroup>
-                                <FormGroup>
+                                </div>
+                                <div className="form-group">
                                     <label className="form-label tooltip" data-tooltip={HELP_MSG}>Keys:</label>
                                     <CaptureBox
                                         defaultValue={commandDefault}
                                         command={command}
                                         onData={data => editItem.updateCommand(data)}
                                         cursorName="capture-box"/>
-                                </FormGroup>
+                                </div>
                                 <Toggle name={'second-stroke'}
                                         label={'Second stroke'}
                                         checked={enableSecondary}
                                         onChange={val => editItem.updateEnableSecondary(val)}
                                         keyScope={KEY_SCOPE}
                                         tabIndex={0}>
-                                            <FormGroup>
+                                            <div className="form-group">
                                                 <CaptureBox
                                                     defaultValue={secondaryDefault}
                                                     command={secondary}
                                                     onData={data => editItem.updateSecondary(data)}
                                                     cursorName="capture-box-2" />
-                                            </FormGroup>
+                                            </div>
                                 </Toggle>
                             </CursorNavigableForm>
                         </div>

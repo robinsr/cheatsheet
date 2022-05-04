@@ -2,7 +2,6 @@ import KeyScope from 'components/providers/KeyScope';
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { useMst } from 'store';
-import { FormGroup } from 'spectre-react';
 import { CursorFocusableInput } from 'components/inputs';
 import Modal from './Modal';
 
@@ -30,7 +29,7 @@ const EditAppModal = observer(() => {
                 content={
                      <div className="content">
                          <form>
-                             <FormGroup>
+                             <div className="form-group">
                                  <label className="form-label">App name:</label>
                                  <CursorFocusableInput cursorName="edit-app-name"
                                      className="form-input"
@@ -40,8 +39,8 @@ const EditAppModal = observer(() => {
                                      onChange={e => { apps.editApp.update({ name: e.target.value }) }}
                                      tabIndex="0"
                                  />
-                             </FormGroup>
-                             <FormGroup>
+                             </div>
+                             <div className="form-group">
                                  <label className="form-label">Window name:</label>
                                  <CursorFocusableInput cursorName="edit-app-window"
                                      className="form-input"
@@ -51,7 +50,7 @@ const EditAppModal = observer(() => {
                                      onChange={e => { apps.editApp.update({ windowName: e.target.value }) }}
                                      tabIndex="0"
                                  />
-                             </FormGroup>
+                             </div>
                          </form>
                      </div>
                 }

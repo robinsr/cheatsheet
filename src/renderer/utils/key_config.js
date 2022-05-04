@@ -26,7 +26,7 @@ const key_config = {
         }
     },
     FOCUS_SEARCH: {
-        key: 'S,/',
+        key: '/',
         help: 'Moves focus to the search bar',
         run: (e, root) => {
             root.setCursor('SEARCH');
@@ -92,19 +92,32 @@ const key_config = {
         key: 'E, enter',
         help: 'Open focused shortcut in edit pane',
         run: (e, root) => {
-            root.edit.setEditItem(root.cursor);
-            root.setCursor('edit-form-label');
+
+            let { apps, edit, cursor, setCursor } = root;
+
+            // TODO; search bar does not have its own scope
+            if (e.target?.id === 'app-search-input') {
+                log.warn('TODO: search bar does not have its own scope')
+                return;
+            }
+
+            if (apps.isItem(cursor)) {
+                edit.setEditItem(cursor);
+                setCursor('edit-form-label');
+            } else {
+                log.warn('Enter key pressed, but cursor value is not valid item: ', cursor)
+            }
         }
     },
     NEW_SHORTCUT: {
-        key: 'command+N',
+        key: 'S',
         help: 'Create new shortcut',
         run: (e, root) => {
              root.apps.addItem(root.cursor);
         }
     },
     NEW_CATEGORY: {
-        key: 'N',
+        key: 'C',
         help: 'Create a new category in current app',
         run: (e, root) => {
             root.apps.addItem(root.cursor);
@@ -151,6 +164,7 @@ const key_config = {
         key: 'esc',
         help: null,
         run: (e, root) => {
+            e.target.id === 'app-search-input' && e.target.blur();
             root.apps.clearEditApp()
             root.setCursor(root.apps.topItem.id);
         }
@@ -179,43 +193,81 @@ const key_config = {
         help: null,
         run: (e, root) => {
             let { cursor, setCursor, search, apps } = root;
-            let itemId = cursor.replace('search_', '');
-            let item = apps.find(itemId);
+            if (e.target?.id === 'app-search-input') {
+                // create new
+                throw new Error('Should not run enter action when in search text input');
+            }
 
-            apps.setActiveApp(item.app.id);
-            setCursor(itemId);
+            if (cursor.startsWith('search_')) {
+                let itemId = cursor.replace('search_', '');
+
+                if (apps.isItem(itemId)) {
+                    let item = apps.find(itemId);
+                    apps.setActiveApp(item.app.id);
+                    setCursor(itemId);
+                    search.clearQuery();
+                }
+            }
+        }
+    },
+    EXIT_SEARCH: {
+        key: 'esc',
+        help: null,
+        run: (e, root) => {
+            let { setCursor, search, apps } = root;
             search.clearQuery();
+            setCursor(apps.topItem.id);
         }
     }
 }
 
 const makeEventFilter = (name, func) => {
-    return (e) => {
-        if (func(e)) {
-            log.debug('Event filter match:', name);
-            return true;
-        } else {
-            return false
-        }
+    if (!func) {
+        return (e) => e.target.dataset?.keyscope === name ? 'true': false
+    } else {
+        return (e) => func(e);
     }
 };
 
+
+/**
+ * KeyScope config
+ * @typedef {Object} KeyScopeConfig
+ * @property {string} scope - name of scope
+ * @property {boolean} [keydown = true] - trigger key actions on key down
+ * @property {boolean} [keyup = false] - trigger key actions on key up
+ */
+
+
+/**
+ * ActionList
+ * @typedef {string[]} ActionList - list of actions
+ */
+
+/**
+ * Configures which {@link KeyActions} belong to which scope
+ * @typedef {Object} KeyScopes
+ * @property {KeyScopeConfig} config
+ * @property {ActionList} actions
+ * @property {function} eventFilter - function return true/false when input elements fire keyboard events
+ */
 const key_scopes = {
     APP: {
         config: { scope: 'APP', keydown: true, keyup: false },
         actions: [
-            'SHOW_HELP_MODAL', 'FOCUS_SEARCH', 'MOVE_CURSOR', 'MOVE_SELECTION',
-            'CHANGE_APP', 'SELECT_ITEM', 'NEW_SHORTCUT', 'NEW_CATEGORY',
-            'DELETE_ITEM', 'EDIT_CURRENT_APP'
+            'SHOW_HELP_MODAL',
+            'FOCUS_SEARCH',
+            'MOVE_CURSOR',
+            'CHANGE_APP',
+            'SELECT_ITEM',
+            'MOVE_SELECTION',
+            'DELETE_ITEM',
+            'NEW_SHORTCUT',
+            'NEW_CATEGORY',
+            'EDIT_CURRENT_APP'
         ],
         eventFilter: makeEventFilter('APP', (e) => {
-            let tagName = e.target.tagName;
-            if (/^(INPUT|TEXTAREA|SELECT)$/.test(tagName)) {
-                if (e.target.id === 'search-box') {
-                    return 'SEARCH';
-                }
-            }
-            return 'APP';
+            return e.target?.id !== 'app-search-input';
         })
     },
     HELP: {
@@ -228,16 +280,26 @@ const key_scopes = {
     SEARCH: {
         config: { scope: 'SEARCH', keydown: false, keyup: true },
         actions: [
-            'MOVE_SEARCH_CURSOR', 'SELECT_SEARCH_RESULT'
+            'EXIT_SEARCH', 'MOVE_SEARCH_CURSOR', 'SELECT_SEARCH_RESULT'
         ],
-        eventFilter: makeEventFilter('SEARCH', (e) => true)
+        eventFilter: makeEventFilter('SEARCH'),
+        selector: '#app-search-input'
+    },
+    SEARCH_BUTTONS: {
+        config: { scope: 'SEARCH_BUTTONS', keydown: false, keyup: true },
+        actions: [
+            //, 'SELECT_SEARCH_RESULT'
+        ],
+        eventFilter: makeEventFilter('SEARCH_BUTTON')
     },
     EDIT_ITEM: {
         config: { scope: 'EDIT_ITEM' },
         actions: [
-            'CLEAR_EDIT_ITEM', 'SAVE_EDIT_ITEM', 'NEXT_EDIT_FIELD'
+            'CLEAR_EDIT_ITEM',
+            'SAVE_EDIT_ITEM'
+            //, 'NEXT_EDIT_FIELD'
         ],
-        eventFilter: makeEventFilter('EDIT_ITEM', (e) => e.target.dataset?.keyscope === 'EDIT_ITEM' ? 'EDIT_ITEM': null)
+        eventFilter: makeEventFilter('EDIT_ITEM')
     },
     EDIT_APP: {
         config: { scope: 'EDIT_APP' },

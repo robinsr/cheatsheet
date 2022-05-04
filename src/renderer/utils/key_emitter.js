@@ -2,7 +2,7 @@ import Logger from 'js-logger';
 import EventEmitter from 'events';
 import hotkeys from 'hotkeys-js';
 import { memoize } from 'lodash';
-import { getKeyString } from './dom';
+import { elementMatcher, getElementMatcher, getKeyString } from './dom';
 import { key_scopes, key_config } from './key_config';
 
 const log = Logger.get('KeyEmitter');
@@ -20,7 +20,16 @@ export class KeyEmitter extends EventEmitter {
         Object.assign(this, { scopes, defaultScope });
 
         scopes.forEach(s => this.install(s));
-        this.setScope(defaultScope);
+        this.setScope(defaultScope, 'KeyEmitter::constructor');
+
+        this.filters = () => (e) => {
+            scopes.forEach(scope => {
+                if (elementMatcher(e, scope.config.scope, scope.selector)) {
+                    this.setScope(scope.config.scope, 'KeyEmitter::globalFilter::selector');
+                    return true;
+                }
+            });
+        };
     }
 
     onKey(cb) {
@@ -33,8 +42,12 @@ export class KeyEmitter extends EventEmitter {
         this.on(EVENT_NAMES.SCOPE, cb);
     }
 
-    setScope(scope) {
-        log.debug('Setting scope', scope);
+    setScope(scope, source) {
+        if (!source) {
+            log.warn('DANGER! No source for set scope!');
+        }
+
+        log.debug(`Setting scope: [${scope}], source: [${source}]`);
 
         hotkeys.setScope(scope);
         hotkeys.filter = key_scopes[scope].eventFilter;
@@ -60,12 +73,6 @@ export class KeyEmitter extends EventEmitter {
                 });
             });
         });
-    }
-
-    trigger(e) {
-        let keyString = getKeyString(e, 'hotkeys');
-        log.debug('Uncaught key event:', keyString)
-        hotkeys.trigger(keyString, this.defaultScope);
     }
 }
 

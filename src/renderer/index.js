@@ -7,3 +7,7 @@ import App from './components/App.jsx';
 const root = createRoot(document.getElementById('app'));
  
 root.render(<App />);
+
+window.addEventListener('hashchange', event => {
+    console.log(`Hash Change:`, event.path[0].location.hash)
+});
