@@ -6,6 +6,7 @@
   "main": "src/main/main.js",
   "private": true,
   "scripts": {
+    "test": "jest",
     "start": "electron .",
     "dev": "ELECTRON_DEV=true electron .",
     "build": "npx webpack --config webpack/webpack.config.js",
@@ -54,6 +55,7 @@
     "electron-packager": "^15.5.1",
     "html-webpack-plugin": "^5.5.0",
     "jest": "^28.0.3",
+    "jsdom": "^19.0.0",
     "less-loader": "^10.2.0",
     "markdown-escape": "^1.1.0",
     "node-polyfill-webpack-plugin": "^1.1.4",
@@ -63,5 +65,16 @@
     "style-loader": "^3.3.1",
     "webpack": "^5.72.0",
     "webpack-cli": "^4.9.2"
+  },
+  "jest": {
+
+    "setupFiles": [ "<rootDir>/tst/setup.js" ],
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    },
+    "moduleNameMapper": {
+      "^utils$": "<rootDir>/src/renderer/utils/index.js",
+      "^store/(.*)$": "<rootDir>/src/renderer/store/$1"
+    }
   }
 }

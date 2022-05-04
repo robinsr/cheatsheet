@@ -122,10 +122,10 @@ const MobxAppStore = types
                 self.selectedApp = self.last;
             }
         },
-        addItem(cursor) {
-            if (cursor) {
-                log('addItem, found cursor:', cursor)
-                let result = resolveIdentifier(MobxShortcutItem, self, cursor)
+        addItem(itemId) {
+            if (itemId) {
+                log('addItem, found cursor:', itemId)
+                let result = resolveIdentifier(MobxShortcutItem, self, itemId)
 
                 if (result) {
                     log('Resolved cursor:', result)
@@ -137,10 +137,10 @@ const MobxAppStore = types
                 log('addItem, no cursor');
             }
         },
-        removeItem(cursor) {
-            if (cursor) {
-                log('addItem, found cursor:', cursor)
-                let result = resolveIdentifier(MobxShortcutItem, self, cursor)
+        removeItem(itemId) {
+            if (itemId) {
+                log('addItem, found cursor:', itemId)
+                let result = resolveIdentifier(MobxShortcutItem, self, itemId)
 
                 if (result) {
                     log('Resolved cursor:', result)

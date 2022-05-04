@@ -5,8 +5,6 @@ import Logger from "js-logger";
 
 const stage = window.cheatsheetAPI.stage;
 
-console.log(stage)
-
 const { OFF, DEBUG, INFO, WARN, ERROR } = Logger;
 
 Logger.useDefaults({
