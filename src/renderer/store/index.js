@@ -27,6 +27,10 @@ const initialData = {
         data: null,
         showModal: false
     },
+    search: {
+        query: '',
+        results: []
+    },
     isLoading: true,
     isSaving: false,
     cursor: '/items/itemList/0',

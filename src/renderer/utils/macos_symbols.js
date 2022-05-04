@@ -1,3 +1,5 @@
+// https://www.toptal.com/developers/keycode
+
 let macos_symbols = {
     Meta: { 
         symbol: "⌘", alt: "cmd"

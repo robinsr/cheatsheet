@@ -29,7 +29,7 @@ const CursorNavigableForm = observer(({
     log.debug(children);
 
     return (
-        <form>
+        <form onSubmit={e => e.preventDefault()}>
             {children}
         </form>
     );

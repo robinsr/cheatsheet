@@ -1,3 +1,4 @@
+import { getKeyDirection } from './dom';
 import { getLogger } from './logger';
 const log = getLogger('KeyConfig');
 
@@ -35,12 +36,12 @@ const key_config = {
         key: 'up, down',
         help: 'Move focus up or down',
         run: (e, root) => {
-            let direction = ( e.key === 'ArrowUp' ? 'UP' : 'DOWN');
+            let direction = getKeyDirection(e)
 
-            if (direction === 'DOWN') {
-                root.cursorDown();
-            } else if (direction === 'UP') {
+            if (direction.UP) {
                 root.cursorUp();
+            } else {
+                root.cursorDown();
             }
         }
     },
@@ -48,15 +49,15 @@ const key_config = {
         key: 'shift+up, shift+down',
         help: 'Move selected item up or down',
         run: (e, root) => {
-            let direction = ( e.key === 'ArrowUp' ? 'UP' : 'DOWN');
+            let direction = getKeyDirection(e);
 
             if (root.apps.isItem(root.cursor)) {
                 let item = root.apps.find(root.cursor);
 
-                if (direction === 'DOWN') {
-                    item.category.swapItems(item, item.next);
-                } else {
+                if (direction.UP) {
                     item.category.swapItems(item.prev, item);
+                } else {
+                    item.category.swapItems(item, item.next);
                 }
             }
         }
@@ -119,7 +120,7 @@ const key_config = {
         }
     },
     SAVE_EDIT_ITEM: {
-        key: 'command+S',
+        key: 'enter,command+S',
         help: 'Save edit item',
         run: (e, root) => {
             root.edit.saveEditItem();
@@ -153,6 +154,38 @@ const key_config = {
             root.apps.clearEditApp()
             root.setCursor(root.apps.topItem.id);
         }
+    },
+    MOVE_SEARCH_CURSOR: {
+        key: 'up,down',
+        help: null,
+        run: (e, root) => {
+            let direction = getKeyDirection(e);
+            let { cursor, setCursor, search, apps } = root;
+
+            if (cursor?.startsWith('search_')) {
+                let itemId = cursor.replace('search_', '');
+                if (direction.UP) {
+                    setCursor('search_' + search.prev(itemId).id);
+                } else {
+                    setCursor('search_' + search.next(itemId).id);
+                }
+            } else if (search.first) {
+                setCursor('search_' + search.first.id);
+            }
+        }
+    },
+    SELECT_SEARCH_RESULT: {
+        key: 'enter',
+        help: null,
+        run: (e, root) => {
+            let { cursor, setCursor, search, apps } = root;
+            let itemId = cursor.replace('search_', '');
+            let item = apps.find(itemId);
+
+            apps.setActiveApp(item.app.id);
+            setCursor(itemId);
+            search.clearQuery();
+        }
     }
 }
 
@@ -175,7 +208,15 @@ const key_scopes = {
             'CHANGE_APP', 'SELECT_ITEM', 'NEW_SHORTCUT', 'NEW_CATEGORY',
             'DELETE_ITEM', 'EDIT_CURRENT_APP'
         ],
-        eventFilter: makeEventFilter('APP', (e) => true)
+        eventFilter: makeEventFilter('APP', (e) => {
+            let tagName = e.target.tagName;
+            if (/^(INPUT|TEXTAREA|SELECT)$/.test(tagName)) {
+                if (e.target.id === 'search-box') {
+                    return 'SEARCH';
+                }
+            }
+            return 'APP';
+        })
     },
     HELP: {
         config: { scope: 'HELP', keydown: true, keyup: false },
@@ -187,8 +228,9 @@ const key_scopes = {
     SEARCH: {
         config: { scope: 'SEARCH', keydown: false, keyup: true },
         actions: [
+            'MOVE_SEARCH_CURSOR', 'SELECT_SEARCH_RESULT'
         ],
-        eventFilter: makeEventFilter('SEARCH', (e) => e.target.id === 'app-search-input' ? 'SEARCH': null)
+        eventFilter: makeEventFilter('SEARCH', (e) => true)
     },
     EDIT_ITEM: {
         config: { scope: 'EDIT_ITEM' },

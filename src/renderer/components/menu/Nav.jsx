@@ -1,7 +1,6 @@
 import './Nav.scss';
 
 import React from 'react';
-import { Button } from 'spectre-react';
 import SearchBox from './SearchBox.jsx';
 import {observer} from 'mobx-react-lite';
 import {useMst} from 'store';
@@ -21,9 +20,9 @@ const Nav = observer(({
             </div>
             <div className="navbar">
                 <section className="navbar-section">
-                    <Button  primary={true} onClick={onMenuClick}>
+                    <button className={'btn btn-primary'} tabIndex={-1} onClick={onMenuClick}>
                         <i className={'icon icon-' + (isMenuOpen ? 'cross' : 'menu')}></i>
-                    </Button>
+                    </button>
                     <SearchBox isMenuOpen={isMenuOpen} />
                 </section>
             </div>

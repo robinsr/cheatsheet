@@ -3,11 +3,12 @@ import { debounce as _debounce } from 'lodash';
 import Optional from 'optional-js';
 import {  types,  flow,  getEnv,  getSnapshot,  resolveIdentifier } from 'mobx-state-tree';
 import { gate, getLogger } from 'utils';
-import UIStore from './ui/UIStore.js';
+import UIStore from './ui/UIStore';
+import MobxSearchStore from 'store/ui/SearchStore';
 import MobxAppStore from './app/AppStore.js';
-import MobxEditItemStore from './edit/EditItemStore.js';
-import MobxImageModalStore from './export/ImageStore.js';
-import MobxShortcutItem from './app/ShortcutItem.js';
+import MobxEditItemStore from './edit/EditItemStore';
+import MobxImageModalStore from './export/ImageStore';
+import MobxShortcutItem from './app/ShortcutItem';
 
 const SELF_KEY = '__self__';
 
@@ -19,6 +20,7 @@ const MobxStore = types
         edit: MobxEditItemStore,
         apps: MobxAppStore,
         imageModal: MobxImageModalStore,
+        search: MobxSearchStore,
         isLoading: types.optional(types.boolean, true),
         isSaving: types.boolean,
         cursor: types.maybeNull(types.string),

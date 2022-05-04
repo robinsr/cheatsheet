@@ -1,4 +1,5 @@
 import './SearchBox.scss';
+import KeyScope from 'components/providers/KeyScope';
 
 import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
@@ -10,13 +11,12 @@ import SearchResult from './SearchResult';
 const SearchBox = observer(({
     isMenuOpen=false
 }) => {
-    let { edit, apps, cursor, setCursor } = useMst();
+    let { search, cursor } = useMst();
+    let { query, results, updateQuery, clearQuery } = search
 
     let searchRef = useRef();
 
-    let [ query, setQuery ] = useState('')
     let [ focusClass, setFocusClass ] = useState('');
-    let [ result, setResult ] = useState([]);
 
     useEffect(() => {
         if (cursor === 'SEARCH') {
@@ -26,45 +26,10 @@ const SearchBox = observer(({
 
     useEffect(function clearOnMenuOpen() {
         if (isMenuOpen) {
-            setQuery('');
-            setResult([]);
+            clearQuery();
         }
     }, [ isMenuOpen ]);
 
-    function onFocus(e) {
-        setFocusClass('is-focused');
-    }
-
-    function onBlur(e) {
-        setFocusClass('');
-    }
-
-    function reset() {
-        setQuery('');
-        setResult([]);
-    }
-
-    function escape(e) {
-        if (e.key === "Escape") {
-            searchRef.current.blur();
-            reset();
-        }
-    }
-
-    function onSearch(e) {
-        setQuery(e.target.value)
-        let results = apps.query(e.target.value);
-        setResult(results);
-    }
-
-    function onItemClick(result) {
-        setQuery('');
-        setResult([]);
-        // TODO, this should just change the cursor, not edit the item
-        // edit.setEditItem(result.id);
-        apps.setActiveApp(result.app.id);
-        setCursor(result.id)
-    }
 
     return (
         <div className="form-autocomplete search-box mx-2">
@@ -72,24 +37,20 @@ const SearchBox = observer(({
                 <input className="form-input" id="app-search-input"
                     type="text"
                     placeholder="Search Shortcuts"
-                    onChange={onSearch}
-                    onFocus={onFocus}
-                    onKeyUp={escape}
-                    onBlur={onBlur}
-                    value={query}
+                    onChange={e => updateQuery(e.target.value)}
+                    onFocus={() => setFocusClass('is-focused')}
+                    onBlur={() => setFocusClass('')}
+                    value={search.query}
                     ref={searchRef}
                 />
             </div>
-            {result.length > 0 ?
-                <ul className="menu">
-                    {result.map(r => (
-                        <SearchResult key={'search_' + r.id}
-                                         result={r}
-                                         query={query}
-                                         onClick={onItemClick}
-                        />))}
-                </ul>
-            : null}
+            {results.length > 0 &&
+                <KeyScope scope={'SEARCH'} prevScope={'APP'}>
+                    <ul className="menu">
+                        {results.map(r => <SearchResult key={'search_' + r.id} result={r} query={query}/>)}
+                    </ul>
+                </KeyScope>
+            }
         </div>
     );
 });

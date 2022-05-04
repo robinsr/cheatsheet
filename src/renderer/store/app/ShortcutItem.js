@@ -28,16 +28,7 @@ const MobxShortcutItem = types
             get markdown() {
                 return `|${self.label}|${self.command}|`; // todo; complete md string
             },
-            getResultsSplit(q) {
-                let query = new RegExp('(' + q + ')', 'i');
-                let split = self.label.split(query);
 
-                if (split.length > 1) {
-                    return [split[0], split[1], split.slice(2).join('')]
-                } else {
-                    return [];
-                }
-            }
         }
     })
     .actions(self => {

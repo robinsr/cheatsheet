@@ -14,28 +14,53 @@ export class ShowHideElement {
     hide = () => this.e.forEach(e => e.style.display = 'none');
 }
 
+
+export const getKeyDirection = (e) => {
+    return {
+        UP: e.key === 'ArrowUp',
+        DOWN: e.key === 'ArrowDown',
+        LEFT: e.key === 'ArrowLeft',
+        RIGHT: e.key === 'ArrowRight'
+    }
+}
+
 const letter_key = new RegExp(/^Key[\w]{1}$/);
 
 
-export const getKeyString = (e) => {
+const keyStringOpts = {
+    hotkeys: {
+        modifiers: ['meta', 'ctrl','alt', 'shift'],
+        joiner: '+'
+    },
+    cheatsheet: {
+        modifiers: ['Meta', 'Control', 'Alt', 'Shift'],
+        joiner: '-'
+    }
+}
+
+
+
+export const getKeyString = (e, mode='cheatsheet') => {
     log.debug('KeyEvent in:', _pick(e, ['altKey', 'shiftKey', 'ctrlKey', 'metaKey', 'code', 'keyCode', 'key']));
+
+    let opts = keyStringOpts[mode];
 
     let kbString = [];
 
     if (e.metaKey) {
-        kbString.push('Meta');
+        kbString.push(opts.modifiers[0]);
     }
 
     if (e.ctrlKey) {
-        kbString.push('Control');
+        kbString.push(opts.modifiers[1]);
     }
 
     if(e.altKey){
-        kbString.push('Alt');
+        kbString.push(opts.modifiers[2]);
     }
 
     if (e.shiftKey) {
-        kbString.push('Shift');
+        kbString.push(opts.modifiers[3]);
     }
 
     if (!['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) {
@@ -52,7 +77,7 @@ export const getKeyString = (e) => {
 
     log.debug('key out:', kbString);
 
-    return kbString.join('-');
+    return kbString.join(opts.joiner);
 }
 
 export const captureActions = {

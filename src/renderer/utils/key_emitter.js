@@ -2,6 +2,7 @@ import Logger from 'js-logger';
 import EventEmitter from 'events';
 import hotkeys from 'hotkeys-js';
 import { memoize } from 'lodash';
+import { getKeyString } from './dom';
 import { key_scopes, key_config } from './key_config';
 
 const log = Logger.get('KeyEmitter');
@@ -14,11 +15,12 @@ const EVENT_NAMES = {
 // Not sure if using event emitter is the best here, but it
 // solves the issue of having a new callback every rerender
 export class KeyEmitter extends EventEmitter {
-    constructor(scopes, default_scope) {
+    constructor(scopes, defaultScope) {
         super();
+        Object.assign(this, { scopes, defaultScope });
 
         scopes.forEach(s => this.install(s));
-        this.setScope(default_scope);
+        this.setScope(defaultScope);
     }
 
     onKey(cb) {
@@ -58,6 +60,12 @@ export class KeyEmitter extends EventEmitter {
                 });
             });
         });
+    }
+
+    trigger(e) {
+        let keyString = getKeyString(e, 'hotkeys');
+        log.debug('Uncaught key event:', keyString)
+        hotkeys.trigger(keyString, this.defaultScope);
     }
 }
 
