@@ -2,6 +2,8 @@ import { isEmpty } from 'lodash';
 import { getParent, types } from 'mobx-state-tree';
 import MobxCategoryItem from 'store/app/CategoryItem';
 
+
+
 const EDIT = '__edit__';
 
 const MobxEditableShortcutItem = types
@@ -37,6 +39,12 @@ const MobxEditableShortcutItem = types
         }
     }))
 
+/**
+ * @typedef {object} EditStore
+ * @property {object} editItem
+ * @property {object[]} categoryItems
+ */
+
 const MobxEditItemStore = types
     .model('MobxEditItemStore', {
         editItem: types.maybeNull(MobxEditableShortcutItem),
@@ -46,7 +54,12 @@ const MobxEditItemStore = types
         let targetItem;
 
         return {
+            /**
+             * @name EditStore#setEditItem
+             * @param {ShortcutInstance} target
+             */
             setEditItem(target) {
+                /** @type {RootStore} */
                 let root = getParent(self);
 
                 if (typeof target === 'string') {
@@ -112,5 +125,10 @@ const MobxEditItemStore = types
             }
         }
     });
+
+MobxEditItemStore.__defaults = {
+    editItem: null,
+    categoryOptions: []
+};
 
 export default MobxEditItemStore;

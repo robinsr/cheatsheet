@@ -5,6 +5,11 @@ import Optional from 'optional-js';
 
 const log = getLogger('Store/CategoryItem');
 
+/**
+ * @class ICategoryItemViews
+ * @param {ICategoryItem} self
+ * @constructor
+ */
 export const CategoryItemViews = (self) => ({
     item(id) {
         if (!id) throw new Error('No ID supplied');
@@ -22,14 +27,19 @@ export const CategoryItemViews = (self) => ({
         return self.items[i];
     },
     next(id) {
+        /** @type {IAppItem} */
+        let parent = getParent(self, 2)
+
         return Optional.of(id)
             .map(self.index).map(increment).map(self.at)
-            .orElseGet(() => getParent(self, 2).next(self.id).first);
+            .orElseGet(() => parent.next(self.id).first);
     },
     prev(id) {
+        /** @type {IAppItem} */
+        let parent = getParent(self, 2)
         return Optional.of(id)
             .map(self.index).map(decrement).map(self.at)
-            .orElseGet(() => getParent(self, 2).prev(self.id).last);
+            .orElseGet(() => parent.prev(self.id).last);
     },
     get first() {
         return self.items[0];
@@ -42,6 +52,11 @@ export const CategoryItemViews = (self) => ({
     }
 })
 
+/**
+ * @class ICategoryItemActions
+ * @param {ICategoryItem} self
+ * @constructor
+ */
 export const CategoryItemActions = (self) => ({
     updateName(name) {
         self.name = name
@@ -92,11 +107,17 @@ export const CategoryItemActions = (self) => ({
             self.items.splice(i2, 0, tmp1);
         } else {
             // TODO; swap items between categories?
-            let tItem = item1.category === self ? item1 : item2
+            // let tItem = item1.category === self ? item1 : item2
         }
     }
 });
 
+/**
+ * @typedef {object} ICategoryItemProps
+ * @property {string} id
+ * @property {string} name
+ * @property {IShortcutItem[]} items
+ */
 const MobxCategoryItem = types
     .model({
         id: types.identifier,
@@ -107,3 +128,7 @@ const MobxCategoryItem = types
     .actions(CategoryItemActions)
 
 export default MobxCategoryItem;
+
+/**
+ * @typedef { ICategoryItemProps, ICategoryItemActions, CollectionStore.<IShortcutItem> } ICategoryItem
+ */

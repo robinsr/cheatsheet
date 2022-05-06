@@ -1,5 +1,15 @@
 import { types } from 'mobx-state-tree';
 
+/**
+ * @typedef {object} UIStore
+ * @property {Themes} theme
+ * @property {boolean} activeFollow
+ * @property {string[]} ignoreApps
+ */
+
+/**
+ * @enum {string}
+ */
 export const Themes = {
     light: 'light',
     dark: 'dark'
@@ -8,11 +18,13 @@ export const Themes = {
 const UIStore = types
     .model('UIStore', {
         theme: types.enumeration('theme', ['light', 'dark']),
-        activeWindow: types.maybeNull(types.string),
         activeFollow: types.boolean,
         ignoreApps: types.array(types.string)
     })
     .actions(self => ({
+        /**
+         * @name UIStore#toogleTheme
+         */
         toggleTheme() {
             switch (self.theme) {
                 case Themes.light:
@@ -23,12 +35,18 @@ const UIStore = types
                     break;
             }
         },
-        setActiveWindow(name) {
-            self.activeWindow = name;
-        },
+        /**
+         * @name UIStore#toggleActiveFollow
+         */
         toggleActiveFollow() {
             self.activeFollow = !self.activeFollow;
         }
     }));
+
+UIStore.__defaults = {
+    theme: 'dark',
+    activeWindow: window.cheatsheetAPI.configVal('name'),
+    activeFollow: true
+};
 
 export default UIStore;

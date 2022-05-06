@@ -10,7 +10,7 @@ const KeyActions = observer(({ children }) => {
     let root = useMst();
 
     KeyEmitter.onScope(scope => {
-        root.setKeyScope(scope);
+        root.state.setKeyScope(scope);
     });
 
     KeyEmitter.onKey(({ event, actionName, run }) => {

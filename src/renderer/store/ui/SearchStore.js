@@ -3,6 +3,11 @@ import Optional from 'optional-js';
 import MobxShortcutItem from 'store/app/ShortcutItem';
 import { decrement, increment } from 'utils';
 
+/**
+ * @typedef {object} SearchStore
+ * @property {?string} query
+ * @property {object[]} results
+ */
 
 const MobxSearchStore = types.model('SearchStore', {
     query: types.maybeNull(types.string),
@@ -36,14 +41,26 @@ const MobxSearchStore = types.model('SearchStore', {
     }
 }))
 .actions(self => ({
+    /**
+     * @name SearchStore#updateQuery
+     * @param {string} val
+     */
     updateQuery(val) {
         self.query = val;
         self.results = getParent(self).apps.query(val);
     },
+    /**
+     * @name SearchStore#clearQuery
+     */
     clearQuery() {
         self.query = '';
         self.results = [];
     }
 }));
+
+MobxSearchStore.__defaults = {
+    query: '',
+    results: []
+};
 
 export default MobxSearchStore;

@@ -4,16 +4,102 @@ import Optional from 'optional-js';
 import {  types,  flow,  getEnv,  getSnapshot,  resolveIdentifier } from 'mobx-state-tree';
 import { gate, getLogger } from 'utils';
 import UIStore from './ui/UIStore';
-import MobxSearchStore from 'store/ui/SearchStore';
+import MobxSearchStore from './ui/SearchStore';
+import MobxStateStore from './ui/StateStore.js';
 import MobxAppStore from './app/AppStore.js';
 import MobxEditItemStore from './edit/EditItemStore';
 import MobxImageModalStore from './export/ImageStore';
 import MobxShortcutItem from './app/ShortcutItem';
 
-const SELF_KEY = '__self__';
-
 const log = getLogger('RootStore');
 
+/**
+ * @class IRootStoreViews
+ * @param {IRootStore} self
+ * @constructor
+ */
+const RootStoreViews = self => ({
+    get isEmpty() {
+        return self.apps.isEmpty;
+    }
+})
+
+/**
+ * @class IRootStoreActions
+ * @param {IRootStore} self
+ * @constructor
+ */
+const RootStoreActions = self => ({
+    getInitialData: flow(function* getInitialData() {
+        log.info('Fetching data...');
+        try {
+            let initialData = yield getEnv(self).api.getInitialData();
+            log.info('Fetched data:', initialData);
+            Object.assign(self, initialData);
+            self.apps.setActiveApp(0);
+        } catch (err) {
+            log.error(err);
+        }
+        setTimeout(() => self.state.loading(false), 1200);
+    }),
+    listenToWindowChange() {
+        let api = getEnv(self).api;
+
+        api.handleWindow(gate(hasWindowChanged, (e, data) => {
+            handleWindowChange(data.windowName, self, api);
+        }));
+    },
+    removeApp(appId) {
+        self.apps.removeApp(appId);
+    },
+    removeCategory(appId, groupId) {
+        self.apps.item(appId).removeCategory(groupId);
+    },
+    backup() {
+        return getSnapshot(self);
+    },
+    setCursor: _debounce(val => self._setCursor(val), 10),
+    _setCursor(val) {
+        self.cursor = val;
+    },
+    getCursor() {
+        return Optional.ofNullable(self.cursor);
+    },
+    resolveCursor(val) {
+        // Currently only looks up shortcutitems, but can be
+        // extended to check for other model types
+        try {
+            let item = resolveIdentifier(MobxShortcutItem, self, val);
+            log.debug('resolved item:', val)
+            return item
+        } catch (e) {
+            return null;
+        }
+    },
+    cursorDown() {
+        self.cursor = Optional.ofNullable(self.cursor)
+            .map(val => self.resolveCursor(val))
+            .map(item => item.next?.id)
+            .orElse(self.apps.topItem.id);
+    },
+    cursorUp() {
+        self.cursor = Optional.ofNullable(self.cursor)
+            .map(self.resolveCursor)
+            .map(item => item.prev?.id)
+            .orElse(self.apps.topItem.id);
+    }
+})
+
+/**
+ * @typedef {object} IRootStoreProps
+ * @property {UIStore} ui
+ * @property {EditStore} edit
+ * @property {IAppStore} apps
+ * @property {ImageModalStore} imageModal
+ * @property {SearchStore} search
+ * @property {StateStore} state
+ * @property {string} cursor
+ */
 const MobxStore = types
     .model('MobxStore', {
         ui: UIStore,
@@ -21,97 +107,33 @@ const MobxStore = types
         apps: MobxAppStore,
         imageModal: MobxImageModalStore,
         search: MobxSearchStore,
-        isLoading: types.optional(types.boolean, true),
-        isSaving: types.boolean,
+        state: MobxStateStore,
         cursor: types.maybeNull(types.string),
-        keyScope: types.maybeNull(types.string)
     })
-    .views(self => ({
-        get isEmpty() {
-            return self.apps.isEmpty;
-        }
-    }))
-    .actions(self => ({
-        setLoading(val) {
-            self.isLoading = val;
-        },
-        setSaving(val) {
-            self.isSaving = val;
-        },
-        getInitialData: flow(function* getInitialData() {
-            log.info('Fetching data...');
-            try {
-                let initialData = yield getEnv(self).api.getInitialData();
-                log.info('Fetched data:', initialData);
-                Object.assign(self, initialData);
-            } catch (err) {
-                log.error(err);
-            }
-            setTimeout(self.isLoaded, 1200);
-        }),
-        listenToWindowChange() {
-            let api = getEnv(self).api;
+    .views(RootStoreViews)
+    .actions(RootStoreActions);
 
-            api.handleWindow(gate(hasWindowChanged, (e, data) => {
-                handleWindowChange(data.windowName, self, api);
-            }));
-        },
-        isLoaded() {
-            self.isLoading = false;
-        },
-        removeApp(appId) {
-            self.apps.removeApp(appId);
-        },
-        removeCategory(appId, groupId) {
-            self.apps.item(appId).removeCategory(groupId);
-        },
-        backup() {
-            return getSnapshot(self);
-        },
-        setKeyScope(val) {
-            self.keyScope = val;
-        },
-        setCursor: _debounce(val => self._setCursor(val), 10),
-        _setCursor(val) {
-            self.cursor = val;
-        },
-        getCursor() {
-            return Optional.ofNullable(self.cursor);
-        },
-        resolveCursor(val) {
-            // Currently only looks up shortcutitems, but can be
-            // extended to check for other model types
-            try {
-                let item = resolveIdentifier(MobxShortcutItem, self, val);
-                log.debug('resolved item:', val)
-                return item
-            } catch (e) {
-                return null;
-            }
-        },
-        cursorDown() {
-            self.cursor = Optional.ofNullable(self.cursor)
-                .map(val => self.resolveCursor(val))
-                .map(item => item.next?.id)
-                .orElse(self.apps.topItem.id);
-        },
-        cursorUp() {
-            self.cursor = Optional.ofNullable(self.cursor)
-                .map(self.resolveCursor)
-                .map(item => item.prev?.id)
-                .orElse(self.apps.topItem.id);
-        }
-    }));
+MobxStore.__defaults = {
+    ui: UIStore.__defaults,
+    edit: MobxEditItemStore.__defaults,
+    apps: MobxAppStore.__defaults,
+    imageModal: MobxImageModalStore.__defaults,
+    search: MobxSearchStore.__defaults,
+    state: MobxStateStore.__defaults,
+    cursor: 'SEARCH',
+}
 
-
-function handleWindowChange(windowName, { apps, ui }, { thisApp }) {
+function handleWindowChange(windowName, { apps, ui, state }) {
     log.debug('Handling window change', windowName);
-    ui.setActiveWindow(windowName);
+    state.setActiveWindow(windowName);
 
-    let ignoreApps = [].concat(apps.ignoreApps).concat([ SELF_KEY, thisApp ]);
+    if (!ui.activeFollow) {
+        return;
+    }
 
+    let thisApp = window.cheatsheetAPI.configVal('name');
 
-    if (ignoreApps.includes(windowName)|| !ui.activeFollow) {
+    if ([ thisApp ].concat(apps.ignoreApps).includes(windowName)) {
         return;
     }
 
@@ -121,7 +143,7 @@ function handleWindowChange(windowName, { apps, ui }, { thisApp }) {
         apps.clearUnknownAppName();
         apps.setActiveApp(app.id);
     } else {
-        apps.setUnknownAppName(windowName)
+        apps.setUnknownAppName(windowName);
     }
 }
 
@@ -134,4 +156,8 @@ const hasWindowChanged = (memo, args) => {
 }
 
 export default MobxStore;
+
+/**
+ * @typedef { IRootStoreProps, IRootStoreViews, IRootStoreActions } IRootStore
+ */
 

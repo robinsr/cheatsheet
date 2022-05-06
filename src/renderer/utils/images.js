@@ -1,8 +1,18 @@
 import { optimize } from 'svgo';
 
+/** @class */
 export class CustomImage {
+    /**
+     * Image type
+     *  @member {"SVG"|"PNG"} type
+     **/
     type = null;
 
+    /**
+     * Converts a snapshot (plain object) to a CustomImage
+     * @param {object} value - snapshot value
+     * @return {CustomImage}
+     */
     static fromSnapshot(value) {
         let { type, data, width, height, filename } = value;
 
@@ -15,14 +25,47 @@ export class CustomImage {
     
     constructor(type, data, width, height, filename) {
         this.type = type;
+
+        /**
+         * image data
+         * @member {string} data
+         **/
         this.data = data;
+
+        /**
+         * Image width in pixels
+         * @member {number} width
+         **/
         this.width = width;
+
+        /**
+         * Image height in pixels
+         * @member {number} height
+         **/
         this.height = height;
+
+        /**
+         * Filename to use when saving image
+         * @member {string} filename
+         **/
         this.filename = filename;
     }
 
+    /**
+     * Gets the image dimensions
+     * @returns {{width, height}}
+     */
     get dimensions() {
         return { width: this.width, height: this.height };
+    }
+
+    /**
+     * @interface
+     * @description Get the data-uri value
+     * @returns {string} data-uri display string
+     */
+    getDataURI() {
+        throw new Error('Not implemented');
     }
 }
 
@@ -30,6 +73,7 @@ export class CustomSVGImage extends CustomImage {
     constructor(data, width, height, filename) {
         super('SVG', data, width, height, filename);
 
+        /** @type {{data: string}} results **/
         const result = optimize(data, {
             multipass: true
         });

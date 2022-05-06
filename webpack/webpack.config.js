@@ -56,7 +56,7 @@ module.exports = {
             title: 'Cheat',
             template: './index.ejs',
             inject: false
-        }),
+        })
     ],
     optimization: {
         runtimeChunk: 'single'

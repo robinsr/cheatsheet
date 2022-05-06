@@ -11,12 +11,14 @@ const Nav = observer(({
     onMenuClick, isMenuOpen=false
 }) => {
 
-    let { cursor, keyScope, ui } = useMst();
+    let { cursor, state } = useMst();
+
+    let { keyScope, activeWindow } = state;
 
     return (
         <header id="main-header">
             <div id="title-bar">
-                <small className={"float-right"}>keyScope: {keyScope}; cursor: {cursor}; active: {ui.activeWindow || 'none'}</small>
+                <small className={"float-right"}>keyScope: {keyScope}; cursor: {cursor}; active: {activeWindow || 'none'}</small>
             </div>
             <div className="navbar">
                 <section className="navbar-section">

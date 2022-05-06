@@ -21,7 +21,7 @@ const OptionsForm = observer(() => {
                 <label className="form-switch">
                     <input
                         type="checkbox"
-                        checked={ui.theme == Themes.light}
+                        checked={ui.theme === Themes.light}
                         onChange={ui.toggleTheme}
                     />
                     <i className="form-icon"></i> Light Keys
@@ -39,7 +39,7 @@ const OptionsForm = observer(() => {
             </div>
 
             <div className="form-control my-2">
-                <button clsssName="btn btn-sm" onClick={onBackup}><HiOutlineSave /> Backup now</button>
+                <button className="btn btn-sm" onClick={onBackup}><HiOutlineSave /> Backup now</button>
             </div>
         </nav>
     );

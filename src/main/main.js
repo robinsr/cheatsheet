@@ -1,16 +1,40 @@
 const { app, BrowserWindow, ipcMain, session } = require('electron');
-const path = require('path');
-const os = require('os')
-
+const settings = require('electron-app-settings');
 const activeWindows = require('electron-active-window');
+const { saveImage, saveSnapshot, getLatestSnapshot } = require('./io.js');
+const path = require('path');
+const os = require('os');
+require('./data');
+
+const config = require('../../package.json');
+const conf = {
+    cwd: __dirname,
+    logs: app.getPath('logs'),
+    appData: app.getPath('appData'),
+    userData: app.getPath('userData')
+}
 
 const IS_DEV = process.env.ELECTRON_DEV === 'true';
 
-const devToolsBath = path.join(
-   os.homedir(),
-   '/Library/Application Support/Google/Chrome/Default/Extensions/pfgnfdagidkfgccljigdamigbcnndkod/0.9.26_0'
- );
+if (IS_DEV) {
+    settings.set('app', {
+        name: config.productName,
+        save: false,
+        saveDir: path.resolve(conf.userData, 'snapshots'),
+        saveKey: 'dev.json',
+        debug: true
+    });
+} else {
+    settings.set('app', {
+        name: config.productName,
+        save: false,
+        saveDir: path.resolve(conf.userData, 'snapshots'),
+        saveKey: 'latest.json',
+        debug: false
+    });
+}
 
+console.log('Using settings:', settings.get('app'));
 
 const dimensions = {
     dev: {
@@ -25,13 +49,10 @@ const createWindow = () => {
     const windowConfig = {
         title: 'Cheat',
         titleBarStyle: 'hiddenInset',
-        // titleBarOverlay: {
-        //   color: '#2f3241',
-        //   symbolColor: '#74b1be'
-        // },
         vibrancy: 'content',
         webPreferences: {
             nodeIntegration: true,
+            nodeIntegrationInWorker: true,
             preload: path.resolve(__dirname, './preload.js'),
             additionalArguments: [ ( IS_DEV ? 'IS_DEV' : null ) ]
         }
@@ -43,6 +64,13 @@ const createWindow = () => {
 
     win.loadFile('./dist/index.html');
 
+    /**
+     * Active window event.
+     *
+     * @event App#app:stateChnage:window
+     * @type {object}
+     * @property {string} windowName - Active window (eg "Google Chrome")
+     */
     function getActiveWindow() {
         activeWindows().getActiveWindow().then(result => {
             win.webContents.send('app:stateChange:window', {
@@ -56,7 +84,7 @@ const createWindow = () => {
     win.on('focus', (e) => {
         win.webContents.send('app:stateChange:focus');
         win.webContents.send('app:stateChange:window', {
-            windowName: '__self__'
+            windowName: config.productName
         });
         clearInterval(pollActiveWindow);
     });
@@ -74,7 +102,7 @@ const createWindow = () => {
     return win;
 }
 
-const { saveImage, saveSnapshot, getLatestSnapshot } = require('./io.js');
+
 
 app.whenReady().then(async () => {
     const win = createWindow();
@@ -82,17 +110,10 @@ app.whenReady().then(async () => {
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow()
     });
-
-    await session.defaultSession.loadExtension(devToolsBath);
     
-    const conf = {
-        cwd: __dirname,
-        logs: app.getPath('logs'),
-        appData: app.getPath('appData'),
-        userData: app.getPath('userData')
-    }
+
 
     ipcMain.handle('app:saveImage', saveImage);
-    ipcMain.handle('app:saveSnapshot', (e, data) => saveSnapshot(conf.userData, data));
-    ipcMain.handle('app:getLatestSnapshot', (e) => getLatestSnapshot(conf.userData));
+    ipcMain.handle('app:saveSnapshot', (e, data) => saveSnapshot(data));
+    ipcMain.handle('app:getLatestSnapshot', (e) => getLatestSnapshot());
 })

@@ -8,6 +8,9 @@ const root = createRoot(document.getElementById('app'));
  
 root.render(<App />);
 
+window.cheatsheetAPI.config()
+    .then(config => console.log(config));
+
 window.addEventListener('hashchange', event => {
-    console.log(`Hash Change:`, event.path[0].location.hash)
+    console.log(`Hash Change:`, event.path[0].location.hash);
 });
