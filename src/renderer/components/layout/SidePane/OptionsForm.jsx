@@ -1,6 +1,6 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { HiOutlineSave } from "react-icons/all";
+import { HiOutlineSave } from "react-icons/hi";
 import { useMst, Themes } from 'store';
 
 const OptionsForm = observer(() => {

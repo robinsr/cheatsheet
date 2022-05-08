@@ -1,3 +1,5 @@
+@import '../../styles/variables';
+
 .modal {
 
     &.image_modal {
@@ -15,7 +17,7 @@
     }
 
     .download-image {
-        border: 1px solid #ddd;
+        border: 1px solid $light-gray;
         padding: 0.8rem;
         border-radius: 1rem;
 

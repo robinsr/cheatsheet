@@ -1,4 +1,4 @@
-import { optimize } from 'svgo';
+
 
 /** @class */
 export class CustomImage {
@@ -72,13 +72,6 @@ export class CustomImage {
 export class CustomSVGImage extends CustomImage {
     constructor(data, width, height, filename) {
         super('SVG', data, width, height, filename);
-
-        /** @type {{data: string}} results **/
-        const result = optimize(data, {
-            multipass: true
-        });
-
-        this.data = result.data;
     }
     getDataURI() {
         const buff = Buffer.from(unescape(encodeURIComponent(this.data)), 'latin1');

@@ -3,7 +3,7 @@ import { debounce as _debounce } from 'lodash';
 import Optional from 'optional-js';
 import {  types,  flow,  getEnv,  getSnapshot,  resolveIdentifier } from 'mobx-state-tree';
 import { gate, getLogger } from 'utils';
-import UIStore from './ui/UIStore';
+import MobxSettingsStore from './ui/SettingsStore.js';
 import MobxSearchStore from './ui/SearchStore';
 import MobxStateStore from './ui/StateStore.js';
 import MobxAppStore from './app/AppStore.js';
@@ -30,22 +30,11 @@ const RootStoreViews = self => ({
  * @constructor
  */
 const RootStoreActions = self => ({
-    getInitialData: flow(function* getInitialData() {
-        log.info('Fetching data...');
-        try {
-            let initialData = yield getEnv(self).api.getInitialData();
-            log.info('Fetched data:', initialData);
-            Object.assign(self, initialData);
-            self.apps.setActiveApp(0);
-        } catch (err) {
-            log.error(err);
-        }
-        setTimeout(() => self.state.loading(false), 1200);
-    }),
-    listenToWindowChange() {
-        let api = getEnv(self).api;
 
-        api.handleWindow(gate(hasWindowChanged, (e, data) => {
+    listenToWindowChange() {
+        let api = getEnv(self).cheatsheetAPI;
+
+        api.subscribe('app:window-change', gate(hasWindowChanged, (e, data) => {
             handleWindowChange(data.windowName, self, api);
         }));
     },
@@ -92,7 +81,7 @@ const RootStoreActions = self => ({
 
 /**
  * @typedef {object} IRootStoreProps
- * @property {UIStore} ui
+ * @property {ISettingsStore} ui
  * @property {EditStore} edit
  * @property {IAppStore} apps
  * @property {ImageModalStore} imageModal
@@ -102,7 +91,7 @@ const RootStoreActions = self => ({
  */
 const MobxStore = types
     .model('MobxStore', {
-        ui: UIStore,
+        ui: MobxSettingsStore,
         edit: MobxEditItemStore,
         apps: MobxAppStore,
         imageModal: MobxImageModalStore,
@@ -114,7 +103,7 @@ const MobxStore = types
     .actions(RootStoreActions);
 
 MobxStore.__defaults = {
-    ui: UIStore.__defaults,
+    ui: MobxSettingsStore.__defaults,
     edit: MobxEditItemStore.__defaults,
     apps: MobxAppStore.__defaults,
     imageModal: MobxImageModalStore.__defaults,
@@ -122,6 +111,7 @@ MobxStore.__defaults = {
     state: MobxStateStore.__defaults,
     cursor: 'SEARCH',
 }
+
 
 function handleWindowChange(windowName, { apps, ui, state }) {
     log.debug('Handling window change', windowName);
@@ -131,19 +121,19 @@ function handleWindowChange(windowName, { apps, ui, state }) {
         return;
     }
 
-    let thisApp = window.cheatsheetAPI.configVal('name');
+    let thisApp = window.cheatsheetAPI.config.get('name');
 
-    if ([ thisApp ].concat(apps.ignoreApps).includes(windowName)) {
+    if ([ thisApp ].concat(ui.ignoreApps).includes(windowName)) {
         return;
     }
 
     let app = apps.window(windowName);
 
     if (app) {
-        apps.clearUnknownAppName();
+        state.clearUnknownAppName();
         apps.setActiveApp(app.id);
     } else {
-        apps.setUnknownAppName(windowName);
+        ui.setUnknownAppName(windowName);
     }
 }
 

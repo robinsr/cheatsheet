@@ -1,6 +1,8 @@
+@import '../../styles/variables';
+
 .search-box-result {
     a:focus {
-        background: #f1f1fc;
-        color: #5755d9;
+        color: $active-text-color;
+        background: $active-text-bg;
     }
 }

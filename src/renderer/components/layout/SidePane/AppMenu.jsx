@@ -2,7 +2,8 @@ import './AppMenu.scss';
 
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import { FaKeyboard, FiFilePlus, FiEdit } from "react-icons/all";
+import { FiFilePlus, FiEdit } from "react-icons/fi";
+import { FaKeyboard } from 'react-icons/fa';
 import { useMst } from 'store';
 import classnames from 'classnames';
 

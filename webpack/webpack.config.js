@@ -12,6 +12,7 @@ module.exports = {
     devtool: 'inline-source-map',
     devServer: {
         static: './dist',
+        hot: true
     },
     output: {
         filename: '[name].bundle.js',
@@ -40,11 +41,12 @@ module.exports = {
         }]
     },
     resolve: {
-        extensions: ['', '.js', '.jsx'],
+        extensions: ['', '.js', '.jsx', 'scss'],
         alias: {
             components: path.resolve(__dirname, '../src/renderer/components/'),
             store: path.resolve(__dirname, '../src/renderer/store/'),
-            utils: path.resolve(__dirname, '../src/renderer/utils/')
+            utils: path.resolve(__dirname, '../src/renderer/utils/'),
+            styles: path.resolve(__dirname, '../src/renderer/styles/')
         },
         fallback: {
             "fs": false

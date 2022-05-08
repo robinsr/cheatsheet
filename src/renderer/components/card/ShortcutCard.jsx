@@ -72,7 +72,7 @@ const ShortcutCard = observer(({
                 <div className="card-header">
                     <div className="dropdown float-right" ref={menuRef}>
                         <button
-                            className="btn btn-primary btn-sm mx-1"
+                            className={'btn btn-sm mx-1 ' + (edit ? 'btn-success' : 'btn-primary')}
                             onClick={() => setEdit(!edit)}
                             tabIndex={-1}>
                                 {edit

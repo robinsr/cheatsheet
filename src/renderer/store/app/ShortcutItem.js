@@ -7,12 +7,14 @@ import { getParent, getPath, types } from 'mobx-state-tree';
  */
 const ShortcutItemViews = self => ({
     /**
+     * @name ShortcutItemActions.app
      * @returns {IAppStore}
      */
     get app() {
         return getParent(self, 4);
     },
     /**
+     * @name ShortcutItemActions.category
      * @returns {ICategoryItem}
      */
     get category() {
@@ -27,10 +29,7 @@ const ShortcutItemViews = self => ({
     },
 
     get link() {
-        console.log(getPath(self));
-        let path = `/apps/${self.app.id}/category/${self.category.id}/item/${self.id}`;
-        console.log(path);
-        return path;
+        return `/apps/${self.app.id}/category/${self.category.id}/item/${self.id}`;
     },
 
     get markdown() {

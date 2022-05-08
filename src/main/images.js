@@ -6,9 +6,9 @@ class CustomImage {
     static fromData(imageData) {
         let { type, data, width, height, filename } = imageData;
 
-        if (type == 'SVG') {
+        if (type === 'SVG') {
             return new CustomSVGImage(data, width, height, filename);
-        } else if (type == 'PNG') {
+        } else if (type === 'PNG') {
             return new CustomPNGImage(data, width, height, filename);
         }
     }

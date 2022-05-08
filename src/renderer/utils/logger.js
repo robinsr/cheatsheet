@@ -3,7 +3,7 @@
  */
 import Logger from "js-logger";
 
-const stage = window.cheatsheetAPI.stage;
+const stage = window.cheatsheetAPI.stage();
 
 const { OFF, DEBUG, INFO, WARN, ERROR } = Logger;
 
@@ -18,17 +18,17 @@ Logger.useDefaults({
       },
 });
 
-if (stage === 'DEV') {
+if (stage === 'dev') {
     Logger.get('AppStore').setLevel(INFO);
     Logger.get('JSX/CursorNavigableForm').setLevel(INFO);
     Logger.get('JSX/CaptureBox').setLevel(DEBUG);
     Logger.get('JSX/EditItemModal').setLevel(INFO);
-    Logger.get('KeyActions').setLevel(DEBUG);
-    Logger.get('KeyConfig').setLevel(DEBUG);
-    Logger.get('KeyEmitter').setLevel(DEBUG);
+    Logger.get('KeyActions').setLevel(INFO);
+    Logger.get('KeyConfig').setLevel(INFO);
+    Logger.get('KeyEmitter').setLevel(INFO);
     Logger.get('Store').setLevel(INFO);
     Logger.get('Store/action').setLevel(INFO);
-    Logger.get('Store/patch').setLevel(INFO);
+    Logger.get('Store/patch').setLevel(DEBUG);
     Logger.get('Store/snapshot').setLevel(INFO);
 }
 

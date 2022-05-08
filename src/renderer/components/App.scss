@@ -1,9 +1,12 @@
+@import '../styles/variables';
+
 html, body, #app {
     height: 100%;
 }
 
 body {
-    background-color: #f7f8f9 !important;
+    background-color: $bg-gray;
+    zoom: $default-zoom;
 
     &.show-debug-viz {
         .debug-vis-only {
@@ -12,6 +15,10 @@ body {
     }
 
     .debug-vis-only {
+        display: none;
+    }
+
+    &::-webkit-scrollbar {
         display: none;
     }
 }

@@ -1,11 +1,13 @@
 import { types } from 'mobx-state-tree';
 
 /**
+ * Contains values that do not need to be persisted and are Subject to frequent changes
  * @typedef {object} StateStore
  * @property {boolean} isLoading
  * @property {boolean} isSaving
  * @property {?string} activeWindow
  * @property {?string} keyScope
+ * @property {string} unknownApp
  */
 
 const MobxStateStore = types
@@ -13,7 +15,8 @@ const MobxStateStore = types
     isLoading: types.optional(types.boolean, true),
     isSaving: types.optional(types.boolean, false),
     activeWindow: types.maybeNull(types.string),
-    keyScope: types.maybeNull(types.string)
+    keyScope: types.maybeNull(types.string),
+    unknownApp: types.maybeNull(types.string)
 })
 .actions(self => ({
     /**
@@ -44,14 +47,28 @@ const MobxStateStore = types
      */
     saving(val) {
         this.isSaving = val;
-    }
+    },
+    /**
+     * @name StateStore#setUnknownAppName
+     * @param {string} appName
+     */
+    setUnknownAppName(appName) {
+        self.unknownApp = appName
+    },
+     /**
+     * @name StateStore#clearUnknownAppName
+     */
+    clearUnknownAppName() {
+        self.unknownApp = null;
+    },
 }));
 
 MobxStateStore.__defaults = {
     isLoading: true,
     isSaving: false,
-    activeWindow: window.cheatsheetAPI.configVal('app.name'),
-    keyScope: null
+    activeWindow: window.cheatsheetAPI.config.get('name'),
+    keyScope: null,
+    unknownApp: null
 }
 
 export default MobxStateStore;

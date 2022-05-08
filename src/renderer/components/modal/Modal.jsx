@@ -11,7 +11,7 @@ const Modal = ({
     content,
     footer,
     onClose,
-
+    closeButton=true
 }) => {
 
     let cns = classnames('modal', name, {
@@ -42,11 +42,13 @@ const Modal = ({
                     <div className="docs-demo columns">
                         <div className="column col-12">
                             {footer}
-                            <button
-                                className="btn btn-default"
-                                onClick={onClose}>
-                                    Close
-                            </button>
+                            {closeButton &&
+                                <button
+                                    className="btn btn-default"
+                                    onClick={onClose}>
+                                        Close
+                                </button>
+                            }
                         </div>
                     </div>
                 </div>

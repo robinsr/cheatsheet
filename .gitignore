@@ -3,4 +3,4 @@ node_modules
 dist
 .DS_store
 .idea
-Cheatsheet-darwin-x64
+dist_electron

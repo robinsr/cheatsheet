@@ -1,3 +1,5 @@
+@import '../../styles/variables';
+
 .label.shortcut {
-    background-color: #dedede;
+    background-color: darken($bg-gray, 5%);
 }

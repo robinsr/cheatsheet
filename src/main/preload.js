@@ -1,14 +1,25 @@
-const { contextBridge, ipcRenderer } = require('electron');
-const settings = require('electron-app-settings');
+const { contextBridge, ipcRenderer: ipc } = require('electron');
+const { stage, conf } = require('../shared/config.js');
 
-let IS_DEV = process.argv.includes('IS_DEV');
 
-contextBridge.exposeInMainWorld('cheatsheetAPI', {
-  saveImage: (imageData) => ipcRenderer.invoke('app:saveImage', imageData),
-  handleWindow: (callback) => ipcRenderer.on('app:stateChange:window', callback),
-  getInitialData: () => ipcRenderer.invoke('app:getLatestSnapshot'),
-  onSnapshot: (data) =>  ipcRenderer.invoke('app:saveSnapshot', data),
-  stage: IS_DEV ? 'DEV' : 'PROD',
-  config: async () => await settings.get('app'),
-  configVal: (key) => settings.get(key)
-})
+const cheatsheetAPI = {
+    apps: {
+        save: async (data) => await ipc.invoke('api:apps:save', data),
+        get: async () => await ipc.invoke('api:apps:get')
+    },
+    settings: {
+        save: async (data) => await ipc.invoke('api:settings:save', data),
+        get: async () => await ipc.invoke('api:settings:get')
+    },
+    image: {
+        save: async (img) => await ipc.invoke('api:image:save', img)
+    },
+    subscribe: (eventName, callback) => ipc.on(eventName, callback),
+    config: {
+        getAll: () => conf,
+        get: (key) => conf[key]
+    },
+    stage: () => stage
+}
+
+contextBridge.exposeInMainWorld('cheatsheetAPI', cheatsheetAPI);

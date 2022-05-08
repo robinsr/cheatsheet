@@ -5,12 +5,15 @@ import { getLogger } from 'utils';
 import MobxStore from "./RootStore.js";
 
 const log = getLogger('Store');
-const api = window.cheatsheetAPI;
+const cheatsheetAPI = window.cheatsheetAPI;
 
-let initialState = MobxStore.create(MobxStore.__defaults, { api });
+
+let initialState = MobxStore.create(MobxStore.__defaults, { cheatsheetAPI });
+/** @type {IRootStore} */
 export const rootStore = initialState;
 
-rootStore.getInitialData().then(() => log.info('data:loaded'));
+rootStore.apps.load().then(() => log.info('apps:loaded'));
+rootStore.ui.load().then(() => log.info('settings:loaded'));
 
 rootStore.listenToWindowChange();
 
@@ -33,9 +36,9 @@ export function useMst() {
     return store;
 }
 
-export { Themes } from './ui/UIStore';
+export { Themes } from './ui/SettingsStore.js';
 
-const saveData = (snapshot) => {
+const saveData = async (snapshot) => {
     if (rootStore.state.isLoading) {
         return;
     }
@@ -44,22 +47,24 @@ const saveData = (snapshot) => {
         return;
     }
 
-    log.info('saving snapshot', snapshot);
+    log.info('Saving apps', snapshot);
 
     rootStore.state.saving(true);
-    api.onSnapshot(snapshot)
-        .then(data => log.info('saved', data))
-        .then(msg => rootStore.state.saving(false))
-        .catch(err => {
-            log.error(err);
-        });
+    try {
+        const result = window.cheatsheetAPI.apps.save(snapshot);
+        log.info('Save success', result);
+    } catch (err) {
+        log.error('Save failed', err);
+    } finally {
+        rootStore.state.saving(false);
+    }
 };
 
 
 onSnapshot(rootStore.apps, _debounce((snapshot) => {
-    saveData({ apps: snapshot });
+    rootStore.apps.save();
 }, 750));
 
 onSnapshot(rootStore.ui, snapshot => {
-    saveData({ ui: snapshot });
+    rootStore.ui.save();
 });

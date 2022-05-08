@@ -28,7 +28,7 @@ export const CategoryItemViews = (self) => ({
     },
     next(id) {
         /** @type {IAppItem} */
-        let parent = getParent(self, 2)
+        let parent = getParent(self, 2);
 
         return Optional.of(id)
             .map(self.index).map(increment).map(self.at)

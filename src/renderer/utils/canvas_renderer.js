@@ -1,7 +1,7 @@
 import html2canvas from 'html2canvas';
 import { changeDpiDataUrl } from 'changedpi'; 
 import { elementToSVG, inlineResources } from 'dom-to-svg';
-import { optimize } from 'svgo';
+import optimize from 'svgo-browser/lib/optimize';
 
 import { CustomPNGImage, CustomSVGImage } from 'utils/images.js';
 
@@ -14,11 +14,7 @@ const renderPNG = (e) => {
             scale: 2,
             backgroundColor: null,
         }).then(canvas => {
-            let highDensityDataURI = changeDpiDataUrl(canvas.toDataURL('image/png', 1.0), 300);
-            let dataURI = highDensityDataURI.replace(CustomPNGImage.dataURIPrefix, '');
-
-            // let dataURI = canvas.toDataURL('image/png', 0.92).replace(CustomPNGImage.dataURIPrefix, '');
-            
+            let dataURI = changeDpiDataUrl(canvas.toDataURL('image/png', 1.0), 300);
             resolve(new CustomPNGImage(dataURI, e_width, e_height));
         });
     });
@@ -36,7 +32,9 @@ const renderSVG = (e) => {
         inlineResources(svgDocument.documentElement).then(() => {
             let svgString = new XMLSerializer().serializeToString(svgDocument);
 
-            resolve(new CustomSVGImage(svgString, e_width, e_height));
+            optimize(svgString).then(data => {
+                resolve(new CustomSVGImage(data, e_width, e_height));
+            });
         });
     });
 }

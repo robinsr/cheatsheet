@@ -1,12 +1,12 @@
-import { resolveIdentifier, types } from 'mobx-state-tree';
-import { newUuid, getDebugLogger } from 'utils';
+import { flow, getEnv, getSnapshot, resolveIdentifier, types } from 'mobx-state-tree';
+import { newUuid, getLogger } from 'utils';
 import Optional from 'optional-js';
 
 import MobxAppItem from './AppItem';
 import MobxCategoryItem from './CategoryItem';
 import MobxShortcutItem from './ShortcutItem';
 
-const log = getDebugLogger('AppStore');
+const log = getLogger('AppStore');
 
 
 /**
@@ -73,6 +73,27 @@ const AppStoreViews = (self) =>  ({
  * @constructor
  */
 const AppStoreActions = (self) => ({
+    load: flow(function* loadApps() {
+        log.info('Fetching AppStore...');
+        try {
+            let result = yield getEnv(self).cheatsheetAPI.apps.get();
+            log.info('Fetched AppStore', result);
+            self.appList = result.appList;
+            self.selectedApp = self.appList[0];
+        } catch (err) {
+            log.error(err);
+        }
+    }),
+    save: flow(function* saveApps() {
+        log.info('Saving AppStore')
+        try {
+            const result = yield getEnv(self).cheatsheetAPI.apps.save(getSnapshot(self));
+            log.info('AppStore saved', result);
+        } catch (err) {
+            log.error('AppStore save failed', err);
+            log.error(err);
+        }
+    }),
     addNewApp(name='New App', windowName='') {
         let newApp = MobxAppItem.create({
             id: newUuid(), name, windowName, categories: [
@@ -88,15 +109,27 @@ const AppStoreActions = (self) => ({
         return newApp;
     },
     removeApp(id) {
+        let isActive = self.selectedApp.id === id;
+        let isEdit = self.editApp.id === id;
+
+        if (isEdit) {
+            self.clearEditApp();
+        }
+
+        if (isActive) {
+            self.selectedApp = self.appList.find(a => a.id !== id);
+        }
+
         self.appList.splice(self.index(id), 1);
     },
-    /**
-     * @param {number|string} appId - appId string or number index
-     */
     setActiveApp(appId) {
-        if (typeof appId === 'string') self.selectedApp = self.item(appId);
-        if (typeof appId === 'number') self.selectedApp = self.appList[appId];
-        else self.selectedApp = self.appList[0];
+        if (typeof appId === 'string') {
+            self.selectedApp = self.item(appId);
+        } else if (typeof appId === 'number') {
+            self.selectedApp = self.appList[appId];
+        } else {
+            self.selectedApp = self.appList[0];
+        }
     },
     clearSelectedApp() {
         self.selectedApp = null;
@@ -106,15 +139,6 @@ const AppStoreActions = (self) => ({
     },
     clearEditApp() {
         self.editApp = null;
-    },
-    setUnknownAppName(appName) {
-        self.unknownApp = appName
-    },
-    clearUnknownAppName() {
-        self.unknownApp = null;
-    },
-    addIgnoreApp(appName) {
-        self.ignoreApps.unshift(appName);
     },
     nextApp() {
         let current = self.index(self.selectedApp.id);
@@ -136,32 +160,31 @@ const AppStoreActions = (self) => ({
     },
     addItem(itemId, label) {
         if (itemId) {
-            log('addItem, found cursor:', itemId)
+            log.debug('addItem, found cursor:', itemId)
             let result = resolveIdentifier(MobxShortcutItem, self, itemId)
 
             if (result) {
-                log('Resolved cursor:', result)
+                log.debug('Resolved cursor:', result)
                 return result.category.addItem(label);
             }
 
-
         } else {
-            log('addItem, no cursor');
+            log.debug('addItem, no cursor');
         }
     },
     removeItem(itemId) {
         if (itemId) {
-            log('addItem, found cursor:', itemId)
+            log.debug('addItem, found cursor:', itemId)
 
             /** @type {IShortcutItem} */
             let result = resolveIdentifier(MobxShortcutItem, self, itemId)
 
             if (result) {
-                log('Resolved cursor:', result)
+                log.debug('Resolved cursor:', result)
                 result.category.removeItem(result.id);
             }
         } else {
-            log('addItem, no cursor');
+            log.debug('addItem, no cursor');
         }
     }
 })
@@ -172,8 +195,6 @@ const AppStoreActions = (self) => ({
  * @property {IAppItemProps[]} appList
  * @property {IAppItemProps} selectedApp
  * @property {IAppItemProps} editApp
- * @property {string} unknownApp
- * @property {string[]} ignoreApps
  * @property {IShortcutItem[]} allItems
  * @property {IShortcutItem} topItem
  * @property {boolean} isEmpty
@@ -183,8 +204,6 @@ const MobxAppStore = types
         appList: types.array(MobxAppItem),
         selectedApp: types.maybeNull(types.reference(MobxAppItem)),
         editApp: types.maybeNull(types.reference(MobxAppItem)),
-        unknownApp: types.maybeNull(types.string),
-        ignoreApps: types.array(types.string)
     })
     .views(AppStoreViews)
     .actions(AppStoreActions)
@@ -192,9 +211,7 @@ const MobxAppStore = types
 MobxAppStore.__defaults = {
     appList: [],
     selectedApp: null,
-    editApp: null,
-    unknownApp: null,
-    ignoreApps: []
+    editApp: null
 }
 
 export default MobxAppStore;

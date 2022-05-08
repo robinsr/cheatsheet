@@ -1,5 +1,4 @@
-$hover-color: #5755d9;
-$hover-bg: #f1f1fc;
+@import '../../styles/variables';
 
 .shortcut-table {
     .large-font {
@@ -9,7 +8,7 @@ $hover-bg: #f1f1fc;
     }
 
     th {
-        background-color: #fff;
+        background-color: $white !important;
     }
 
     td, th {
@@ -25,13 +24,13 @@ $hover-bg: #f1f1fc;
     }
 
     .remove-shortcut {
-        color: #f00;
+        color: $warning;
     }
 
     .shortcut-table-item {
         &.active, &:hover {
-            color: $hover-color;
-            background-color: #f1f1fc !important;
+            color: $active-text-color;
+            background-color: $active-text-bg !important;
         }
     }
 }

@@ -1,7 +1,7 @@
 import './CaptureBox.scss';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { FaUndo } from "react-icons/all";
+import { FaUndo } from "react-icons/fa";
 import hotkeys from 'hotkeys-js';
 import { observer } from "mobx-react-lite";
 import classnames from "classnames";

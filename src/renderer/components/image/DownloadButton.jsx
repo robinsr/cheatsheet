@@ -1,4 +1,7 @@
 import React from 'react';
+import { getLogger } from 'utils';
+
+const log = getLogger('JSX/DownloadButton');
 
 const noop = (data) => console.log(data);
 
@@ -10,19 +13,15 @@ const DownloadButton = ({
         return null;
     }
 
-
-    const onClick = (e) => {
-        
-        window.cheatsheetAPI.saveImage(imageModel)
-            .then(filePath => {
-                if (filePath) {
-                    onSave(`Iamge saved to ${filePath}`)
-                } 
-                
-            })
-            .catch(err => {
-                onError(err);
-            });
+    const onClick = async (e) => {
+        try {
+            const filepath = await window.cheatsheetAPI.image.save(imageModel);
+            log.info('File save success', filepath);
+            onSave(filepath);
+        } catch (err) {
+            log.error('File save failed', err);
+            onError(err);
+        }
     }
 
     return (

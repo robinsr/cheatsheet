@@ -1,4 +1,4 @@
-$hover-color: #5755d9;
+@import '../../../styles/variables';
 
 .app-menu {
 
@@ -14,7 +14,7 @@ $hover-color: #5755d9;
       cursor: pointer;
 
       &:hover {
-        color: $hover-color;
+        color: $active-text-color;
       }
     }
   }
@@ -34,7 +34,7 @@ $hover-color: #5755d9;
       justify-content: space-between;
 
       &:hover {
-        color: $hover-color;
+        color: $active-text-color;
       }
 
       div svg {
