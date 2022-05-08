@@ -9,9 +9,9 @@
     "test": "jest",
     "start": "electron .",
     "dev": "ELECTRON_DEV=true electron .",
-    "build": "npx webpack --config webpack/webpack.config.js",
-    "watch": "npx webpack --config webpack/webpack.config.js --watch",
-    "serve": "npx webpack serve --config webpack/webpack.config.js ",
+    "build": "npx webpack --config webpack/webpack.prod.js",
+    "watch": "npx webpack --config webpack/webpack.dev.js --watch",
+    "serve": "npx webpack serve --config webpack/webpack.dev.js ",
     "package": "node packager.js",
     "clean": "rm -rf dist"
   },
@@ -67,7 +67,8 @@
     "style-loader": "^3.3.1",
     "webpack": "^5.72.0",
     "webpack-cli": "^4.9.2",
-    "webpack-dev-server": "^4.9.0"
+    "webpack-dev-server": "^4.9.0",
+    "webpack-merge": "^5.8.0"
   },
   "jest": {
     "setupFiles": [

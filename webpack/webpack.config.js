@@ -4,15 +4,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 
 module.exports = {
-    mode: 'development',
     entry: {
         main: ['regenerator-runtime/runtime.js', './renderer/index.js']
-    },
-    // target: 'electron-main',
-    devtool: 'inline-source-map',
-    devServer: {
-        static: './dist',
-        hot: true
     },
     output: {
         filename: '[name].bundle.js',

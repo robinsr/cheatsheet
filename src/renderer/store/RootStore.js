@@ -133,7 +133,7 @@ function handleWindowChange(windowName, { apps, ui, state }) {
         state.clearUnknownAppName();
         apps.setActiveApp(app.id);
     } else {
-        ui.setUnknownAppName(windowName);
+        state.setUnknownAppName(windowName);
     }
 }
 

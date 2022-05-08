@@ -5,7 +5,7 @@ import SearchBox from './SearchBox.jsx';
 import {observer} from 'mobx-react-lite';
 import {useMst} from 'store';
 
-
+const debug = window.cheatsheetAPI.config.get('debug');
 
 const Nav = observer(({
     onMenuClick, isMenuOpen=false
@@ -18,7 +18,7 @@ const Nav = observer(({
     return (
         <header id="main-header">
             <div id="title-bar">
-                <small className={"float-right"}>keyScope: {keyScope}; cursor: {cursor}; active: {activeWindow || 'none'}</small>
+                {debug && <small className={"float-right"}>keyScope: {keyScope}; cursor: {cursor}; active: {activeWindow || 'none'}</small>}
             </div>
             <div className="navbar">
                 <section className="navbar-section">

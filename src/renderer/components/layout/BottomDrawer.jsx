@@ -4,24 +4,25 @@ import { useMst } from "store";
 import SlidingPane from "react-sliding-pane";
 
 const BottomDrawer = observer(() => {
-    let { apps } = useMst();
+    let { apps, state, ui } = useMst();
 
     const [ isOpen, setIsOpen ] = useState(true);
 
-    if (!apps.unknownApp) {
+    if (!state.unknownApp) {
         return null;
     }
 
-    let { unknownApp } = apps;
+    let { unknownApp } = state;
+
 
     function onIgnore() {
-        apps.addIgnoreApp(unknownApp);
-        apps.clearUnknownAppName();
+        ui.addIgnoreApp(unknownApp);
+        state.clearUnknownAppName();
     }
 
     function onYesResponse() {
         apps.addNewApp(unknownApp, unknownApp);
-        apps.clearUnknownAppName();
+        state.clearUnknownAppName();
     }
 
     return (
