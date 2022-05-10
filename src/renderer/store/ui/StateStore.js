@@ -39,14 +39,14 @@ const MobxStateStore = types
      * @param {boolean} val
      */
     loading(val) {
-        this.isLoading = val;
+        self.isLoading = val;
     },
     /**
      * @name StateStore#saving
      * @param {boolean} val
      */
     saving(val) {
-        this.isSaving = val;
+        self.isSaving = val;
     },
     /**
      * @name StateStore#setUnknownAppName

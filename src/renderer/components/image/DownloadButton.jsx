@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from 'components/inputs';
 import { getLogger } from 'utils';
 
 const log = getLogger('JSX/DownloadButton');
@@ -25,9 +26,9 @@ const DownloadButton = ({
     }
 
     return (
-        <button className="btn btn-primary" onClick={onClick}>
+        <Button primary onClick={onClick}>
             <i className="icon icon-download"></i> Download
-        </button>
+        </Button>
     );
 }
 

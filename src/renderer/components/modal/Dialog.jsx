@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from 'components/inputs';
 import Modal from './Modal';
 import KeyScope from 'components/providers/KeyScope';
 
@@ -29,17 +30,16 @@ const Dialog = ({
                          <div className="container">
                             <div className="columns">
                                 <div className="column col-6">
-                                    <button
-                                        className={'btn btn-lg btn-error'}
+                                    <Button large danger
                                         style={btnStyle}
-                                        onClick={onConfirm}>Confirm</button>
+                                        onClick={onConfirm}>Confirm</Button>
 
                                 </div>
                                 <div className="column col-6">
-                                    <button
+                                    <Button large
                                         className={'btn btn-lg btn-default'}
                                         style={btnStyle}
-                                        onClick={onCancel}>Cancel</button>
+                                        onClick={onCancel}>Cancel</Button>
                                 </div>
                             </div>
                          </div>

@@ -1,7 +1,11 @@
 const path = require('path');
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+// const ThemesGeneratorPlugin = require('themes-switch/ThemesGeneratorPlugin');
+// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
+const themes = [ 'default', 'darcula' ];
+//,styles: themes.map(theme => `./renderer/styles/themes/${theme}.scss`)
 
 module.exports = {
     entry: {

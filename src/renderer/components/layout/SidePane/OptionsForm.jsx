@@ -1,9 +1,11 @@
 import React from 'react';
+import { Button } from 'components/inputs';
 import { observer } from 'mobx-react-lite';
+import { GiMoonBats } from 'react-icons/gi';
 import { HiOutlineSave } from "react-icons/hi";
-import { useMst, Themes } from 'store';
+import { useMst, KeyThemes } from 'store';
 
-const OptionsForm = observer(() => {
+const OptionsForm = observer(({ closeContainer }) => {
     const { ui, backup } = useMst();
 
     function onBackup() {
@@ -21,8 +23,24 @@ const OptionsForm = observer(() => {
                 <label className="form-switch">
                     <input
                         type="checkbox"
-                        checked={ui.theme === Themes.light}
-                        onChange={ui.toggleTheme}
+                        checked={ui.isDarkMode}
+                        onChange={e => {
+                            e.target.checked ? ui.night() : ui.day();
+                            closeContainer();
+                        }}
+                    />
+                    <i className="form-icon"></i> <GiMoonBats/>
+                </label>
+            </div>
+            <div className="form-control">
+                <label className="form-switch">
+                    <input
+                        type="checkbox"
+                        checked={ui.keyTheme === KeyThemes.light}
+                        onChange={e => {
+                            ui.toggleKeyTheme();
+                            closeContainer();
+                        }}
                     />
                     <i className="form-icon"></i> Light Keys
                 </label>
@@ -37,9 +55,8 @@ const OptionsForm = observer(() => {
                     <i className="form-icon"></i> Active follow
                 </label>
             </div>
-
             <div className="form-control my-2">
-                <button className="btn btn-sm" onClick={onBackup}><HiOutlineSave /> Backup now</button>
+                <Button small onClick={onBackup}><HiOutlineSave /> Backup now</Button>
             </div>
         </nav>
     );

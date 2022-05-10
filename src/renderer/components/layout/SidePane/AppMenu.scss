@@ -27,15 +27,7 @@
     list-style: none;
 
     &-item {
-      font-size: 0.9rem;
-      cursor: pointer;
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
 
-      &:hover {
-        color: $active-text-color;
-      }
 
       div svg {
         vertical-align: text-top;

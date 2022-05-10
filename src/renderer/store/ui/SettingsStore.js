@@ -4,20 +4,24 @@ import { getLogger } from 'utils';
 const log = getLogger('SettingsStore');
 
 /**
- * Contains "user-settings" -like properties that are to be persisted
- * @typedef {object} ISettingsStore
- * @property {Themes} theme
- * @property {boolean} activeFollow
- * @property {string[]} ignoreApps
- */
-
-/**
  * @enum {string}
  */
-export const Themes = {
+export const KeyThemes = {
     light: 'light',
     dark: 'dark'
 }
+
+/**
+ * Night mode values
+ * @enum {string}
+ */
+export const Themes = {
+    night: 'night',
+    day: 'day'
+}
+
+const darkModeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+const systemTheme = darkModeQuery.matches ? Themes.night : Themes.day;
 
 /**
  * SettingsStore actions
@@ -46,15 +50,29 @@ const SettingsStoreActions = (self) => ({
         }
     }),
     /**
-     * @name ISettingsStore#toogleTheme
+     * Enable Dark mode
+     * @name ISettingsStore#night
      */
-    toggleTheme() {
-        switch (self.theme) {
-            case Themes.light:
-                self.theme = Themes.dark;
+    night() {
+        self.theme = Themes.night
+    },
+    /**
+     * Disable Dark mode
+     * @name ISettingsStore#day
+     */
+    day() {
+        self.theme = Themes.day
+    },
+    /**
+     * @name ISettingsStore#toggleKeyTheme
+     */
+    toggleKeyTheme() {
+        switch (self.keyTheme) {
+            case KeyThemes.light:
+                self.keyTheme = KeyThemes.dark;
                 break;
-            case Themes.dark:
-                self.theme = Themes.light;
+            case KeyThemes.dark:
+                self.keyTheme = KeyThemes.light;
                 break;
         }
     },
@@ -73,17 +91,46 @@ const SettingsStoreActions = (self) => ({
     }
 });
 
+
+/**
+ * SettingsStore computed views
+ * @param {ISettingsStore} self
+ * @constructor
+ */
+const SettingsStoreViews = self => ({
+    /**
+     * @name ISettingsStore#isDarkMode
+     * @returns {boolean}
+     */
+    get isDarkMode() {
+        return self.theme === Themes.night;
+    }
+});
+
+
+/**
+ * Contains "user-settings" -like properties that are to be persisted
+ * @typedef {object} ISettingsStore
+ * @property {Themes} theme
+ * @property {KeyThemes} keyTheme
+ * @property {boolean} activeFollow
+ * @property {string[]} ignoreApps
+ */
 const MobxSettingsStore = types
     .model('SettingsStore', {
-        theme: types.enumeration('theme', ['light', 'dark']),
+        theme: types.optional(types.enumeration('theme', ['day', 'night']), 'day'),
+        keyTheme: types.enumeration('keyTheme', ['light', 'dark']),
         activeFollow: types.boolean,
         ignoreApps: types.array(types.string)
     })
+    .views(SettingsStoreViews)
     .actions(SettingsStoreActions);
 
 MobxSettingsStore.__defaults = {
-    theme: 'dark',
-    activeFollow: true
+    keyTheme: 'dark',
+    theme: systemTheme,
+    activeFollow: true,
+    ignoreApps: []
 };
 
 export default MobxSettingsStore;

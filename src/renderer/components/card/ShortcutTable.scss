@@ -7,9 +7,6 @@
         }
     }
 
-    th {
-        background-color: $white !important;
-    }
 
     td, th {
         padding: 0.2rem 0.2rem;
@@ -19,24 +16,10 @@
         border-bottom: none;
     }
 
-    .shortcut-table-item {
-        cursor: pointer;
-    }
+
 
     .remove-shortcut {
         color: $warning;
     }
 
-    .shortcut-table-item {
-        &.active, &:hover {
-            color: $active-text-color;
-            background-color: $active-text-bg !important;
-        }
-    }
-}
-
-.shortcut {
-    padding: 0.2rem 0.3em 0.3rem 0.2rem;
-    display: inline-block;
-    white-space: nowrap;
 }

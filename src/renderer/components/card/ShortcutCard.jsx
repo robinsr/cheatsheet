@@ -1,16 +1,57 @@
-import './ShortcutCard.scss';
-
+import { FlexGrow, PointerItem, SpaceBetweenItem, Transition } from 'components/theme';
 import React, { useEffect, useRef, useState } from 'react';
+import { HiOutlineTrash } from 'react-icons/hi';
+import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
-
-import { renderPNG, renderSVG } from 'utils/canvas_renderer.js';
-import { ShowHideElement } from 'utils/dom.js';
 import { useMst } from 'store';
+import { CardMenu, MenuItem } from 'components/card/CardMenu';
+import { Button, ButtonLink, ContentEditable, ToggleButton } from 'components/inputs';
+import { renderPNG, renderSVG, ShowHideElement } from 'utils';
+import ShortcutTable from './ShortcutTable';
 
-import ShortcutTable from './ShortcutTable.jsx';
+const CardContainer = styled.div`
+  border: 0;
+  box-shadow: 0 0.25rem 1rem rgba(48, 55, 66, 0.15);
+  break-inside: avoid;
+  margin-bottom: 0.8rem;
+`
+
+const Card = styled.div`
+  ${Transition()};
+  
+  background-color: ${props => props.theme.card.body};
+  color: ${props => props.theme.card.text};
+  border: 0.05rem solid ${props => props.theme.card.head};
+  border-radius: 0.1rem;
+  display: flex;
+  flex-direction: column;
+`;
+
+const CardHeader = styled.div`
+  ${SpaceBetweenItem()}
+  ${Transition()};
+  
+  padding: 0.8rem;
+  background-color: ${props => props.theme.card.head};
+`;
+
+const CardTitle = styled.div`
+  ${FlexGrow()}
+`;
+
+const AddItemButton = styled.div`
+  ${PointerItem()}
+  width: 100%;
+  text-align: center;
+  
+  a {
+    display: block;
+    font-size: 1.2rem;
+  }
+`;
 
 
-const ShortcutCard = observer(({ 
+const ShortcutCard = observer(({
     group, app
 }) => {
     let { items, imageModal, removeCategory } = useMst();
@@ -22,112 +63,87 @@ const ShortcutCard = observer(({
     let [ edit, setEdit ] = useState(false);
     let [ editGroupName, setEditGroupName ] = useState(group.name);
 
-    useEffect(editing => {
-        if (editing) {
-            return;
-        }
+    const onDoneEdit = () => {
+        if (editGroupName !== group) group.updateName(editGroupName);
+        setEdit(false);
+    };
 
-        if (editGroupName !== group) {
-            group.updateName(editGroupName);
-        }
-    }, [edit]);
-
-    function render(type) {
-        if (type === 'SVG') {
-            return renderSVG(cardRef.current);
-        } else if (type === 'PNG') {
-            return renderPNG(cardRef.current);
-        } else {
-            return Promise.reject('Image type must be SVG on PNG')
-        }
+    const render = type => {
+        if (type === 'SVG') return renderSVG(cardRef.current);
+        if (type === 'PNG') return renderPNG(cardRef.current);
+        return Promise.reject('Image type must be SVG on PNG')
     }
 
-    function exportImage(type) {
-        let e = new ShowHideElement([
-            menuRef.current, addItemRef.current
-        ]);
-        e.hide();
-
+    const exportImage = type => {
+        let e = new ShowHideElement([ menuRef.current, addItemRef.current ]);
         render(type)
             .then(imageData => {
-                e.show();
-
                 imageData.filename = `cheatsheet-${app.name}-${group.name}`;
                 imageModal.setImageData(imageData);
             })
-            .catch(e.show())
+            .catch(e.show)
+            .finally(e.show)
     }
 
-    function deleteCategory() {
+    const deleteCategory = () => {
         removeCategory(app.id, group.id);
     }
 
-    function exportMD() {
-        // todo
+    const deleteSelected = () => {
+
     }
 
+    const exportMD = () => { /* todo */ }
+
     return (
-        <div className="shortcut-card" key={'shortcut-card-' + group.id} ref={cardRef}>
-            <div className="card">
-                <div className="card-header">
-                    <div className="dropdown float-right" ref={menuRef}>
-                        <button
-                            className={'btn btn-sm mx-1 ' + (edit ? 'btn-success' : 'btn-primary')}
-                            onClick={() => setEdit(!edit)}
-                            tabIndex={-1}>
-                                {edit
-                                    ? <i className="icon icon-check"></i>
-                                    : <i className="icon icon-edit"></i>}
-                        </button>
+        <CardContainer key={'shortcut-card-' + group.id} ref={cardRef}>
+            <Card className="card">
+                <CardHeader>
+                    <CardTitle>
+                        <ContentEditable className="card-title h5"
+                                         editable={edit}
+                                         defaultValue={group.name}
+                                         editValue={editGroupName}
+                                         onChange={setEditGroupName}/>
+                    </CardTitle>
+                    <div className="dropdown" ref={menuRef}>
+                        <ToggleButton className="mx-1" tabIndex={-1}
+                                      unPopped={<Button small primary icon="edit" />}
+                                      popped={<Button small success icon="check" />}
+                                      onPop={() => setEdit(true)}
+                                      onUnPop={() => onDoneEdit()}
+                        />
                         {edit ?
-                             <button
-                                className="btn btn-error btn-sm"
-                                onClick={deleteCategory}
-                                tabIndex={-1}>
-                                <i className="icon icon-delete"></i>
-                            </button>
+                             <Button small danger icon="delete" onClick={deleteCategory}tabIndex={-1}/>
                             : <span>
-                                <button
-                                    className="btn btn-primary btn-sm dropdown-toggle"
-                                    tabIndex={-1}>
-                                    <i className="icon icon-download"></i>
-                                </button>
-                                <ul className="menu export-menu">
-                                    <li className="menu-item">
-                                        <a onClick={() => exportImage('PNG')}>
-                                            <i className="icon icon-photo"></i>
-                                            <span className="mx-1">PNG</span>
-                                        </a>
-                                    </li>
-                                    <li className="menu-item">
-                                        <a onClick={() => exportImage('SVG')}>
-                                            <i className="icon icon-resize-horiz"></i>
-                                            <span className="mx-1">SVG</span>
-                                        </a>
-                                    </li>
-                                    <li className="menu-item">
-                                        <a onClick={() => exportMD()}>
-                                            <i className="icon icon-bookmark"></i>
-                                            <span className="mx-1">MD</span>
-                                        </a>
-                                    </li>
-                                </ul>
+                                <Button small primary icon="download" className="dropdown-toggle"tabIndex={-1}/>
+                                <CardMenu>
+                                    <MenuItem name="PNG" icon="photo" onCLick={() => exportImage('PNG')}/>
+                                    <MenuItem name="SVG" icon="horiz" onCLick={() => exportImage('SVG')}/>
+                                    <MenuItem name="MD" icon="bookmark" onCLick={() => exportMD()}/>
+                                </CardMenu>
                             </span>
                           }
                     </div>
-                    <div className="card-title h5">
-                        {edit ? <input type="text" value={editGroupName} onChange={e => setEditGroupName(e.target.value)} /> : group.name}
-                    </div>
-                </div>
+                </CardHeader>
                 <div className="card-body">
                     <ShortcutTable group={group} editing={edit}/>
-                    <div className="row-new-cmd text-center" ref={addItemRef}>
-                        <a onClick={() => group.addItem()} className="btn btn-link">+</a>
-                    </div>
+                    <AddItemButton ref={addItemRef}>
+                        {!edit
+                          ? <ButtonLink onClick={() => group.addItem()}>+</ButtonLink>
+                          : <Button danger small left onClick={() => deleteSelected()}>
+                                <HiOutlineTrash/> Delete selected
+                            </Button>
+                        }
+                    </AddItemButton>
                 </div>
-            </div>
-        </div>
+            </Card>
+        </CardContainer>
     );
 });
 
 export default ShortcutCard;
+
+/*
+{edit ? <input type="text" value={editGroupName} onChange={e => setEditGroupName(e.target.value)} /> : group.name}
+ */

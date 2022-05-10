@@ -1,32 +1,38 @@
+
 import './AppMenu.scss';
 
 import React from 'react';
-import { observer } from 'mobx-react-lite';
-import { FiFilePlus, FiEdit } from "react-icons/fi";
-import { FaKeyboard } from 'react-icons/fa';
-import { useMst } from 'store';
+import styled, { css } from 'styled-components';
 import classnames from 'classnames';
+import { observer } from 'mobx-react-lite';
+import { useMst } from 'store';
+import { FaKeyboard } from 'react-icons/fa';
+import { FiEdit, FiFilePlus } from 'react-icons/fi';
+import { PointerItem, SpaceBetweenItem } from 'components/theme';
+
+const HoverItem = ({ cursor, $id, theme }) => css`
+    color: ${cursor === $id ? theme.accent : 'unset'};
+  
+    &:hover {
+        color: ${theme.accent} : 'unset';
+    }
+`
+// night table row hover: rgb(29 29 77 / 10%)
+const MenuItemList = styled.li`
+    ${props => PointerItem(props)}
+    ${props => HoverItem(props)}
+    ${props => SpaceBetweenItem(props)}
+    font-size: 0.9rem;
+`;
 
 const AppMenu = observer(({
     onSelect=() => {}
 }) => {
     let { apps, cursor, setCursor } = useMst();
 
-    function addNewApp() {
-        apps.addNewApp()
-    }
-
     function selectApp(appId) {
         apps.setActiveApp(appId);
         onSelect(appId);
-    }
-
-    function editApp(appId) {
-        apps.setEditApp(appId);
-    }
-
-    function makeActive(id) {
-        setCursor(id);
     }
 
     function getListItemClasses(id) {
@@ -40,21 +46,21 @@ const AppMenu = observer(({
             <div className="app-menu-title">
                 <span className="h4">Apps</span>
                 <span>
-                    <FiFilePlus onClick={addNewApp}/>
+                    <FiFilePlus onClick={() => apps.addNewApp()}/>
                 </span>
             </div>
             <ul className="app-menu-list">
                 {apps.appList.map(a => (
-                    <li key={'sidepane_app_' + a.id}
+                    <MenuItemList key={'spa'+a.id} $id={a.id} cursor={cursor}
                         className={getListItemClasses(a.id)}
-                        onMouseEnter={() => makeActive(a.id)}>
+                        onMouseEnter={() => setCursor(a.id)}>
                             <div onClick={() => selectApp(a.id)}>
                                 <span><FaKeyboard/> {a.name}</span>
                             </div>
-                            <div onClick={() => editApp(a.id)}>
+                            <div onClick={() => apps.setEditApp(a.id)}>
                                 <FiEdit/>
                             </div>
-                    </li>
+                    </MenuItemList>
                 ))}
             </ul>
         </nav>

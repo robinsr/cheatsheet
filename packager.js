@@ -24,7 +24,6 @@ const buildOpts = {
 
 buildElectronApp(buildOpts);
 
-// TODO; remove
 // remove folders & files not to be included in the app
 function cleanSources(buildPath, electronVersion, platform, arch, callback) {
     console.log('Removing unused project files and folders');

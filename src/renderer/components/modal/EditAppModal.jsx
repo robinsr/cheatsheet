@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
+import { HiOutlineTrash } from 'react-icons/hi';
 import { useMst } from 'store';
-import { CursorFocusableInput } from 'components/inputs';
+import { Button, CursorFocusableInput } from 'components/inputs';
 import Modal from './Modal';
 import Dialog from 'components/modal/Dialog';
 import KeyScope from 'components/providers/KeyScope';
@@ -38,6 +39,7 @@ const EditAppModal = observer(() => {
                 title={'Edit ' + name}
                 active={true}
                 onClose={onClose}
+                closeButton={false}
                 content={
                      <div className="content">
                          <form onSubmit={e => e.preventDefault()} >
@@ -63,14 +65,6 @@ const EditAppModal = observer(() => {
                                      tabIndex="0"
                                  />
                              </div>
-                             <div className="form-group">
-                                 <button type="button"
-                                         className={'btn btn-error'}
-                                         style={{ width: '100%', marginTop: '0.5rem'}}
-                                         onClick={() => setWillDelete(true)}>
-                                            Delete app
-                                 </button>
-                             </div>
                              {willDelete &&
                                 <Dialog title={`Delete ${name}?`}
                                         onCancel={() => setWillDelete(false)}
@@ -81,7 +75,12 @@ const EditAppModal = observer(() => {
                      </div>
                 }
                 footer={
-                    <button type="button" className="btn btn-primary mx-1" onClick={onClose}>Done</button>
+                    <div>
+                        <Button danger icon left onClick={() => setWillDelete(true)}>
+                            <HiOutlineTrash/>
+                        </Button>
+                        <Button primary type="button" className="mx-1" onClick={onClose}>Done</Button>
+                    </div>
                 }/>
         </KeyScope>
     );

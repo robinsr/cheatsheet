@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { observer } from "mobx-react-lite";
 import { useMst } from "store";
+import { Button } from 'components/inputs';
 import SlidingPane from "react-sliding-pane";
+
 
 const BottomDrawer = observer(() => {
     let { apps, state, ui } = useMst();
@@ -36,8 +38,8 @@ const BottomDrawer = observer(() => {
             <div>
                 <p>Add shortcuts for {unknownApp}?</p>
                 <div>
-                    <button className={"btn btn-success"} onClick={onYesResponse}>Yes</button>
-                    <button className={"btn btn-error"} onClick={onIgnore}>Ignore</button>
+                    <Button success onClick={onYesResponse}>Yes</Button>
+                    <Button danger onClick={onIgnore}>Ignore</Button>
                 </div>
             </div>
         </SlidingPane>

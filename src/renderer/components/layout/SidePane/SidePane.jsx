@@ -7,7 +7,6 @@ import AppMenu from './AppMenu.jsx';
 import OptionsForm from './OptionsForm.jsx';
 
 
-
 const SidePane = ({
     isOpen, onClose
 }) => {
@@ -20,8 +19,10 @@ const SidePane = ({
             from="left"
             width="300px"
             onRequestClose={onClose}>
-            <AppMenu onSelect={onClose} />
-            <OptionsForm />
+            <React.Fragment>
+                <AppMenu onSelect={onClose} />
+                <OptionsForm closeContainer={onClose} />
+            </React.Fragment>
         </SlidingPane>
     );
 };

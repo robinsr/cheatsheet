@@ -12,8 +12,10 @@ let initialState = MobxStore.create(MobxStore.__defaults, { cheatsheetAPI });
 /** @type {IRootStore} */
 export const rootStore = initialState;
 
-rootStore.apps.load().then(() => log.info('apps:loaded'));
-rootStore.ui.load().then(() => log.info('settings:loaded'));
+Promise.all([ rootStore.apps.load(), rootStore.ui.load() ])
+    .then(() => {
+        setTimeout(() => rootStore.state.loading(false), 750);
+    });
 
 rootStore.listenToWindowChange();
 
@@ -36,7 +38,7 @@ export function useMst() {
     return store;
 }
 
-export { Themes } from './ui/SettingsStore.js';
+export { KeyThemes } from './ui/SettingsStore.js';
 
 const saveData = async (snapshot) => {
     if (rootStore.state.isLoading) {

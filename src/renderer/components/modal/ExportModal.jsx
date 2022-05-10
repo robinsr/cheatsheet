@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import Modal from './Modal.jsx';
+import { Button } from 'components/inputs';
 import { AppContext } from 'store';
 import copy_to_clip from 'utils/clipboard.js';
 
@@ -58,9 +59,9 @@ export default class ExportModal extends Component {
                     </div>
                 }
                 footer={
-                    <button className="btn btn-primary" onClick={this.copy_markdown}>
+                    <Button primary onClick={this.copy_markdown}>
                         <i className="icon icon-copy"></i> Copy markdown
-                    </button>
+                    </Button>
                 }
             />
         )

@@ -1,0 +1,15 @@
+$primary-color: #2e5bec;
+
+$active-text-color: $primary-color;
+$active-text-bg: #f1f1fc;
+
+$bg-gray: #f7f8f9;
+$gray: #bcc3ce;
+$light-gray: lighten($gray, 18%);
+$dark-gray: darken($gray, 50%);
+
+
+@import 'spectre.css/src/spectre';
+@import 'spectre.css/src/spectre-icons';
+@import 'spectre.css/src/spectre-exp';
+

@@ -2,7 +2,7 @@ import KeyScope from 'components/providers/KeyScope';
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import Modal from './Modal.jsx';
-import { CaptureBox, CursorFocusableInput, CursorNavigableForm, Toggle } from 'components/inputs';
+import { Button, CaptureBox, CursorFocusableInput, CursorNavigableForm, Toggle } from 'components/inputs';
 import { useMst } from 'store';
 import { key_scopes, getLogger } from 'utils';
 
@@ -95,13 +95,13 @@ const EditModal = observer(() => {
                         </div>
                     }
                     footer={
-                        <button
+                        <Button primary
                             type="button"
                             data-keyscope={KEY_SCOPE}
-                            className="btn btn-primary mx-1"
+                            className="mx-1"
                             onClick={saveEditItem}>
                                 Save
-                        </button>
+                        </Button>
                     }
                 />
             </KeyScope>

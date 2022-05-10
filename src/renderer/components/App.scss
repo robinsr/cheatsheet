@@ -1,43 +1,10 @@
 @import '../styles/variables';
 
-html, body, #app {
-    height: 100%;
-}
+@import 'spectre.css/src/spectre';
+@import 'spectre.css/src/spectre-icons';
+@import 'spectre.css/src/spectre-exp';
 
 body {
-    background-color: $bg-gray;
+    // TODO; put this is SettingsStore
     zoom: $default-zoom;
-
-    &.show-debug-viz {
-        .debug-vis-only {
-            display: block;
-        }
-    }
-
-    .debug-vis-only {
-        display: none;
-    }
-
-    &::-webkit-scrollbar {
-        display: none;
-    }
-}
-
-.app-container {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    margin: 0 8px;
-    user-select: none;
-}
-
-.app-content {
-    margin-top: 78px;
-}
-
-.app-footer {
-    height: 2rem;
-    text-align: center;
 }

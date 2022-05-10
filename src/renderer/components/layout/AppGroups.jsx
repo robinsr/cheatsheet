@@ -1,25 +1,34 @@
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-
+import { useMst } from 'store';
+import styled from 'styled-components';
+import { Button } from 'components/inputs';
 import ShortcutCards from 'components/card/ShortcutCards.jsx';
 
-import { useMst } from 'store';
 
-const fullScreenCenter = {
-    width: '100%',
-    height: '60vh',
-    transform: 'scale(1.5)'
-}
+const LoadingSpinner = styled.div`
+  width: 100%;
+  height: 100vh;
+  transform: scale(3.0);
+  filter: blur(0.015rem);
+  transition: filter 0.6s;
+`;
+
+const Figure = styled.figure`
+    vertical-align: bottom;
+    margin-bottom: 6px;
+    background-color: ${props => props.theme.accentColor};
+`;
 
 const SingleApp = ({ app }) => {
     return (
         <div key={'app_' + app.id}>
             <div className="my-2">
-                <figure className="avatar avatar-md" data-initial={app.name[0].toUpperCase()} />
+                <Figure className="avatar avatar-md" data-initial={app.name[0].toUpperCase()} />
                 <em className="h3 mx-2">{app.name}</em>
-                <button className="btn btn-sm btn-primary s-circle float-right" onClick={() => app.addCategory()}>
+                <Button small primary circle className="float-right" onClick={() => app.addCategory()}>
                     <i className="icon icon-plus"></i>
-                </button>
+                </Button>
             </div>
             <ShortcutCards app={app} />
         </div>
@@ -28,21 +37,23 @@ const SingleApp = ({ app }) => {
 };
 
 const AppGroups = observer(() => {
-    let { apps, isLoading } = useMst();
+    let { apps, state } = useMst();
 
     let selectedApp = apps.selectedApp;
 
-    if (isLoading) {
-        return (<div style={fullScreenCenter} className="loading loading-lg"></div>);
+    if (false || state.isLoading) {
+        return (<LoadingSpinner className="loading loading-lg"/>);
     }
 
     return (
-        <div className="app-groups">
-            { selectedApp
-                ? <SingleApp app={selectedApp} />
-                : apps.appList.map(app => <SingleApp app={app} />)
-            }
-        </div>
+        <React.Fragment>
+            <div className="app-groups">
+                { selectedApp
+                    ? <SingleApp app={selectedApp} />
+                    : apps.appList.map(app => <SingleApp app={app} />)
+                }
+            </div>
+        </React.Fragment>
     );
 });
 
