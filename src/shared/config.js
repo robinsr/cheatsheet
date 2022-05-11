@@ -23,7 +23,8 @@ const AppConfig = {
         profile: 'dev',
         debug: true,
         window: {
-            width: 2000, height: 1600
+            width: 2000, height: 1600, minWidth: 450
+            //width: 450, height: 980, minWidth: 450
         }
     },
     prod:  {
@@ -33,7 +34,7 @@ const AppConfig = {
         profile: 'prod',
         debug: false,
         window: {
-            width: 450, height: 980
+            width: 450, height: 980, minWidth: 450
         }
     }
 }

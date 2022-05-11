@@ -4,6 +4,16 @@
 @import 'spectre.css/src/spectre-icons';
 @import 'spectre.css/src/spectre-exp';
 
+@font-face {
+    font-family: "JetBrainsMono-Regular";
+    src: url('fonts/JetBrainsMono-2.242/fonts/ttf/JetBrainsMono-Regular.ttf');
+}
+@font-face {
+    font-family: "JetBrainsMono-Thin";
+    src: url('fonts/JetBrainsMono-2.242/fonts/ttf/JetBrainsMono-Thin.ttf');
+}
+
+
 body {
     // TODO; put this is SettingsStore
     zoom: $default-zoom;

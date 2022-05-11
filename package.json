@@ -27,6 +27,7 @@
     "dom-to-svg": "^0.12.2",
     "electron-active-window": "0.0.6",
     "font-manager": "^0.3.1",
+    "font-scanner": "git+https://github.com/Axosoft/font-scanner.git",
     "fs-extra": "^10.1.0",
     "gm": "^1.23.1",
     "hotkeys-js": "^3.8.9",

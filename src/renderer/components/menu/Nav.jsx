@@ -53,9 +53,7 @@ const Nav = observer(({
             </WindowTitleBar>
             <div className="navbar">
                 <NavBarContents className="navbar-section">
-                    <Button primary tabIndex={-1} onClick={onMenuClick}>
-                        <i className={'icon icon-' + (isMenuOpen ? 'cross' : 'menu')}></i>
-                    </Button>
+                    <Button primary icon={isMenuOpen ? 'cross' : 'menu'} tabIndex={-1} onClick={onMenuClick}/>
                     <SearchBarContainer>
                         <SearchBox isMenuOpen={isMenuOpen} />
                     </SearchBarContainer>

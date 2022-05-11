@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
+
 const MovingLabel = styled.label`
   margin-top: 0;
   margin-bottom: 0;
@@ -16,10 +17,10 @@ const InputContainer = styled.div`
   overflow: hidden;
 `
 
-const Checkbox = ({ label, ...rest }) => {
+const Checkbox = ({ label, showCheckbox, ...rest }) => {
     return (
         <InputContainer className="form-group">
-            <MovingLabel className="form-checkbox" {...rest}>
+            <MovingLabel className="form-checkbox" showCheckbox={showCheckbox}>
                 <input type="checkbox" {...rest} />
                 <i className="form-icon"></i> {label}
             </MovingLabel>

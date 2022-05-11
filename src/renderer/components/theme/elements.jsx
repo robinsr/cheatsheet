@@ -1,3 +1,4 @@
+import { lighten } from 'polished';
 import styled, { css } from 'styled-components';
 import { columnBreakpoints } from './themes'
 
@@ -16,6 +17,15 @@ export const ColumnContainer = styled.div`
   }
 `;
 
+export const HideControl = () => css`
+  clip: rect(0,0,0,0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  position: absolute;
+  width: 1px;
+`;
+
 export const PointerItem = () => css`
   cursor: pointer;
 `;
@@ -30,8 +40,12 @@ export const SpaceBetweenItem = () => css`
     justify-content: space-between;
 `;
 
-export const FlexRow = styled.div`
+export const FlexRow = styled.div.attrs(props => ({
+  gap: props.gap || 0
+}))`
   ${SpaceBetweenItem()}
+  
+  gap: ${props => props.gap};
 `;
 
 export const FlexGrow = () => css`
@@ -40,4 +54,40 @@ export const FlexGrow = () => css`
 
 export const FlexItem = styled.div`
   ${props => props.grow ? FlexGrow() : `flex-grow: 0;`}
+`;
+
+export const FloatingButton = styled.div.attrs(props => ({
+  width: 40
+}))`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 1.1rem;
+  right: 1rem;
+  cursor: pointer;
+  background: ${props => lighten(0.15, props.theme.accent)};
+  width: ${props => props.width}px;
+  height: ${props => props.width}px;
+  border-radius: ${props => props.width / 2}px;
+  font-size: 1.1rem;
+  
+  &:hover {
+    background: ${props => props.theme.accent};;
+  }
+  
+  svg {
+    color: ${props => props.theme.base.bg};
+  }
+`;
+
+
+export const AppFlexContainer = styled.div`
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    margin: 0 8px;
+    user-select: none;
 `;

@@ -1,25 +1,16 @@
-import './App.scss';
+import { AppFlexContainer, columnBreakpoints, FloatingButton, GlobalStyle, themes } from 'components/theme';
 
 import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
+import { ImShrink2 } from 'react-icons/im';
 import { Provider, rootStore, useMst } from 'store'
-import { BottomDrawer, ErrorAlert, AppGroups, SidePane } from './layout';
-import { HelpModal, ImageModal, EditItemModal, EditAppModal } from './modal'
-import Nav from './menu/Nav';
-import KeyActions from './providers/KeyActions.jsx';
-import { columnBreakpoints, themes, GlobalStyle } from 'components/theme';
 import styled, { ThemeProvider } from 'styled-components';
+import './App.scss';
+import { AppGroups, BottomDrawer, SidePane } from './layout';
+import Nav from './menu/Nav';
+import { EditAppModal, EditItemModal, HelpModal, ImageModal, UnknownAppModal } from './modal'
+import KeyActions from './providers/KeyActions.jsx';
 
-
-const AppFlexContainer = styled.div`
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    margin: 0 8px;
-    user-select: none;
-`;
 
 const headerHeight = '78px';
 
@@ -36,32 +27,40 @@ const SpacedContainer = styled.div`
   }
 `;
 
-
 const ThemedApp = observer(() => {
     const { ui } = useMst();
     const [ isMenuOpen, setMenuOpen ] = useState(false);
 
     const toggleMenu = () => setMenuOpen(!isMenuOpen);
 
+    const resizeToDefault = () => {
+        window.cheatsheetAPI.emit('app:requestResize');
+    }
 
     return (
         <ThemeProvider theme={themes[ui.theme]}>
             <React.Fragment>
                 <KeyActions>
-                    <Nav onMenuClick={toggleMenu} isMenuOpen={isMenuOpen}/>
-                    <AppFlexContainer id={'blur-target'}>
-                        <SpacedContainer space={headerHeight}>
-                            <div className="container grid-xl">
-                                <AppGroups/>
-                            </div>
-                        </SpacedContainer>
-                        <SidePane isOpen={isMenuOpen} onClose={() => setMenuOpen(false)}/>
-                    </AppFlexContainer>
+                    <div id={'blur-target'}>
+                        <Nav onMenuClick={toggleMenu} isMenuOpen={isMenuOpen}/>
+                        <AppFlexContainer>
+                            <SpacedContainer space={headerHeight}>
+                                <div className="container grid-xl">
+                                    <AppGroups/>
+                                </div>
+                            </SpacedContainer>
+                            <SidePane isOpen={isMenuOpen} onClose={() => setMenuOpen(false)}/>
+                        </AppFlexContainer>
+                        <FloatingButton onClick={resizeToDefault}>
+                            <ImShrink2/>
+                        </FloatingButton>
+                    </div>
                     <ImageModal/>
                     <EditItemModal/>
                     <EditAppModal/>
                     <BottomDrawer/>
                     <HelpModal/>
+                    <UnknownAppModal/>
                 </KeyActions>
                 <GlobalStyle/>
             </React.Fragment>

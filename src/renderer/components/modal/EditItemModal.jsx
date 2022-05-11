@@ -82,15 +82,17 @@ const EditModal = observer(() => {
                                         checked={enableSecondary}
                                         onChange={val => editItem.updateEnableSecondary(val)}
                                         keyScope={KEY_SCOPE}
-                                        tabIndex={0}>
+                                        tabIndex={0}
+                                        reveal={
                                             <div className="form-group">
                                                 <CaptureBox
                                                     defaultValue={secondaryDefault}
                                                     command={secondary}
                                                     onData={data => editItem.updateSecondary(data)}
-                                                    cursorName="capture-box-2" />
+                                                    cursorName="capture-box-2"/>
                                             </div>
-                                </Toggle>
+                                        }
+                                />
                             </CursorNavigableForm>
                         </div>
                     }

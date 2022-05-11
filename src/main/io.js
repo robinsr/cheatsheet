@@ -4,6 +4,8 @@ const fs = require( 'fs' );
 const gm = require('gm');
 const { CustomImage } = require('./images');
 
+const ENC = { encoding: 'utf8' };
+
 
 class Store {
     constructor({ saveEnabled = true, saveDir, profile }) {
@@ -14,7 +16,7 @@ class Store {
             settings: getFileName(saveDir, profile, 'settings')
         };
 
-        console.info('Creating store', { saveEnabled, saveDir, profile, stores });
+        console.info('Creating store with config:', { saveEnabled, saveDir, profile, stores });
 
         ipc.handle('api:image:save', (e, imageData) => {
             return saveImage(imageData);
@@ -33,15 +35,36 @@ class Store {
         });
 
         ipc.handle('api:settings:save', (e, data) => {
+            ipc.emit('app:settingsUpdated', data);
             return this.writeJSON(stores.settings, data);
         });
+
+        this.stores = stores;
+    }
+
+    getSettingsSync() {
+        let filepath = this.stores.settings;
+
+        console.info('Reading user settings...');
+
+        try {
+            const data = fs.readFileSync(filepath, ENC);
+            return JSON.parse(data.toString());
+        } catch (err) {
+            if (err.code === 'ENOENT') {
+                console.info('No settings file found', filepath);
+                return {};
+            } else {
+                throw new Error('Could not read user settings')
+            }
+        }
     }
 
     getJSON(filepath) {
         console.info('Reading file', filepath);
 
         return new Promise((resolve, reject) => {
-            fs.readFile(filepath, { encoding: 'utf8' }, (err, data) => {
+            fs.readFile(filepath, ENC, (err, data) => {
                 if (err){
                     if (err.code === 'ENOENT') {
                         console.info('Creating file for store', filepath);
@@ -64,7 +87,7 @@ class Store {
 
         if (this.saveEnabled) {
             return new Promise((resolve, reject) => {
-                writeFile(filepath, JSON.stringify(data, null, 4), { encoding: 'utf8' })
+                writeFile(filepath, JSON.stringify(data, null, 4), ENC)
                     .then(() => {
                         console.info('snapshot saved to ' + filepath)
                         resolve({ status: 'success', filepath });

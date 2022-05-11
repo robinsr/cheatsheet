@@ -20,8 +20,25 @@ export const Themes = {
     day: 'day'
 }
 
+const ThemeValues = Object.values(Themes);
+const SysThemeModel = types
+    .model('sysTheme', {
+        current: types.enumeration('keyTheme', ThemeValues)
+    })
+    .actions(self => ({
+        setTheme(theme) {
+            self.current = theme;
+        }
+    }));
+
 const darkModeQuery = window.matchMedia("(prefers-color-scheme: dark)");
-const systemTheme = darkModeQuery.matches ? Themes.night : Themes.day;
+const sysTheme = SysThemeModel.create({
+    current: darkModeQuery.matches ? Themes.night : Themes.day
+});
+
+darkModeQuery.onchange = e => {
+    sysTheme.setTheme(e.matches ? Themes.night : Themes.day);
+};
 
 /**
  * SettingsStore actions
@@ -40,7 +57,7 @@ const SettingsStoreActions = (self) => ({
         }
     }),
     save: flow(function* saveApps() {
-        log.info('Saving SettingsStore')
+        log.info('Saving SettingsStore');
         try {
             const result = yield getEnv(self).cheatsheetAPI.settings.save(getSnapshot(self));
             log.info('SettingsStore saved', result);
@@ -50,18 +67,11 @@ const SettingsStoreActions = (self) => ({
         }
     }),
     /**
-     * Enable Dark mode
-     * @name ISettingsStore#night
+     * Sets the user's preferred theme
+     * @name ISettingsStore#setUserTheme
      */
-    night() {
-        self.theme = Themes.night
-    },
-    /**
-     * Disable Dark mode
-     * @name ISettingsStore#day
-     */
-    day() {
-        self.theme = Themes.day
+    setUserTheme(theme) {
+        self.userTheme = theme;
     },
     /**
      * @name ISettingsStore#toggleKeyTheme
@@ -83,11 +93,26 @@ const SettingsStoreActions = (self) => ({
         self.activeFollow = !self.activeFollow;
     },
     /**
+     * @name ISettingsStore#toggleAlwaysOnTop
+     */
+    toggleAlwaysOnTop() {
+        self.alwaysOnTop = !self.alwaysOnTop;
+    },
+    /**
+     * @name ISettingsStore#toggleSystemTheme
+     */
+    toggleSystemTheme() {
+        self.useSystemTheme = !self.useSystemTheme;
+    },
+
+    /**
      * @name ISettingsStore#addIgnoreApp
      * @param {string} appName
      */
     addIgnoreApp(appName) {
-        self.ignoreApps.unshift(appName);
+        if (self.ignoreApps.indexOf(appName) === -1) {
+            self.ignoreApps.unshift(appName);
+        }
     }
 });
 
@@ -102,8 +127,16 @@ const SettingsStoreViews = self => ({
      * @name ISettingsStore#isDarkMode
      * @returns {boolean}
      */
-    get isDarkMode() {
-        return self.theme === Themes.night;
+    get userPrefersNight() {
+        return self.userTheme === Themes.night;
+    },
+
+    /**
+     * @name ISettingsStore#theme
+     * @returns {Themes}
+     */
+    get theme() {
+        return self.useSystemTheme ? sysTheme.current : self.userTheme;
     }
 });
 
@@ -111,16 +144,20 @@ const SettingsStoreViews = self => ({
 /**
  * Contains "user-settings" -like properties that are to be persisted
  * @typedef {object} ISettingsStore
- * @property {Themes} theme
+ * @property {boolean} useSystemTheme
+ * @property {Themes} userTheme
  * @property {KeyThemes} keyTheme
  * @property {boolean} activeFollow
+ * @property {boolean} alwaysOnTop
  * @property {string[]} ignoreApps
  */
 const MobxSettingsStore = types
     .model('SettingsStore', {
-        theme: types.optional(types.enumeration('theme', ['day', 'night']), 'day'),
+        useSystemTheme: types.boolean,
+        userTheme: types.enumeration('theme', ThemeValues),
         keyTheme: types.enumeration('keyTheme', ['light', 'dark']),
         activeFollow: types.boolean,
+        alwaysOnTop: types.boolean,
         ignoreApps: types.array(types.string)
     })
     .views(SettingsStoreViews)
@@ -128,8 +165,10 @@ const MobxSettingsStore = types
 
 MobxSettingsStore.__defaults = {
     keyTheme: 'dark',
-    theme: systemTheme,
+    userTheme: sysTheme.current,
+    useSystemTheme: true,
     activeFollow: true,
+    alwaysOnTop: false,
     ignoreApps: []
 };
 

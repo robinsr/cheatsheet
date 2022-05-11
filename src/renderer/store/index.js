@@ -12,16 +12,21 @@ let initialState = MobxStore.create(MobxStore.__defaults, { cheatsheetAPI });
 /** @type {IRootStore} */
 export const rootStore = initialState;
 
+onAction(rootStore, action => getLogger('Store/action').debug(action))
+onPatch(rootStore, patch => getLogger('Store/patch').debug(patch))
+onSnapshot(rootStore, (snapshot) => getLogger('Store/snapshot').debug(snapshot));
+
+
 Promise.all([ rootStore.apps.load(), rootStore.ui.load() ])
     .then(() => {
-        setTimeout(() => rootStore.state.loading(false), 750);
+        setTimeout(() => {
+            rootStore.state.loading(false);
+            window.cheatsheetAPI.emit('app:loaded')
+        }, 750);
     });
 
 rootStore.listenToWindowChange();
 
-onAction(rootStore, action => getLogger('Store/action').debug(action))
-onPatch(rootStore, patch => getLogger('Store/patch').debug(patch))
-onSnapshot(rootStore, (snapshot) => getLogger('Store/snapshot').debug(snapshot));
 
 export const AppContext = createContext();
 export const Provider = AppContext.Provider;
@@ -69,4 +74,8 @@ onSnapshot(rootStore.apps, _debounce((snapshot) => {
 
 onSnapshot(rootStore.ui, snapshot => {
     rootStore.ui.save();
+});
+
+window.addEventListener('unload', e => {
+    window.cheatsheetAPI.emit('app:reloading');
 });

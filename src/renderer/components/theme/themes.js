@@ -44,6 +44,9 @@ const themes = {
             color: themeBase.night,
             bg: transparentize(.78, blackLevels[1])
         },
+        inputs: {
+            bg: lighten(.3, blackLevels[3])
+        },
         blur: transparentize(0.55, blackLevels[1]),
         accent: themeBase.night,
         accentColor: themeBase.night, // todo: rename accentColor -> accen
@@ -74,6 +77,9 @@ const themes = {
         cursor: {
             color: themeBase.day,
             bg: transparentize(.84, themeBase.day)
+        },
+        inputs: {
+            bg: lighten(0.25, blackLevels[3])
         },
         blur: transparentize(0.75, blackLevels[6]),
         accent: themeBase.day,

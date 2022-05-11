@@ -35,6 +35,9 @@ module.exports = {
                     ]
                 }
             }
+        },{
+            test: /\.(woff|woff2|eot|ttf|otf)$/i,
+            type: 'asset/resource',
         }]
     },
     resolve: {
@@ -43,7 +46,7 @@ module.exports = {
             components: path.resolve(__dirname, '../src/renderer/components/'),
             store: path.resolve(__dirname, '../src/renderer/store/'),
             utils: path.resolve(__dirname, '../src/renderer/utils/'),
-            styles: path.resolve(__dirname, '../src/renderer/styles/')
+            fonts: path.resolve(__dirname, '../fonts/')
         },
         fallback: {
             "fs": false

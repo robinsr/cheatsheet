@@ -1,4 +1,4 @@
-const { app, BrowserWindow  } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const activeWindows = require('electron-active-window');
 const path = require('path');
 const { stage, conf } = require('../shared/config.js');
@@ -6,15 +6,23 @@ const Store = require('./io');
 
 console.log('Using settings:', conf);
 
+const store = new Store(conf);
+
+const userSettings = store.getSettingsSync();
+
+
+
 const createWindow = () => {
     const windowConfig = {
         title: 'Cheat',
         titleBarStyle: 'hiddenInset',
         vibrancy: 'content',
+        show: false,
         webPreferences: {
             nodeIntegration: true,
             enableRemoteModule: true,
-            preload: path.resolve(__dirname, './preload.js')
+            preload: path.resolve(__dirname, './preload.js'),
+            alwaysOnTop: userSettings.alwaysOnTop || false
         }
     }
 
@@ -28,6 +36,22 @@ const createWindow = () => {
         win.loadFile('./dist/index.html');
     }
 
+
+
+    if (stage === 'dev' && process.argv.includes('--console')) {
+        win.webContents.openDevTools();
+    }
+
+    let { width, height } = conf.window;
+
+    ipcMain.handle('app:requestResize', (e) => {
+        win.setSize(width, height, true);
+    })
+
+    return win;
+}
+
+const activeWindowListener = (win) => {
     /**
      * Active window event.
      *
@@ -43,7 +67,7 @@ const createWindow = () => {
         });
     }
 
-    let pollActiveWindow = setInterval(getActiveWindow, 1000);
+    let pollActiveWindow;
 
     win.on('focus', (e) => {
         win.webContents.send('app:focus');
@@ -59,23 +83,69 @@ const createWindow = () => {
         pollActiveWindow = setInterval(getActiveWindow, 1000);
     });
 
-    if (stage === 'dev') {
-        win.webContents.openDevTools();
+    return {
+        startPolling: () => {
+            if (pollActiveWindow === undefined) {
+                pollActiveWindow = setInterval(getActiveWindow, 1000);
+            }
+        },
+        stopPolling: () => {
+            clearInterval(pollActiveWindow);
+        }
     }
-
-    return win;
 }
 
 
-/**
- * @listens module:app~saveImage
- */
 app.whenReady().then(async () => {
     const win = createWindow();
 
+    const winListener = activeWindowListener(win);
+
     app.on('activate', () => {
-        if (BrowserWindow.getAllWindows().length === 0) createWindow()
+        if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
 
-    new Store(conf);
+    win.once('ready-to-show', () => {
+        win.show();
+    });
+
+    ipcMain.on('app:loaded', () => {
+        // start active window listening after app
+        // is ready prevents there already being an
+        // unknown window at startup
+        winListener.startPolling();
+    });
+
+    ipcMain.on('app:reloading', () => {
+
+        winListener.stopPolling();
+    });
+
+    // Any user settings that require an electron API call
+    // to take effect (should be saved and applied on app restart)
+    ipcMain.on('app:settingsUpdated', (data) => {
+        console.info('Syncing user settings', data);
+
+        const settingsKeys = Object.keys(data);
+
+        if (settingsKeys.includes('alwaysOnTop')) {
+            win.setAlwaysOnTop(data.alwaysOnTop);
+        }
+
+        if (settingsKeys.includes('activeFollow')) {
+            if (data.activeFollow) {
+                winListener.startPolling();
+            } else {
+                winListener.stopPolling();
+            }
+        }
+    });
+
+
+    console.log(ipcMain.eventNames())
+
+    ipcMain.eventNames().forEach(evt => {
+        console.log(evt)
+        ipcMain.handle(evt, (e) => console.log('Recieved event:', evt));
+    })
 })

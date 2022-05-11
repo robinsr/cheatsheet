@@ -15,6 +15,7 @@ const cheatsheetAPI = {
         save: async (img) => await ipc.invoke('api:image:save', img)
     },
     subscribe: (eventName, callback) => ipc.on(eventName, callback),
+    emit: (eventName, data) => ipc.invoke(eventName, data),
     config: {
         getAll: () => conf,
         get: (key) => conf[key]

@@ -28,8 +28,10 @@ if (stage === 'dev') {
     Logger.get('KeyEmitter').setLevel(INFO);
     Logger.get('Store').setLevel(INFO);
     Logger.get('Store/action').setLevel(INFO);
-    Logger.get('Store/patch').setLevel(DEBUG);
+    Logger.get('Store/patch').setLevel(INFO);
     Logger.get('Store/snapshot').setLevel(INFO);
+
+    Logger.get('SettingsStore/action').setLevel(DEBUG);
 }
 
 

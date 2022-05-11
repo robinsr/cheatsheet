@@ -10,7 +10,8 @@ import { FlexItem, PointerItem, SpaceBetweenItem } from 'components/theme';
 
 
 const ShortcutTableContainer = styled.div`
-  color: ${props => props.theme.card.text}
+  color: ${props => props.theme.card.text};
+  font-family: "JetBrainsMono-Regular", monospace;
   
   :last-child div {
     border-bottom: none;
@@ -85,10 +86,10 @@ const ShortcutTableRow = observer(({
             <FlexItem>
                 <ShortcutKey item={item} command={command} capture={false} onClick={(e) => onClick(e, 'key1')} />
                 {secondary
-                    ? <span>
+                    ? <React.Fragment>
                         <strong> + </strong>
                         <ShortcutKey item={item} command={secondary} capture={false} onClick={(e) => onClick(e, 'key2')} />
-                      </span>
+                      </React.Fragment>
                     : null}
             </FlexItem>
         </ShortcutItemRow>

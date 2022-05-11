@@ -11,7 +11,11 @@ const ModalOverrides = createGlobalStyle`
     }
     
     .modal-container {
-        background-color: ${props => props.theme.menus.bg} !important;
+        background-color: ${props => props.theme.base.bg} !important;
+        
+        p {
+            color: ${props => props.theme.base.text} !important;
+        }
     }
     
     #blur-target {
@@ -27,7 +31,8 @@ const Modal = ({
     content,
     footer,
     onClose,
-    closeButton=true
+    closeButton=true,
+    closeButtonText='Close'
 }) => {
 
     let cns = classnames('modal', name, {
@@ -58,7 +63,7 @@ const Modal = ({
                             <div className="column col-12">
                                 {footer}
                                 {closeButton &&
-                                    <Button onClick={onClose}>Close</Button>
+                                    <Button onClick={onClose}>{closeButtonText}</Button>
                                 }
                             </div>
                         </div>
