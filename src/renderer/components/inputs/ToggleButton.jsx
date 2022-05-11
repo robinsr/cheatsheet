@@ -1,22 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const ToggleButton = ({ unPopped, popped, onPop, onUnPop, ...rest }) => {
+const ToggleButton = ({ unPopped, popped, onPop, onUnPop, checked=false, ...rest }) => {
 
-    const [ checked, setChecked ] = useState(false);
+    const [ poppedState, setPoppedState ] = useState(checked);
 
-
+    useEffect(() => {
+        setPoppedState(checked);
+    }, [checked])
 
     const unCheckedButton = React.cloneElement(unPopped, { onClick: () => {
-        setChecked(true);
+        setPoppedState(true);
         onPop();
     }, ...rest });
 
     const checkedButton = React.cloneElement(popped, { onClick: () => {
-        setChecked(false);
+        setPoppedState(false);
         onUnPop();
     }, ...rest });
 
-    return checked ? checkedButton : unCheckedButton;
+    return poppedState ? checkedButton : unCheckedButton;
 }
 
 export default ToggleButton;

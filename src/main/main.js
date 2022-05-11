@@ -45,6 +45,7 @@ const createWindow = () => {
     let { width, height } = conf.window;
 
     ipcMain.handle('app:requestResize', (e) => {
+        console.log('Resizing window');
         win.setSize(width, height, true);
     })
 
@@ -109,21 +110,20 @@ app.whenReady().then(async () => {
         win.show();
     });
 
-    ipcMain.on('app:loaded', () => {
+    ipcMain.handle('app:loaded', () => {
         // start active window listening after app
         // is ready prevents there already being an
         // unknown window at startup
         winListener.startPolling();
     });
 
-    ipcMain.on('app:reloading', () => {
-
+    ipcMain.handle('app:reloading', () => {
         winListener.stopPolling();
     });
 
     // Any user settings that require an electron API call
     // to take effect (should be saved and applied on app restart)
-    ipcMain.on('app:settingsUpdated', (data) => {
+    ipcMain.handle('app:settingsUpdated', (data) => {
         console.info('Syncing user settings', data);
 
         const settingsKeys = Object.keys(data);
@@ -141,11 +141,4 @@ app.whenReady().then(async () => {
         }
     });
 
-
-    console.log(ipcMain.eventNames())
-
-    ipcMain.eventNames().forEach(evt => {
-        console.log(evt)
-        ipcMain.handle(evt, (e) => console.log('Recieved event:', evt));
-    })
 })

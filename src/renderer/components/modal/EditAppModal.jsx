@@ -76,7 +76,7 @@ const EditAppModal = observer(() => {
                 }
                 footer={
                     <div>
-                        <Button danger icon left onClick={() => setWillDelete(true)}>
+                        <Button danger left svg onClick={() => setWillDelete(true)}>
                             <HiOutlineTrash/>
                         </Button>
                         <Button primary type="button" className="mx-1" onClick={onClose}>Done</Button>

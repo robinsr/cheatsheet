@@ -7,6 +7,12 @@ const MovingLabel = styled.label`
   margin-bottom: 0;
   transition: transform 0.25s;
   transform: ${props => props.showCheckbox ? 'translateX(0)' : 'translateX(-24px)'};
+  
+  input:checked ~ span {
+    text-decoration: line-through;
+    text-decoration-thickness: 0.1rem;
+    text-decoration-color: ${props => props.theme.accent};
+  }
 `
 
 MovingLabel.defaultProps = {
@@ -22,7 +28,7 @@ const Checkbox = ({ label, showCheckbox, ...rest }) => {
         <InputContainer className="form-group">
             <MovingLabel className="form-checkbox" showCheckbox={showCheckbox}>
                 <input type="checkbox" {...rest} />
-                <i className="form-icon"></i> {label}
+                <i className="form-icon"></i><span>{label}</span>
             </MovingLabel>
         </InputContainer>
     );

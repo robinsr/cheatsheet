@@ -1,6 +1,5 @@
 import { FlexGrow, PointerItem, SpaceBetweenItem, Transition } from 'components/theme';
-import React, { useEffect, useRef, useState } from 'react';
-import { HiOutlineTrash } from 'react-icons/hi';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { useMst } from 'store';
@@ -66,6 +65,7 @@ const ShortcutCard = observer(({
     const onDoneEdit = () => {
         if (editGroupName !== group) group.updateName(editGroupName);
         setEdit(false);
+        group.removeSelected();
     };
 
     const render = type => {
@@ -99,7 +99,7 @@ const ShortcutCard = observer(({
         <CardContainer key={'shortcut-card-' + group.id} ref={cardRef}>
             <Card className="card">
                 <CardHeader>
-                    <CardTitle>
+                    <CardTitle onDoubleClick={() => setEdit(true)}>
                         <ContentEditable className="card-title h5"
                                          editable={edit}
                                          defaultValue={group.name}
@@ -108,6 +108,7 @@ const ShortcutCard = observer(({
                     </CardTitle>
                     <div className="dropdown" ref={menuRef}>
                         <ToggleButton className="mx-1" tabIndex={-1}
+                                      checked={edit}
                                       unPopped={<Button small primary icon="edit" />}
                                       popped={<Button small success icon="check" />}
                                       onPop={() => setEdit(true)}
@@ -119,7 +120,7 @@ const ShortcutCard = observer(({
                                 <Button small primary icon="download" className="dropdown-toggle"tabIndex={-1}/>
                                 <CardMenu>
                                     <MenuItem name="PNG" icon="photo" onCLick={() => exportImage('PNG')}/>
-                                    <MenuItem name="SVG" icon="horiz" onCLick={() => exportImage('SVG')}/>
+                                    <MenuItem name="SVG" icon="resize-horiz" onCLick={() => exportImage('SVG')}/>
                                     <MenuItem name="MD" icon="bookmark" onCLick={() => exportMD()}/>
                                 </CardMenu>
                             </span>
@@ -129,12 +130,7 @@ const ShortcutCard = observer(({
                 <div className="card-body">
                     <ShortcutTable group={group} editing={edit}/>
                     <AddItemButton ref={addItemRef}>
-                        {!edit
-                          ? <ButtonLink onClick={() => group.addItem()}>+</ButtonLink>
-                          : <Button danger small left onClick={() => deleteSelected()}>
-                                <HiOutlineTrash/> Delete selected
-                            </Button>
-                        }
+                        <ButtonLink onClick={() => group.addItem()}>+</ButtonLink>
                     </AddItemButton>
                 </div>
             </Card>

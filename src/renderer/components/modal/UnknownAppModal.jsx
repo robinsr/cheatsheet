@@ -12,7 +12,7 @@ const UnknownAppModal = observer(() => {
     }
 
     let { unknownApp } = state;
-    
+
     const onIgnore = () => {
         ui.addIgnoreApp(unknownApp);
         state.clearUnknownAppName();

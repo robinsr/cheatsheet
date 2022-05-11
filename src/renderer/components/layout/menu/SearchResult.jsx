@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 
-import ShortcutKey from 'components/card/ShortcutKey';
+import ShortcutKey from 'components/card/ShortcutKey.jsx';
 import { useMst } from 'store';
 
 const SearchResult = observer(({ result, query }) => {

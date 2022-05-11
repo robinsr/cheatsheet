@@ -1,16 +1,16 @@
 import './SearchBox.scss';
 import classnames from 'classnames';
 import { CursorFocusableInput } from 'components/inputs';
-import KeyScope from 'components/providers/KeyScope';
+import KeyScope from 'components/providers/KeyScope.jsx';
 
 import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import { useMst } from 'store';
 import { isEnterKey, KeyEmitter } from 'utils';
-import { macos_symbols } from 'utils/macos_symbols';
+import { macos_symbols } from 'utils/macos_symbols.js';
 
-import SearchResult from './SearchResult';
+import SearchResult from './SearchResult.jsx';
 
 const SearchBox = observer(({
     isMenuOpen=false

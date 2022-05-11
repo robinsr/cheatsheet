@@ -1,14 +1,14 @@
-import { AppFlexContainer, columnBreakpoints, FloatingButton, GlobalStyle, themes } from 'components/theme';
+import './App.scss';
 
 import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
 import { ImShrink2 } from 'react-icons/im';
 import { Provider, rootStore, useMst } from 'store'
 import styled, { ThemeProvider } from 'styled-components';
-import './App.scss';
-import { AppGroups, BottomDrawer, SidePane } from './layout';
-import Nav from './menu/Nav';
+import { AppGroups, SidePane } from './layout';
+import { Nav } from './layout';
 import { EditAppModal, EditItemModal, HelpModal, ImageModal, UnknownAppModal } from './modal'
+import { AppFlexContainer, columnBreakpoints, FloatingButton, GlobalStyle, themes } from 'components/theme';
 import KeyActions from './providers/KeyActions.jsx';
 
 
@@ -58,7 +58,6 @@ const ThemedApp = observer(() => {
                     <ImageModal/>
                     <EditItemModal/>
                     <EditAppModal/>
-                    <BottomDrawer/>
                     <HelpModal/>
                     <UnknownAppModal/>
                 </KeyActions>

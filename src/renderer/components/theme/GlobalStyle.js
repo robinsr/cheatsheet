@@ -17,14 +17,6 @@ const GlobalStyle = createGlobalStyle`
       display: none;
     }
   }
-  
-  .form-input, 
-  .modal-container,
-  .modal-container .modal-header,
-  select {
-    ${Transition()};
-    color: ${props => props.theme.textBase};
-  }
-`
+`;
 
 export default GlobalStyle;

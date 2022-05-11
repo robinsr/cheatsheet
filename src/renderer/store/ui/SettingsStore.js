@@ -140,6 +140,11 @@ const SettingsStoreViews = self => ({
     }
 });
 
+// TODO: move this into a config of some kind
+const ignoreAppsDefault = [
+    'loginwindow', 'Finder'
+]
+
 
 /**
  * Contains "user-settings" -like properties that are to be persisted

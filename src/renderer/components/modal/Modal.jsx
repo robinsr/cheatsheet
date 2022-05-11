@@ -6,21 +6,23 @@ import { Button } from 'components/inputs';
 import { createGlobalStyle } from 'styled-components';
 
 const ModalOverrides = createGlobalStyle`
-    .modal-overlay {
-        background-color: ${props => props.theme.blur} !important;
+  .modal-overlay {
+    background-color: ${props => props.theme.blur} !important;
+  }
+  
+  .modal-container {
+    background-color: ${props => props.theme.menus.bg} !important;
+      
+    .modal-header, .modal-content {
+      a, p, .h1, .h2, .h3, .h4, .h5, .h6 {
+        color: ${props => props.theme.menus.text} !important;
+      }
     }
-    
-    .modal-container {
-        background-color: ${props => props.theme.base.bg} !important;
-        
-        p {
-            color: ${props => props.theme.base.text} !important;
-        }
-    }
-    
-    #blur-target {
-      filter: ${props => props.active ? 'blur(2px)' : 'unset'};
-    }
+  }
+  
+  #blur-target {
+    filter: ${props => props.active ? 'blur(2px)' : 'unset'};
+  }
 `;
 
 const Modal = ({

@@ -72,6 +72,9 @@ export const CategoryItemActions = (self) => ({
         // self.items.splice(self.index(id), 1);
         return detach(self.items[self.index(id)]);
     },
+    removeSelected() {
+       self.items = self.items.filter(i => !i.selected);
+    },
     acceptItem(item) {
         if (getType(item) === MobxShortcutItem) {
             self.items.push(item);

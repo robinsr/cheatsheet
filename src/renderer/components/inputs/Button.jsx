@@ -22,6 +22,11 @@ const sizeVariants = {
         fontSize: '1.2rem',
         height: '1.8rem',
         padding: '0.25rem 0.4rem'
+    },
+    svg: {
+        fontSize: '1.1rem',
+        height: '1.8rem',
+        padding: '0.25rem 0.4rem'
     }
 }
 
@@ -31,7 +36,7 @@ const variantUtil = (props, opts, defaults) => {
     return match.length > 0 ? match[0] : defaults;
 }
 
-const getSizeVar = props => variantUtil(props, ['small', 'large', 'icon'], 'default');
+const getSizeVar = props => variantUtil(props, ['small', 'large', 'icon', 'svg'], 'default');
 const getColorVar = props => variantUtil(props, ['primary', 'success', 'danger'], 'default');
 
 const BaseButton = styled.button.attrs(props => ({

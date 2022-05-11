@@ -11,7 +11,6 @@ import { FlexItem, PointerItem, SpaceBetweenItem } from 'components/theme';
 
 const ShortcutTableContainer = styled.div`
   color: ${props => props.theme.card.text};
-  font-family: "JetBrainsMono-Regular", monospace;
   
   :last-child div {
     border-bottom: none;
@@ -41,10 +40,10 @@ const ShortcutTableHeader = styled(BaseRow)`
 `;
 
 const ShortcutTableRow = observer(({
-    item, editing, onMoveUp, onMoveDown, toDelete, selectItem
+    item, editing, onMoveUp, onMoveDown
 }) => {
     let { edit, cursor, setCursor } = useMst();
-    let { id, label, command, secondary } = item;
+    let { id, label, command, secondary, selected, select, deselect } = item;
 
     function onRightClick(e) {
         if (e.nativeEvent.which === 3) {
@@ -80,8 +79,8 @@ const ShortcutTableRow = observer(({
                 <Checkbox
                     label={label}
                     showCheckbox={editing}
-                    checked={toDelete.includes(id)}
-                    onChange={e => selectItem(e.target.checked)}/>
+                    checked={selected}
+                    onChange={e => editing && select(e.target.checked)}/>
             </FlexItem>
             <FlexItem>
                 <ShortcutKey item={item} command={command} capture={false} onClick={(e) => onClick(e, 'key1')} />
@@ -97,12 +96,6 @@ const ShortcutTableRow = observer(({
 });
 
 const ShortcutTable = observer(({ group, editing }) => {
-
-    const [ toDelete, updateToDelete ] = useState([]);
-
-    const addToDelete = id => updateToDelete(toDelete.concat(id));
-    const subToDelete = id => updateToDelete(toDelete.filter(i => i !== id));
-
     return (
         <ShortcutTableContainer>
             <ShortcutTableHeader>
@@ -113,8 +106,6 @@ const ShortcutTable = observer(({ group, editing }) => {
                 <ShortcutTableRow item={item}
                      key={'table_item_' + item.id}
                      editing={editing}
-                     toDelete={toDelete}
-                     selectItem={checked => checked ? addToDelete(item.id) : subToDelete(item.id)}
                      onMoveUp={() => group.moveItemUp(item.id)}
                      onMoveDown={() => group.moveItemDown(item.id)}
                      onDelete={() => group.removeItem(item.id)}

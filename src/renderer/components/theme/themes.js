@@ -6,88 +6,104 @@ export const columnBreakpoints = {
     2: '1248px'
 };
 
-const blackLevels = {
-    1: lighten(.03, '#000'),
-    2: lighten(.10, '#000'),
-    3: lighten(.25, '#000'),
-    4: darken(.12, '#fff'),
-    5: darken(.05, '#fff'),
-    6: darken(.02, '#fff')
+const W = '#FFF';
+
+const BW = {
+    100: darken(.02, W),
+    200: darken(.08, W),
+    300: darken(.14, W),
+    400: darken(.25, W),
+    500: darken(.50, W),
+    600: darken(.75, W),
+    700: darken(.82, W),
+    800: darken(.90, W),
+    900: darken(.97, W)
 }
 
-const themeBase = {
+const accents = {
     night: '#5755d9',
     day: '#2e5bec'
 }
 
 const themes = {
     night: {
+        buttons: makeButtonThemes(accents.night),
         base: {
-            bg: blackLevels[1],
-            text: blackLevels[4]
+            bg: BW[900],
+            text: BW[300]
         },
         menus: {
-            bg: blackLevels[2],
-            text: blackLevels[4]
+            bg: BW[700],
+            text: BW[300]
         },
         card: {
-            body: blackLevels[3],
-            head: blackLevels[2],
-            text: blackLevels[4],
-            border: darken(0.5, blackLevels[4])
+            body: BW[700],
+            head: BW[800],
+            text: BW[300],
+            border: BW[400]
         },
         keys: {
-            bg: darken(0.05, blackLevels[2]),
-            text: lighten(0.05, blackLevels[4])
+            bg: BW[800],
+            text: BW[300]
         },
         cursor: {
-            color: themeBase.night,
-            bg: transparentize(.78, blackLevels[1])
+            color: accents.night,
+            bg: transparentize(.78, BW[900])
         },
         inputs: {
-            bg: lighten(.3, blackLevels[3])
+            bg: BW[600]
         },
-        blur: transparentize(0.55, blackLevels[1]),
-        accent: themeBase.night,
-        accentColor: themeBase.night, // todo: rename accentColor -> accen
-        background: '#343434',
-        textBase: '#fff',
+        capture: {
+            bg: darken(0.1, BW[500])
+        },
+        blur: transparentize(0.55, BW[900]),
+        accent: accents.night,
+        /** @deprecated **/
+        accentColor: accents.night,
+        /** @deprecated **/
+        background: BW[400],
+        /** @deprecated **/
+        textBase: BW[100],
+        /** @deprecated **/
         border: '0.05rem solid #686868',
-        buttons: makeButtonThemes(themeBase.night)
+
     },
     day: {
+        buttons: makeButtonThemes(accents.day),
         base: {
-            bg: blackLevels[6],
-            text: blackLevels[3]
+            bg: BW[100],
+            text: BW[600]
         },
         menus: {
-            bg: blackLevels[5],
-            text: blackLevels[3]
+            bg: BW[100],
+            text: BW[600]
         },
         card: {
-            body: blackLevels[6],
-            head: blackLevels[5],
-            text: blackLevels[3],
-            border: lighten(0.5, blackLevels[3])
+            body: BW[100],
+            head: BW[200],
+            text: BW[600],
+            border: BW[500]
         },
         keys: {
-            bg: darken(0.10, blackLevels[5]),
-            text: lighten(0.05, blackLevels[2])
+            bg: BW[500],
+            text: BW[700]
         },
         cursor: {
-            color: themeBase.day,
-            bg: transparentize(.84, themeBase.day)
+            color: accents.day,
+            bg: transparentize(.84, accents.day)
         },
         inputs: {
-            bg: lighten(0.25, blackLevels[3])
+            bg: BW[400]
         },
-        blur: transparentize(0.75, blackLevels[6]),
-        accent: themeBase.day,
-        accentColor: themeBase.day,
+        capture: {
+            bg: lighten(0.1, BW[400])
+        },
+        blur: transparentize(0.75, BW[100]),
+        accent: accents.day,
+        accentColor: accents.day,
         background: '#f7f8f9',
         textBase: '#000',
         border: '0.05rem solid #dadee4',
-        buttons: makeButtonThemes(themeBase.day)
     }
 }
 

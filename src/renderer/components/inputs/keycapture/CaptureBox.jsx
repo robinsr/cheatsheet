@@ -1,14 +1,13 @@
-import './CaptureBox.scss';
+import { Debugger } from 'components/inputs/keycapture/Debug';
+import StyledCaptureBox from 'components/inputs/keycapture/StyledCaptureBox';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { FaUndo } from "react-icons/fa";
 import hotkeys from 'hotkeys-js';
 import { observer } from "mobx-react-lite";
+import { isEmpty as _isEmpty } from 'lodash';
 import classnames from "classnames";
 import { useMst } from "store";
-
-import ShortcutKey from 'components/card/ShortcutKey';
-
+import styled from 'styled-components';
 import {
     captureActions,
     getCaptureAction,
@@ -19,25 +18,14 @@ import {
     KeyEmitter
 } from 'utils';
 
+import UndoButton from './UndoButton';
+import ShortcutKey from 'components/card/ShortcutKey.jsx';
 
 const log = getLogger('JSX/CaptureBox');
 const hotkeysConfig = key_scopes.CAPTURE.config;
 
-const UndoButton = ({ onClick }) => {
 
-    let styles = {
-        opacity: '1',
-        position: 'absolute',
-        top: 0,
-        left: 0
-    };
 
-    return (
-        <button type="button" className={'btn btn-small btn-link'} style={styles} onClick={onClick} tabIndex={-1}>
-            <FaUndo color={'#5755d9'} />
-        </button>
-    );
-}
 
 const CaptureBox = observer(({
     defaultValue, command, cursorName, tabNext, onData
@@ -60,11 +48,6 @@ const CaptureBox = observer(({
             setCursor(cursorName);
         }
     }
-
-    let cns = classnames('new-shortcut-box', 'text-gray', {
-        'focus': status === 'focus'
-    });
-
 
     const startCapture = () => {
         log.debug("Capturing");
@@ -137,28 +120,32 @@ const CaptureBox = observer(({
         }
     }
 
+    let cns = classnames('new-shortcut-box', 'text-gray', {
+        'focus': status === 'focus'
+    });
+
     /**
      * Order precedence:
      * keyString (unsaved input) > command (saved to edit model) > defaultValue (saved to model)
      */
     return (
         <div style={{position: "relative"}} onBlur={stopCapture} onClick={onClick}>
-            <div className={cns}
+            <StyledCaptureBox className={cns}
                  tabIndex="0"
                  id="capture-box"
                  ref={ref}
                  onFocus={startCapture}>
                 {keyString !== null
                     ? <ShortcutKey command={keyString} />
-                    : command !== null
+                    : !_isEmpty(command)
                         ? <ShortcutKey command={command} />
                         : status === 'blur'
                             ? <em>Click to capture</em>
                             : <em>Capturing...</em>
                 }
-            </div>
+            </StyledCaptureBox>
             {keyString !== null || command !== defaultValue ? <UndoButton onClick={undo} /> : null}
-            <small className="debug-vis-only"><pre>{JSON.stringify({ keyString, command, defaultValue }, null, 4)}</pre></small>
+            <Debugger obj={{ keyString, command, defaultValue }}/>
         </div>
     );
 });
