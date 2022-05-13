@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { getLogger, KeyEmitter } from 'utils';
+import { getLogger } from 'utils';
+import { useKeys } from 'keys';
 
 const log = getLogger('JSX/KeyScope');
 
@@ -10,14 +11,15 @@ const log = getLogger('JSX/KeyScope');
  * to return true for inputs in child elements
  */
 const KeyScope = ({ scope='APP', prevScope='APP', children }) => {
+    const keyEmitter = useKeys();
 
     useEffect(() => {
         log.info('Setting key scope:', scope);
-        KeyEmitter.setScope(scope, 'JSX/KeyScope::setup');
+        keyEmitter.setScope(scope, 'JSX/KeyScope::setup');
 
         return () => {
             log.info('Setting key scope:', prevScope);
-            KeyEmitter.setScope(prevScope, 'JSX/KeyScope::cleanup');
+            keyEmitter.setScope(prevScope, 'JSX/KeyScope::cleanup');
         }
     }, [])
 

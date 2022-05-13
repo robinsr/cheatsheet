@@ -81,7 +81,7 @@ export class CustomSVGImage extends CustomImage {
 
 export class CustomPNGImage extends CustomImage {
     constructor(data, width, height, filename) {
-        super('PNG', data, width, height, filename);
+        super('PNG', data.replace('data:image/png;base64,', ''), width, height, filename);
     }
     getDataURI() {
         return 'data:image/png;base64,' + this.data;

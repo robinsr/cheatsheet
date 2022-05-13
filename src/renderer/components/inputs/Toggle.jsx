@@ -45,9 +45,9 @@ const SwitchControl = styled.i`
   ${Transition()};
   
   background-clip: padding-box;
-  background: ${props => props.theme.inputs.bg};
+  background: ${props => props.theme.inputs.toggle.bg};
   border-radius: 0.45rem;
-  border: 0.05rem solid ${props => props.theme.inputs.bg};
+  border: 0.05rem solid ${props => props.theme.inputs.toggle.bg};
   cursor: pointer;
   display: inline-block;
   height: 0.9rem;

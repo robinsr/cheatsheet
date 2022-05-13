@@ -22,10 +22,10 @@ Promise.all([ rootStore.apps.load(), rootStore.ui.load() ])
         setTimeout(() => {
             rootStore.state.loading(false);
             window.cheatsheetAPI.emit('app:loaded')
+            rootStore.listenToWindowChange();
         }, 750);
     });
 
-rootStore.listenToWindowChange();
 
 
 export const AppContext = createContext();
@@ -42,31 +42,6 @@ export function useMst() {
     }
     return store;
 }
-
-export { KeyThemes } from './ui/SettingsStore.js';
-
-const saveData = async (snapshot) => {
-    if (rootStore.state.isLoading) {
-        return;
-    }
-
-    if (rootStore.edit.editItem !== null) {
-        return;
-    }
-
-    log.info('Saving apps', snapshot);
-
-    rootStore.state.saving(true);
-    try {
-        const result = window.cheatsheetAPI.apps.save(snapshot);
-        log.info('Save success', result);
-    } catch (err) {
-        log.error('Save failed', err);
-    } finally {
-        rootStore.state.saving(false);
-    }
-};
-
 
 onSnapshot(rootStore.apps, _debounce((snapshot) => {
     rootStore.apps.save();

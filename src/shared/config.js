@@ -4,7 +4,7 @@ const packageConfig = require('../../package.json');
 
 /**
  * Various config values
- * @typedef {object }StageConfig
+ * @typedef {object} StageConfig
  * @property {string} name
  * @property {boolean} saveEnabled
  * @property {string} profile
@@ -15,6 +15,12 @@ const packageConfig = require('../../package.json');
 
 const stage = process.env.ELECTRON_DEV === 'true' ? 'dev' : 'prod';
 
+const minimums = {
+    minWidth: 400,
+    minHeight: 800
+}
+
+/** @type {Object.<any, StageConfig>} */
 const AppConfig = {
     dev: {
         name: packageConfig.productName,
@@ -22,20 +28,21 @@ const AppConfig = {
         saveDir: 'snapshots',
         profile: 'dev',
         debug: true,
-        window: {
-            width: 2000, height: 1600, minWidth: 450
-            //width: 450, height: 980, minWidth: 450
-        }
+        window: Object.assign({}, minimums, {
+            width: 2000,
+            height: 1600
+        })
     },
     prod:  {
         name: packageConfig.productName,
-        saveEnabled: false,
+        saveEnabled: true,
         saveDir: 'snapshots',
         profile: 'prod',
         debug: false,
-        window: {
-            width: 450, height: 980, minWidth: 450
-        }
+        window: Object.assign({}, minimums, {
+            width: 400,
+            height: 980,
+        })
     }
 }
 
@@ -44,3 +51,6 @@ module.exports.stage = stage;
 
 /** @type StageConfig */
 module.exports.conf = AppConfig[stage];
+
+module.exports.isProd = () => stage === 'prod';
+module.exports.isDev = () => stage === 'dev';

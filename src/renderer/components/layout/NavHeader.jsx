@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
+import { ImShrink2 } from 'react-icons/im';
 import { useMst } from 'store';
 import styled from 'styled-components';
-import { SearchBox } from 'components/layout/menu';
+import { SearchBox } from 'components/layout/header';
 import { Button } from 'components/inputs';
-import { FlexGrow, SpaceBetweenItem, Transition } from 'components/theme';
+import { FlexGrow, FlexItem, SpaceBetweenItem, Transition } from 'components/theme';
 
 const debug = window.cheatsheetAPI.config.get('debug');
 const appName = window.cheatsheetAPI.config.get('name');
@@ -16,7 +17,7 @@ const ThemedHeader = styled.header`
   position: fixed;
   width: 100%;
   margin: 0;
-  padding: 0px 4px 8px 13px;
+  padding: 0 10px 8px 10px;
   z-index: 400;
 `;
 
@@ -39,10 +40,16 @@ const SearchBarContainer = styled.div`
 const NavHeader = observer(({
     onMenuClick, isMenuOpen=false
 }) => {
-
     let { cursor, state } = useMst();
-
     let { keyScope, activeWindow } = state;
+
+    const resizeToDefault = () => {
+        window.cheatsheetAPI.emit('app:requestResize');
+    }
+
+    useEffect(() => {
+
+    }, []);
 
     return (
         <ThemedHeader>
@@ -58,6 +65,9 @@ const NavHeader = observer(({
                     <SearchBarContainer>
                         <SearchBox isMenuOpen={isMenuOpen} />
                     </SearchBarContainer>
+                    <FlexItem onClick={resizeToDefault} width={'40'}>
+                        <ImShrink2/>
+                    </FlexItem>
                 </NavBarContents>
             </div>
         </ThemedHeader>

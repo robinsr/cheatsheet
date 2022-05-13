@@ -2,13 +2,25 @@ const { app, dialog, ipcMain: ipc } = require('electron');
 const path = require('path');
 const fs = require( 'fs' );
 const gm = require('gm');
+const { isProd } = require('../shared/config');
+const { getLogger, logIPCEvent } = require('./logger');
 const { CustomImage } = require('./images');
+
+const log = getLogger('io');
 
 const ENC = { encoding: 'utf8' };
 
 
 class Store {
-    constructor({ saveEnabled = true, saveDir, profile }) {
+
+    /**
+     * @param {StageConfig} config
+     */
+    constructor(config) {
+        this.config = config;
+
+        let { saveEnabled, saveDir, profile } = this.config;
+
         this.saveEnabled = saveEnabled;
 
         const stores = {
@@ -16,25 +28,30 @@ class Store {
             settings: getFileName(saveDir, profile, 'settings')
         };
 
-        console.info('Creating store with config:', { saveEnabled, saveDir, profile, stores });
+        log.info('Creating store with config:', { saveEnabled, saveDir, profile, stores });
 
         ipc.handle('api:image:save', (e, imageData) => {
+            logIPCEvent('api:image:save');
             return saveImage(imageData);
         });
 
         ipc.handle('api:apps:get', async (e) => {
+            logIPCEvent('api:apps:get');
             return this.getJSON(stores.apps);
         });
 
         ipc.handle('api:apps:save', (e, data) => {
+            logIPCEvent('api:apps:save');
             return this.writeJSON(stores.apps, data);
         });
 
         ipc.handle('api:settings:get', (e) => {
+            logIPCEvent('api:settings:get');
             return this.getJSON(stores.settings);
         });
 
         ipc.handle('api:settings:save', (e, data) => {
+            logIPCEvent('api:settings:save');
             ipc.emit('app:settingsUpdated', data);
             return this.writeJSON(stores.settings, data);
         });
@@ -45,14 +62,14 @@ class Store {
     getSettingsSync() {
         let filepath = this.stores.settings;
 
-        console.info('Reading user settings...');
+        log.info('Reading user settings...');
 
         try {
             const data = fs.readFileSync(filepath, ENC);
             return JSON.parse(data.toString());
         } catch (err) {
             if (err.code === 'ENOENT') {
-                console.info('No settings file found', filepath);
+                log.info('No settings file found', filepath);
                 return {};
             } else {
                 throw new Error('Could not read user settings')
@@ -61,17 +78,17 @@ class Store {
     }
 
     getJSON(filepath) {
-        console.info('Reading file', filepath);
+        log.debug('Reading file', filepath);
 
         return new Promise((resolve, reject) => {
             fs.readFile(filepath, ENC, (err, data) => {
                 if (err){
                     if (err.code === 'ENOENT') {
-                        console.info('Creating file for store', filepath);
+                        log.debug('Creating file for store', filepath);
                         this.writeJSON(filepath, {});
                         return resolve({});
                     } else {
-                        console.error('failed to get snapshot', err)
+                        log.error('failed to get snapshot', err)
                         return reject(err);
                     }
 
@@ -83,26 +100,28 @@ class Store {
     }
 
     writeJSON(filepath, data) {
-        console.info('Saving snapshot to: ', filepath);
+        log.debug('Saving snapshot to: ', filepath);
 
         if (this.saveEnabled) {
             return new Promise((resolve, reject) => {
                 writeFile(filepath, JSON.stringify(data, null, 4), ENC)
                     .then(() => {
-                        console.info('snapshot saved to ' + filepath)
+                        log.debug('snapshot saved to ' + filepath)
                         resolve({ status: 'success', filepath });
                     })
                     .catch(err => {
-                        console.error('failed to save snapshot');
-                        console.error(err);
+                        log.error('failed to save snapshot');
+                        log.error(err);
                         reject(err);
                     });
             });
+        } else if (isProd()) {
+            throw new Error('Save disabled in prod');
         } else {
+            log.warn('Saving disabled');
             return Promise.resolve({ status: 'disabled', filepath })
         }
     }
-
 }
 
 const checkDir = dir => {
@@ -119,7 +138,7 @@ const getFileName = (saveDir, profile, modelType) => {
 
 const saveImage = (imageData) => {
     let imageModel = CustomImage.fromData(imageData);
-    console.log(imageModel)
+    log.debug('ImageModel received:', imageModel);
 
     return new Promise((resolve, reject) => {
         dialog.showSaveDialog({

@@ -11,7 +11,7 @@ const StyledCaptureBox = styled.div.attrs(props => ({
   
   color: ${props => props.theme.base.text};
   background-color: ${props => props.theme.capture.bg};
-  border: 0.05rem dashed $dark-gray;
+  border: ${props => props.theme.capture.border};;
   border-radius: 0.1rem;
   
   font-size: 0.8rem;

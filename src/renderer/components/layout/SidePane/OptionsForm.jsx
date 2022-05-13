@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { GiMoonBats } from 'react-icons/gi';
 import { HiOutlineSave } from "react-icons/hi";
 import { Toggle } from 'components/inputs';
-import { useMst, KeyThemes } from 'store';
+import { useMst } from 'store';
 
 const OptionsForm = observer(({ closeContainer }) => {
     const { ui, backup } = useMst();
@@ -33,10 +33,10 @@ const OptionsForm = observer(({ closeContainer }) => {
                         // closeContainer();
                     }}
                     label={<GiMoonBats/>}/>
-            <Toggle checked={ui.keyTheme === KeyThemes.light}
+            <Toggle checked={ui.keyTheme === 'light'}
                     onChange={e => {
                         ui.toggleKeyTheme();
-                        closeContainer();
+                        // closeContainer();
                     }}
                     label={'Light Keys'}/>
             <Toggle checked={ui.activeFollow}

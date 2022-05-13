@@ -6,7 +6,8 @@ import Optional from 'optional-js';
 const log = getLogger('Store/CategoryItem');
 
 /**
- * @class ICategoryItemViews
+ * @class CategoryItemViews
+ * @implements CollectionStore.<IShortcutItem>
  * @param {ICategoryItem} self
  * @constructor
  */
@@ -49,13 +50,19 @@ export const CategoryItemViews = (self) => ({
     },
     get path() {
         return getPath(self);
+    },
+    /**
+     * @type {number} - number of items selected (for deletion)
+     */
+    get numSelected() {
+        return self.items.filter(i => i.selected).length;
     }
-})
+});
 
 /**
- * @class ICategoryItemActions
- * @param {ICategoryItem} self
+ * @class CategoryItemActions
  * @constructor
+ * @param {ICategoryItem} self
  */
 export const CategoryItemActions = (self) => ({
     updateName(name) {
@@ -74,6 +81,9 @@ export const CategoryItemActions = (self) => ({
     },
     removeSelected() {
        self.items = self.items.filter(i => !i.selected);
+    },
+    unselectItems() {
+        self.items.filter(i => i.selected).forEach(i => i.select(false));
     },
     acceptItem(item) {
         if (getType(item) === MobxShortcutItem) {
@@ -133,5 +143,5 @@ const MobxCategoryItem = types
 export default MobxCategoryItem;
 
 /**
- * @typedef { ICategoryItemProps, ICategoryItemActions, CollectionStore.<IShortcutItem> } ICategoryItem
+ * @typedef  {ICategoryItemProps, CategoryItemActions, CategoryItemViews } ICategoryItem
  */

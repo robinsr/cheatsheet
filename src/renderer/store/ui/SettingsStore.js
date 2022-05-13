@@ -140,7 +140,7 @@ const SettingsStoreViews = self => ({
     }
 });
 
-// TODO: move this into a config of some kind
+// TODO: Move this into a config of some kind
 const ignoreAppsDefault = [
     'loginwindow', 'Finder'
 ]

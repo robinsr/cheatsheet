@@ -3,10 +3,10 @@ import { debounce as _debounce } from 'lodash';
 import Optional from 'optional-js';
 import {  types,  flow,  getEnv,  getSnapshot,  resolveIdentifier } from 'mobx-state-tree';
 import { gate, getLogger } from 'utils';
-import MobxSettingsStore from './ui/SettingsStore.js';
+import MobxSettingsStore from './ui/SettingsStore';
 import MobxSearchStore from './ui/SearchStore';
-import MobxStateStore from './ui/StateStore.js';
-import MobxAppStore from './app/AppStore.js';
+import MobxStateStore from './ui/StateStore';
+import MobxAppStore from './app/AppStore';
 import MobxEditItemStore from './edit/EditItemStore';
 import MobxImageModalStore from './export/ImageStore';
 import MobxShortcutItem from './app/ShortcutItem';
@@ -35,7 +35,7 @@ const RootStoreActions = self => ({
         let api = getEnv(self).cheatsheetAPI;
 
         api.subscribe('app:window-change', gate(hasWindowChanged, (e, data) => {
-            handleWindowChange(data.windowName, self, api);
+            handleWindowChange(data.windowName, self);
         }));
     },
     removeApp(appId) {
@@ -50,12 +50,14 @@ const RootStoreActions = self => ({
     setCursor: _debounce(val => self._setCursor(val), 10),
     _setCursor(val) {
         self.cursor = val;
+
+        window.history?.pushState({ cursor: val }, 'Cheatsheet-pushState', '#' + val);
     },
     getCursor() {
         return Optional.ofNullable(self.cursor);
     },
     resolveCursor(val) {
-        // Currently only looks up shortcutitems, but can be
+        // Curently only looks up shortcutitems, but can be
         // extended to check for other model types
         try {
             let item = resolveIdentifier(MobxShortcutItem, self, val);
@@ -69,13 +71,13 @@ const RootStoreActions = self => ({
         self.cursor = Optional.ofNullable(self.cursor)
             .map(val => self.resolveCursor(val))
             .map(item => item.next?.id)
-            .orElse(self.apps.topItem.id);
+            .orElse(self.apps.topItem?.id || null);
     },
     cursorUp() {
         self.cursor = Optional.ofNullable(self.cursor)
             .map(self.resolveCursor)
             .map(item => item.prev?.id)
-            .orElse(self.apps.topItem.id);
+            .orElse(self.apps.topItem?.id || null);
     }
 })
 
@@ -109,7 +111,7 @@ MobxStore.__defaults = {
     imageModal: MobxImageModalStore.__defaults,
     search: MobxSearchStore.__defaults,
     state: MobxStateStore.__defaults,
-    cursor: 'SEARCH',
+    cursor: 'NOWHERE',
 }
 
 

@@ -36,6 +36,10 @@ const themes = {
             bg: BW[700],
             text: BW[300]
         },
+        modal: {
+            bg: BW[700],
+            text: BW[300]
+        },
         card: {
             body: BW[700],
             head: BW[800],
@@ -51,10 +55,23 @@ const themes = {
             bg: transparentize(.78, BW[900])
         },
         inputs: {
-            bg: BW[600]
+            toggle: {
+                bg: BW[600]
+            },
+            text: {
+                bg: BW[900],
+                text: BW[300],
+                placeholder: BW[500],
+                border: `0.05rem solid ${BW[600]}`
+            },
+            focus: {
+                border: accents.night,
+                boxShadow: transparentize(.80, accents.night)
+            }
         },
         capture: {
-            bg: darken(0.1, BW[500])
+            bg: BW[800],
+            border: `0.05rem dashed ${BW[400]}`
         },
         blur: transparentize(0.55, BW[900]),
         accent: accents.night,
@@ -75,6 +92,10 @@ const themes = {
             text: BW[600]
         },
         menus: {
+            bg: BW[200],
+            text: BW[600]
+        },
+        modal: {
             bg: BW[100],
             text: BW[600]
         },
@@ -85,7 +106,7 @@ const themes = {
             border: BW[500]
         },
         keys: {
-            bg: BW[500],
+            bg: BW[300],
             text: BW[700]
         },
         cursor: {
@@ -93,10 +114,24 @@ const themes = {
             bg: transparentize(.84, accents.day)
         },
         inputs: {
-            bg: BW[400]
+            toggle: {
+                bg: BW[400]
+            },
+            text: {
+                bg: BW[100],
+                text: BW[700],
+                placeholder: BW[400],
+                border: `0.05rem solid ${BW[400]}`
+            },
+            focus: {
+                border: accents.day,
+                boxShadow: transparentize(.80, accents.day)
+            }
         },
         capture: {
-            bg: lighten(0.1, BW[400])
+            bg: BW[300],
+            border: `0.1rem dashed ${BW[500]}`
+            //bg: lighten(0.1, BW[400])
         },
         blur: transparentize(0.75, BW[100]),
         accent: accents.day,

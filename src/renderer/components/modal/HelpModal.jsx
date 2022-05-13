@@ -1,22 +1,30 @@
+import { FlexItem } from 'components/theme';
 import React from 'react';
 import { observer } from 'mobx-react-lite';
+import styled from 'styled-components';
 import Modal from './Modal';
 import { useMst } from 'store';
 import { newUuid } from 'utils';
-import { key_scopes, key_config } from 'utils/key_config';
+import { key_scopes, key_config } from 'keys/key_config';
 import ShortcutKey from 'components/card/ShortcutKey';
 import KeyScope from 'components/providers/KeyScope';
 
 const installedScopes = [
     { scope: key_scopes.APP, title: 'General shortcuts' },
-    { scope: key_scopes.EDIT_ITEM, title: 'In the edit item pane' }
+    { scope: key_scopes.EDIT_ITEM, title: 'While editing an item' }
 ];
+
+const StyledTable = styled.table`
+  th, td {
+    padding: 0.3rem 0;
+  }
+`;
 
 const HelpTable = ({ scope, title }) => {
     return (
         <div className={'help-table'}>
             <h5>{title}</h5>
-            <table className={'help-table-table table'}>
+            <StyledTable className={'table'}>
                 <thead>
                 <tr><th>Shortcut</th><th>Action</th></tr>
                 </thead>
@@ -40,7 +48,7 @@ const HelpTable = ({ scope, title }) => {
                     })
                 }
                 </tbody>
-            </table>
+            </StyledTable>
         </div>
     );
 }
@@ -58,14 +66,13 @@ const HelpModal = observer(() => {
             <Modal
                 type="medium"
                 name="help-modal"
-                title={'Help'}
+                title={'Shortcut keys'}
                 active={true}
                 onClose={() => setCursor(null)}
                 content={
                      <div className="content">
                         <div className="">
                             <div className="p-centered">
-                                <h4>Keys</h4>
                                 {installedScopes.map(i => <HelpTable
                                     key={newUuid()}
                                     scope={i.scope}

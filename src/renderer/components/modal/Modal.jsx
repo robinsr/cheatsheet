@@ -11,11 +11,11 @@ const ModalOverrides = createGlobalStyle`
   }
   
   .modal-container {
-    background-color: ${props => props.theme.menus.bg} !important;
+    background-color: ${props => props.theme.modal.bg} !important;
       
     .modal-header, .modal-content {
       a, p, .h1, .h2, .h3, .h4, .h5, .h6 {
-        color: ${props => props.theme.menus.text} !important;
+        color: ${props => props.theme.modal.text} !important;
       }
     }
   }

@@ -62,22 +62,25 @@ export const FloatingButton = styled.div.attrs(props => ({
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  bottom: 1.1rem;
-  right: 1rem;
   cursor: pointer;
-  background: ${props => lighten(0.15, props.theme.accent)};
+  background: ${props => props.theme.accent};
   width: ${props => props.width}px;
   height: ${props => props.width}px;
   border-radius: ${props => props.width / 2}px;
   font-size: 1.1rem;
+  transition: background-color 0.3s;
   
   &:hover {
-    background: ${props => props.theme.accent};;
+    background: ${props => lighten(0.04, props.theme.accent)};
   }
   
   svg {
-    color: ${props => props.theme.base.bg};
+    fill: ${props => props.theme.base.bg};
+    transition: fill 0.3s;
+    
+    &&:hover {
+      fill: ${props => props.theme.base.text};
+    }
   }
 `;
 

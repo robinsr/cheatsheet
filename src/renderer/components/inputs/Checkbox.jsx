@@ -1,6 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
+const CheckIcon = styled.i.attrs(props => ({
+    className: 'form-icon'
+}))``;
 
 const MovingLabel = styled.label`
   margin-top: 0;
@@ -12,6 +15,11 @@ const MovingLabel = styled.label`
     text-decoration: line-through;
     text-decoration-thickness: 0.1rem;
     text-decoration-color: ${props => props.theme.accent};
+  }
+  
+  input:checked ~ i {
+    background: ${props => props.theme.accent} !important;
+    border-color: ${props => props.theme.accent} !important;
   }
 `
 
@@ -28,7 +36,7 @@ const Checkbox = ({ label, showCheckbox, ...rest }) => {
         <InputContainer className="form-group">
             <MovingLabel className="form-checkbox" showCheckbox={showCheckbox}>
                 <input type="checkbox" {...rest} />
-                <i className="form-icon"></i><span>{label}</span>
+                <CheckIcon/><span>{label}</span>
             </MovingLabel>
         </InputContainer>
     );

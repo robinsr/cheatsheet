@@ -1,16 +1,42 @@
 import './SearchBox.scss';
 import classnames from 'classnames';
 import { CursorFocusableInput } from 'components/inputs';
-import KeyScope from 'components/providers/KeyScope.jsx';
+import { Transition } from 'components/theme';
 
 import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import { useMst } from 'store';
-import { isEnterKey, KeyEmitter } from 'utils';
+import styled from 'styled-components';
+import { isEnterKey } from 'utils';
 import { macos_symbols } from 'utils/macos_symbols.js';
 
-import SearchResult from './SearchResult.jsx';
+import SearchResults from './SearchResults.jsx';
+
+const StyledFormElement = styled.div`
+  ${Transition()};
+  background: ${props => props.theme.base.bg};
+  
+  input {
+    ${Transition()};
+  }
+  
+  .form-input {
+    border: none; // remove spectre default
+  }
+`;
+
+const FormAutoComplete = styled(StyledFormElement).attrs(props => ({
+    className: [props.className, 'form-autocomplete'].join(' ')
+}))`
+  max-width: 520px;
+  margin: 0 .4rem;
+`;
+
+const FormAutoCompleteInput = styled(StyledFormElement).attrs(props => ({
+    className: [props.className, 'form-autocomplete-input', 'form-input'].join(' ')
+}))``;
+
 
 const SearchBox = observer(({
     isMenuOpen=false
@@ -20,9 +46,7 @@ const SearchBox = observer(({
 
     let [ focused, isFocused ] = useState(false);
 
-    let cns = classnames('form-autocomplete-input form-input', {
-        'is-focused': focused === true
-    })
+    let isFocusedClass = classnames({ 'is-focused': focused === true });
 
     useEffect(function clearOnMenuOpen() {
         if (isMenuOpen) {
@@ -46,12 +70,11 @@ const SearchBox = observer(({
     }
 
     return (
-        <div className="form-autocomplete search-box mx-2">
-            <div className={cns}>
+        <FormAutoComplete>
+            <FormAutoCompleteInput className={isFocusedClass}>
                 <CursorFocusableInput
                     cursorName={'SEARCH'}
                     blur={true}
-                    className="form-input"
                     id="app-search-input"
                     type="text"
                     placeholder="Search Shortcuts or add new"
@@ -64,15 +87,9 @@ const SearchBox = observer(({
                 {query.length > 5 &&
                     <small className="float-right"><em>{macos_symbols.return.symbol} to create new</em></small>
                 }
-            </div>
-            {results.length > 0 &&
-                <KeyScope scope={'SEARCH'} prevScope={'APP'}>
-                    <ul className="menu">
-                        {results.map(r => <SearchResult key={'search_' + r.id} result={r} query={query}/>)}
-                    </ul>
-                </KeyScope>
-            }
-        </div>
+            </FormAutoCompleteInput>
+            <SearchResults results={results} query={query}/>
+        </FormAutoComplete>
     );
 });
 

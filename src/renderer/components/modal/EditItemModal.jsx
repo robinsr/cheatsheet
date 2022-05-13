@@ -4,12 +4,12 @@ import { observer } from 'mobx-react-lite';
 import Modal from './Modal.jsx';
 import { Button, CaptureBox, CursorFocusableInput, CursorNavigableForm, Toggle } from 'components/inputs';
 import { useMst } from 'store';
-import { key_scopes, getLogger } from 'utils';
+import { getLogger } from 'utils';
 
 const log = getLogger('JSX/EditItemModal');
 
 const HELP_MSG = 'Not all keyboard shortcuts can be captured.\nExamples include:\n- Cmd-W (close window)\n- Cmd-Q (quit)';
-const KEY_SCOPE = key_scopes.EDIT_ITEM.config.scope;
+
 
 const EditModal = observer(() => {
     let { editItem, categoryOptions, saveEditItem, clearEditItem } = useMst().edit;
@@ -34,7 +34,7 @@ const EditModal = observer(() => {
                     title="Add/Edit Shortcut"
                     active={true}
                     onClose={clearEditItem}
-                    keyscope={KEY_SCOPE}
+                    keyscope={'EDIT_ITEM'}
                     content={
                         <div className="content">
                             <CursorNavigableForm
@@ -42,7 +42,7 @@ const EditModal = observer(() => {
                                 <div className="form-group">
                                     <label className="form-label">Shortcut name:</label>
                                     <CursorFocusableInput
-                                        data-keyscope={KEY_SCOPE}
+                                        data-keyscope={'EDIT_ITEM'}
                                         cursorName="edit-form-label"
                                         className="form-input"
                                         name="label"
@@ -58,7 +58,7 @@ const EditModal = observer(() => {
                                     <CursorFocusableInput
                                             type="select"
                                             className="form-select"
-                                            data-keyscope={KEY_SCOPE}
+                                            data-keyscope={'EDIT_ITEM'}
                                             cursorName="edit-form-category"
                                             name="category"
                                             value={category.id}
@@ -81,7 +81,7 @@ const EditModal = observer(() => {
                                         label={'Second stroke'}
                                         checked={enableSecondary}
                                         onChange={val => editItem.updateEnableSecondary(val)}
-                                        keyScope={KEY_SCOPE}
+                                        keyScope={'EDIT_ITEM'}
                                         tabIndex={0}
                                         reveal={
                                             <div className="form-group">
@@ -99,7 +99,7 @@ const EditModal = observer(() => {
                     footer={
                         <Button primary
                             type="button"
-                            data-keyscope={KEY_SCOPE}
+                            data-keyscope={'EDIT_ITEM'}
                             className="mx-1"
                             onClick={saveEditItem}>
                                 Save

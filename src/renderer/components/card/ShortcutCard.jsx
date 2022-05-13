@@ -1,4 +1,4 @@
-import { FlexGrow, PointerItem, SpaceBetweenItem, Transition } from 'components/theme';
+import { FlexGrow, FlexRow, PointerItem, SpaceBetweenItem, Transition } from 'components/theme';
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
@@ -49,11 +49,13 @@ const AddItemButton = styled.div`
   }
 `;
 
-
-const ShortcutCard = observer(({
-    group, app
-}) => {
-    let { items, imageModal, removeCategory } = useMst();
+/**
+ * @function
+ * @param {{group:ICategoryItem, app:IAppItem}} props
+ * @returns {JSX.Element}
+ */
+const ShortcutCard = ({ group, app }) => {
+    let { items, imageModal, removeCategory, state } = useMst();
 
     let cardRef = useRef(null);
     let menuRef = useRef(null);
@@ -64,9 +66,33 @@ const ShortcutCard = observer(({
 
     const onDoneEdit = () => {
         if (editGroupName !== group) group.updateName(editGroupName);
-        setEdit(false);
-        group.removeSelected();
-    };
+
+        if (group.numSelected > 0) {
+            let msg = `Remove ${group.numSelected} items from ${group.name}?`
+
+            state.setPromptValueAndWait(msg).then(answer => {
+                if (answer.isConfirm()) {
+                    group.removeSelected();
+                } else {
+                    group.unselectItems();
+                }
+            })
+            .finally(() => setEdit(false));
+        } else {
+            setEdit(false);
+        }
+    }
+
+    const deleteCategory = () => {
+        state.setPromptValueAndWait(`Delete ${group.name}?`)
+            .then(answer => {
+                if (answer.isConfirm()) {
+                   removeCategory(app.id, group.id);
+                } else {
+                    setEdit(false);
+                }
+            })
+    }
 
     const render = type => {
         if (type === 'SVG') return renderSVG(cardRef.current);
@@ -85,14 +111,6 @@ const ShortcutCard = observer(({
             .finally(e.show)
     }
 
-    const deleteCategory = () => {
-        removeCategory(app.id, group.id);
-    }
-
-    const deleteSelected = () => {
-
-    }
-
     const exportMD = () => { /* todo */ }
 
     return (
@@ -104,9 +122,10 @@ const ShortcutCard = observer(({
                                          editable={edit}
                                          defaultValue={group.name}
                                          editValue={editGroupName}
-                                         onChange={setEditGroupName}/>
+                                         onChange={setEditGroupName}
+                                         onEnter={onDoneEdit}/>
                     </CardTitle>
-                    <div className="dropdown" ref={menuRef}>
+                    <FlexRow className="dropdown" ref={menuRef}>
                         <ToggleButton className="mx-1" tabIndex={-1}
                                       checked={edit}
                                       unPopped={<Button small primary icon="edit" />}
@@ -116,16 +135,16 @@ const ShortcutCard = observer(({
                         />
                         {edit ?
                              <Button small danger icon="delete" onClick={deleteCategory}tabIndex={-1}/>
-                            : <span>
+                            : <React.Fragment>
                                 <Button small primary icon="download" className="dropdown-toggle"tabIndex={-1}/>
                                 <CardMenu>
                                     <MenuItem name="PNG" icon="photo" onCLick={() => exportImage('PNG')}/>
                                     <MenuItem name="SVG" icon="resize-horiz" onCLick={() => exportImage('SVG')}/>
                                     <MenuItem name="MD" icon="bookmark" onCLick={() => exportMD()}/>
                                 </CardMenu>
-                            </span>
+                            </React.Fragment>
                           }
-                    </div>
+                    </FlexRow>
                 </CardHeader>
                 <div className="card-body">
                     <ShortcutTable group={group} editing={edit}/>
@@ -136,9 +155,9 @@ const ShortcutCard = observer(({
             </Card>
         </CardContainer>
     );
-});
+}
 
-export default ShortcutCard;
+export default observer(ShortcutCard);
 
 /*
 {edit ? <input type="text" value={editGroupName} onChange={e => setEditGroupName(e.target.value)} /> : group.name}

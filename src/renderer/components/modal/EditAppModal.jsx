@@ -46,7 +46,6 @@ const EditAppModal = observer(() => {
                              <div className="form-group">
                                  <label className="form-label">App name:</label>
                                  <CursorFocusableInput cursorName="edit-app-name"
-                                     className="form-input"
                                      type="text"
                                      placeholder="Shortcut name"
                                      value={name}
@@ -57,7 +56,6 @@ const EditAppModal = observer(() => {
                              <div className="form-group">
                                  <label className="form-label">Window name:</label>
                                  <CursorFocusableInput cursorName="edit-app-window"
-                                     className="form-input"
                                      type="text"
                                      placeholder="Shortcut name"
                                      value={windowName}
@@ -66,7 +64,7 @@ const EditAppModal = observer(() => {
                                  />
                              </div>
                              {willDelete &&
-                                <Dialog title={`Delete ${name}?`}
+                                <Dialog message={`Delete ${name}?`}
                                         onCancel={() => setWillDelete(false)}
                                         onConfirm={deleteApp}
                                 />

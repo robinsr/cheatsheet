@@ -1,16 +1,18 @@
-import { getKeyDirection } from './dom';
-import { getLogger } from './logger';
+import { getKeyDirection } from 'utils/dom.js';
+import { getLogger } from 'utils/logger.js';
 const log = getLogger('KeyConfig');
 
 /**
- * Configure key bindings
- *
- * Each key_config is an object of type:
- * - key: string - hotkeys key string
- * - help: string - optional help string for displaying in help window
- * - run: function - a function to invoke when key is pressed
+ * @typedef {object} IKeyAction
+ * @property {string} key - hotkeys key string
+ * @property {string} helpMessage - a useful help message
+ * @property {function(e: KeyboardEvent, root: IRootStore)} run - function to run on key event
  */
-const key_config = {
+
+/**
+ * @type {Object.<string, IKeyAction>}
+ */
+export const key_config = {
     CLEAR_CURSOR: {
         key: 'esc',
         help: null,
@@ -27,14 +29,14 @@ const key_config = {
     },
     FOCUS_SEARCH: {
         key: '/',
-        help: 'Moves focus to the search bar',
+        help: 'Go to search',
         run: (e, root) => {
             root.setCursor('SEARCH');
         }
     },
     MOVE_CURSOR: {
         key: 'up, down',
-        help: 'Move focus up or down',
+        help: 'Move highlight up or down',
         run: (e, root) => {
             let direction = getKeyDirection(e)
 
@@ -47,7 +49,7 @@ const key_config = {
     },
     MOVE_SELECTION: {
         key: 'shift+up, shift+down',
-        help: 'Move selected item up or down',
+        help: 'Move highlighted item up or down',
         run: (e, root) => {
             let direction = getKeyDirection(e);
 
@@ -107,6 +109,13 @@ const key_config = {
             } else {
                 log.warn('Enter key pressed, but cursor value is not valid item: ', cursor)
             }
+        }
+    },
+    EDIT_LABEL: {
+        key: 'L',
+        help: 'Edit label of highlighted item',
+        run: (e, root) => {
+
         }
     },
     NEW_SHORTCUT: {
@@ -214,44 +223,51 @@ const key_config = {
         key: 'esc',
         help: null,
         run: (e, root) => {
-            let { setCursor, search, apps } = root;
+            let { setCursor, search, apps, state } = root;
             search.clearQuery();
             setCursor(apps.topItem.id);
+            state.setKeyScope('APP');
         }
-    }
-}
-
-const makeEventFilter = (name, func) => {
-    if (!func) {
-        return (e) => e.target.dataset?.keyscope === name ? 'true': false
-    } else {
-        return (e) => func(e);
+    },
+    'NEW_APP -> MAYBE_LATER': {
+        key: 'esc',
+        help: null,
+        run: (e, root) => {
+            root.state.clearUnknownAppName();
+        }
+    },
+    'NEW_APP -> YES': {
+        key: 'Y',
+        help: null,
+        run: (e, root) => {
+            let { unknownApp } = root.state;
+            root.apps.addNewApp(unknownApp, unknownApp);
+            root.state.clearUnknownAppName();
+        }
+    },
+    'NEW_APP -> NO': {
+        key: 'N',
+        help: null,
+        run: (e, root) => {
+            root.ui.addIgnoreApp(root.state.unknownApp);
+            root.state.clearUnknownAppName();
+        }
     }
 };
 
-
 /**
- * KeyScope config
- * @typedef {Object} KeyScopeConfig
- * @property {string} scope - name of scope
- * @property {boolean} [keydown = true] - trigger key actions on key down
- * @property {boolean} [keyup = false] - trigger key actions on key up
+ * @typedef {Object} IKeyScopes
+ * @property {object} config
+ * @property {string} config.scope - name of scope
+ * @property {boolean} [config.keydown=true] - trigger key actions on key down
+ * @property {boolean} [config.keyup=false] - trigger key actions on key up
+ * @property {string[]} actions - list of actions
+ * @property {function(e: KeyboardEvent, scope: string)} eventFilter - function return true/false when input elements fire keyboard events
  */
 
 
-/**
- * ActionList
- * @typedef {string[]} ActionList - list of actions
- */
-
-/**
- * Configures which {@link KeyActions} belong to which scope
- * @typedef {Object} KeyScopes
- * @property {KeyScopeConfig} config
- * @property {ActionList} actions
- * @property {function} eventFilter - function return true/false when input elements fire keyboard events
- */
-const key_scopes = {
+/** @type Object.<string,IKeyScopes> */
+export const key_scopes = {
     APP: {
         config: { scope: 'APP', keydown: true, keyup: false },
         actions: [
@@ -266,31 +282,41 @@ const key_scopes = {
             'NEW_CATEGORY',
             'EDIT_CURRENT_APP'
         ],
-        eventFilter: makeEventFilter('APP', (e) => {
-            return e.target?.id !== 'app-search-input';
-        })
+        eventFilter: (e, scope) => {
+            if (scope && scope !== 'APP') {
+                log.debug('APP deferring keyscope to: ' + scope);
+                return false;
+            }
+
+            const ifAny = [
+                e.target?.id === 'app-search-input',
+                e.target.hasAttribute('contenteditable'),
+                window.location.hash.startsWith('#HELP')
+            ];
+
+            return !ifAny.includes(true);
+        }
     },
     HELP: {
         config: { scope: 'HELP', keydown: true, keyup: false },
         actions: [
             'CLEAR_CURSOR'
         ],
-        eventFilter: makeEventFilter('HELP', (e) => true)
+        eventFilter: (e) => window.location.hash === '#HELP'
     },
     SEARCH: {
         config: { scope: 'SEARCH', keydown: false, keyup: true },
         actions: [
             'EXIT_SEARCH', 'MOVE_SEARCH_CURSOR', 'SELECT_SEARCH_RESULT'
         ],
-        eventFilter: makeEventFilter('SEARCH'),
-        selector: '#app-search-input'
+        eventFilter: (e) => e.target?.id === 'app-search-input'
     },
     SEARCH_BUTTONS: {
         config: { scope: 'SEARCH_BUTTONS', keydown: false, keyup: true },
         actions: [
             //, 'SELECT_SEARCH_RESULT'
         ],
-        eventFilter: makeEventFilter('SEARCH_BUTTON')
+        eventFilter: () => false
     },
     EDIT_ITEM: {
         config: { scope: 'EDIT_ITEM' },
@@ -299,22 +325,31 @@ const key_scopes = {
             'SAVE_EDIT_ITEM'
             //, 'NEXT_EDIT_FIELD'
         ],
-        eventFilter: makeEventFilter('EDIT_ITEM')
+        eventFilter: (e, scope) => scope === 'EDIT_ITEM'
     },
     EDIT_APP: {
         config: { scope: 'EDIT_APP' },
         actions: [
             'CLEAR_EDIT_APP'
         ],
-        eventFilter: makeEventFilter('EDIT_APP', (e) => true)
+        eventFilter: (e, scope) => scope === 'EDIT_APP'
     },
     CAPTURE: {
         config: { scope: 'CAPTURE', keydown: true, keyup: true },
         actions: [
             'CLEAR_EDIT_ITEM'
         ],
-        eventFilter: makeEventFilter('CAPTURE', (e) => e.target.id === 'capture-box' ? 'CAPTURE': null)
+        eventFilter: (e) => e.target.id === 'capture-box' // TODO; still need this?
+    },
+    NEW_APP: {
+        config: { scope: 'NEW_APP', keydown: false, keyup: true },
+        actions: [
+            'SHOW_HELP_MODAL',
+            'NEW_APP -> MAYBE_LATER',
+            'NEW_APP -> YES',
+            'NEW_APP -> NO'
+        ],
+        eventFilter: (e, scope) => scope === 'NEW_APP'
     }
 }
 
-export { key_config, key_scopes };

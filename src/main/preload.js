@@ -20,7 +20,8 @@ const cheatsheetAPI = {
         getAll: () => conf,
         get: (key) => conf[key]
     },
-    stage: () => stage
+    stage: () => stage,
+    systemBeep: () => ipc.invoke('app:beep')
 }
 
 contextBridge.exposeInMainWorld('cheatsheetAPI', cheatsheetAPI);

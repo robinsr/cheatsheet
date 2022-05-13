@@ -36,7 +36,7 @@ const AppMenu = observer(({
     }
 
     function getListItemClasses(id) {
-        return classnames('app-menu-list-item', {
+        return classnames('app-header-list-item', {
             'active': id === cursor
         });
     }

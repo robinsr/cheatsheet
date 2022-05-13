@@ -46,7 +46,8 @@ module.exports = {
             components: path.resolve(__dirname, '../src/renderer/components/'),
             store: path.resolve(__dirname, '../src/renderer/store/'),
             utils: path.resolve(__dirname, '../src/renderer/utils/'),
-            fonts: path.resolve(__dirname, '../fonts/')
+            keys: path.resolve(__dirname, '../src/renderer/keys/'),
+            fonts: path.resolve(__dirname, '../fonts/'),
         },
         fallback: {
             "fs": false

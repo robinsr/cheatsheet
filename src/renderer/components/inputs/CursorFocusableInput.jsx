@@ -2,6 +2,7 @@ import React, {useEffect, useRef} from 'react';
 import { observer } from "mobx-react-lite";
 import { useMst } from "store";
 import { getLogger } from 'utils';
+import { TextInput, Select } from 'components/inputs';
 
 const log = getLogger('JSX/CursorFocusableElement');
 
@@ -26,26 +27,29 @@ const CursorFocusableInput = observer(({
         if (cursor === cursorName) {
             log.debug('setting focus', cursorName);
             inputRef.current.focus();
+            inputRef.current.select();
         } else if (blur) {
             inputRef.current.blur();
         }
     }, [ cursor ]);
 
     function onFocus(e) {
-        if (focus) setCursor(cursorName);
+        if (focus) {
+            setCursor(cursorName);
+        }
     }
 
     if (type === 'text') {
         return (
-            <input type="type" ref={inputRef} data-navname={cursorName} {...rest} />
+            <TextInput ref={inputRef} data-navname={cursorName} {...rest} />
         );
     }
 
     if (type === 'select') {
         return (
-            <select ref={inputRef} data-navname={cursorName} {...rest}>
+            <Select ref={inputRef} data-navname={cursorName} {...rest}>
                 {children}
-            </select>
+            </Select>
         );
     }
 

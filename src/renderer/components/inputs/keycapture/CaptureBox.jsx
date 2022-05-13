@@ -1,5 +1,7 @@
 import { Debugger } from 'components/inputs/keycapture/Debug';
 import StyledCaptureBox from 'components/inputs/keycapture/StyledCaptureBox';
+import { useKeys } from 'keys';
+import { key_scopes } from 'keys/key_config';
 
 import React, { useEffect, useRef, useState } from 'react';
 import hotkeys from 'hotkeys-js';
@@ -7,15 +9,12 @@ import { observer } from "mobx-react-lite";
 import { isEmpty as _isEmpty } from 'lodash';
 import classnames from "classnames";
 import { useMst } from "store";
-import styled from 'styled-components';
 import {
     captureActions,
     getCaptureAction,
     getKeyString,
     getLogger,
-    isTabKey,
-    key_scopes,
-    KeyEmitter
+    isTabKey
 } from 'utils';
 
 import UndoButton from './UndoButton';
@@ -25,11 +24,10 @@ const log = getLogger('JSX/CaptureBox');
 const hotkeysConfig = key_scopes.CAPTURE.config;
 
 
-
-
 const CaptureBox = observer(({
     defaultValue, command, cursorName, tabNext, onData
 }) => {
+    let keyEmitter = useKeys();
     let { cursor, setCursor } = useMst();
     let ref = useRef();
 
@@ -78,7 +76,7 @@ const CaptureBox = observer(({
             }
         });
 
-        KeyEmitter.setScope('CAPTURE', 'JSX/CaptureBox');
+        keyEmitter.setScope('CAPTURE', 'JSX/CaptureBox');
         setStatus('focus');
     }
 
@@ -88,7 +86,7 @@ const CaptureBox = observer(({
         });
         hotkeys.unbind('*' ,'CAPTURE');
         // hotkeys.deleteScope('CAPTURE')
-        KeyEmitter.setScope('EDIT_ITEM', 'JSX/CaptureBox');
+        keyEmitter.setScope('EDIT_ITEM', 'JSX/CaptureBox');
 
         if (discard) return;
 

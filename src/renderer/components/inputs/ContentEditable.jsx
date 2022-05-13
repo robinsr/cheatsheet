@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import classnames from 'classnames';
 import styled from 'styled-components';
+import { isEnterKey } from 'utils';
 
 const EditableDiv = styled.div`
   &:focus-visible {
@@ -9,26 +10,40 @@ const EditableDiv = styled.div`
   
   &[contenteditable=true] {
     background-color: ${props => props.theme.base.bg};
-    
+
     span {
-        text-decoration: dotted underline ${props => props.theme.base.text};
-        text-underline-position: under;
-        cursor: pointer;
+      text-decoration: dotted underline ${props => props.theme.base.text};
+      text-underline-position: under;
     }
+  }
+
+  span {
+    cursor: pointer;
   }
 `
 
-const ContentEditable = ({ editable, defaultValue, editValue, onChange, className, ...rest }) => {
+const ContentEditable = ({ editable, defaultValue, editValue, onChange, onEnter, className, ...rest }) => {
+    const ref = useRef();
+
+    const onKeyInput = (e) => {
+        if (isEnterKey(e)) {
+            e.preventDefault();
+            onEnter();
+        }
+    }
+
     const cns = classnames(className, {
         'editing': editable
-    })
+    });
 
     return (
         <EditableDiv contentEditable={editable}
-             onBlur={e => onChange(e.target.innerText)}
-             suppressContentEditableWarning={true}
-             className={cns}
-             {...rest}>
+                     onKeyDown={onKeyInput}
+                     onBlur={e => onChange(e.target.innerText)}
+                     suppressContentEditableWarning={true}
+                     className={cns}
+                     ref={ref}
+                     {...rest}>
             <span>{editable ? editValue : defaultValue}</span>
         </EditableDiv>
     )

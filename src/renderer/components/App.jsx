@@ -2,14 +2,13 @@ import './App.scss';
 
 import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
-import { ImShrink2 } from 'react-icons/im';
 import { Provider, rootStore, useMst } from 'store'
 import styled, { ThemeProvider } from 'styled-components';
 import { AppGroups, SidePane } from './layout';
 import { Nav } from './layout';
-import { EditAppModal, EditItemModal, HelpModal, ImageModal, UnknownAppModal } from './modal'
+import { EditAppModal, EditItemModal, HelpModal, ImageModal, UnknownAppModal, UserPrompt } from './modal'
 import { AppFlexContainer, columnBreakpoints, FloatingButton, GlobalStyle, themes } from 'components/theme';
-import KeyActions from './providers/KeyActions.jsx';
+import KeyProvider from './providers/KeyProvider.jsx';
 
 
 const headerHeight = '78px';
@@ -33,14 +32,10 @@ const ThemedApp = observer(() => {
 
     const toggleMenu = () => setMenuOpen(!isMenuOpen);
 
-    const resizeToDefault = () => {
-        window.cheatsheetAPI.emit('app:requestResize');
-    }
-
     return (
         <ThemeProvider theme={themes[ui.theme]}>
             <React.Fragment>
-                <KeyActions>
+                <KeyProvider>
                     <div id={'blur-target'}>
                         <Nav onMenuClick={toggleMenu} isMenuOpen={isMenuOpen}/>
                         <AppFlexContainer>
@@ -51,16 +46,14 @@ const ThemedApp = observer(() => {
                             </SpacedContainer>
                             <SidePane isOpen={isMenuOpen} onClose={() => setMenuOpen(false)}/>
                         </AppFlexContainer>
-                        <FloatingButton onClick={resizeToDefault}>
-                            <ImShrink2/>
-                        </FloatingButton>
                     </div>
                     <ImageModal/>
                     <EditItemModal/>
                     <EditAppModal/>
                     <HelpModal/>
                     <UnknownAppModal/>
-                </KeyActions>
+                    <UserPrompt/>
+                </KeyProvider>
                 <GlobalStyle/>
             </React.Fragment>
         </ThemeProvider>
