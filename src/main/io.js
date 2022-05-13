@@ -12,14 +12,14 @@ const ENC = { encoding: 'utf8' };
 
 
 class Store {
+    /** @type boolean */
+    saveEnabled;
 
     /**
      * @param {StageConfig} config
      */
     constructor(config) {
-        this.config = config;
-
-        let { saveEnabled, saveDir, profile } = this.config;
+        let { saveEnabled, saveDir, profile } = config;
 
         this.saveEnabled = saveEnabled;
 

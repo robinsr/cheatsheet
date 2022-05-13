@@ -25,12 +25,23 @@ const accents = {
     day: '#2e5bec'
 }
 
+export const titlebarGradient = `linear-gradient(
+${lighten(0.1, BW[200])},
+${BW[200]} 25%,
+${lighten(0.05, BW[700])} 75%,
+${BW[700]}
+)`.replace('\n', '');
+
 const themes = {
     night: {
         buttons: makeButtonThemes(accents.night),
         base: {
             bg: BW[900],
             text: BW[300]
+        },
+        header: {
+            bg: titlebarGradient,
+            bgPos: '0 100%'
         },
         menus: {
             bg: BW[700],
@@ -90,6 +101,10 @@ const themes = {
         base: {
             bg: BW[100],
             text: BW[600]
+        },
+        header: {
+            bg: titlebarGradient,
+            bgPos: '0 0'
         },
         menus: {
             bg: BW[200],

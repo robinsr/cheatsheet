@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ImShrink2 } from 'react-icons/im';
 import { useMst } from 'store';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { SearchBox } from 'components/layout/header';
 import { Button } from 'components/inputs';
 import { FlexGrow, FlexItem, SpaceBetweenItem, Transition } from 'components/theme';
@@ -10,10 +10,24 @@ import { FlexGrow, FlexItem, SpaceBetweenItem, Transition } from 'components/the
 const debug = window.cheatsheetAPI.config.get('debug');
 const appName = window.cheatsheetAPI.config.get('name');
 
+// todo: figure out how to make this smoooth
+const bgKeyFrame = keyframes`
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+`
+
 const ThemedHeader = styled.header`
   ${Transition()};
-  
-  background-color: ${props => props.theme.menus.bg};
+  background: ${props => props.theme.header.bg};
+  background-position: ${props => props.theme.header.bgPos};
+  background-size: 100% 400%;
   position: fixed;
   width: 100%;
   margin: 0;

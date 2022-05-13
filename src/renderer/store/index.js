@@ -23,9 +23,20 @@ Promise.all([ rootStore.apps.load(), rootStore.ui.load() ])
             rootStore.state.loading(false);
             window.cheatsheetAPI.emit('app:loaded')
             rootStore.listenToWindowChange();
+            enableFileSync();
         }, 750);
     });
 
+
+const enableFileSync = () => {
+    onSnapshot(rootStore.apps, _debounce((snapshot) => {
+        rootStore.apps.save();
+    }, 750));
+
+    onSnapshot(rootStore.ui, snapshot => {
+        rootStore.ui.save();
+    });
+}
 
 
 export const AppContext = createContext();
@@ -43,13 +54,7 @@ export function useMst() {
     return store;
 }
 
-onSnapshot(rootStore.apps, _debounce((snapshot) => {
-    rootStore.apps.save();
-}, 750));
 
-onSnapshot(rootStore.ui, snapshot => {
-    rootStore.ui.save();
-});
 
 window.addEventListener('unload', e => {
     window.cheatsheetAPI.emit('app:reloading');

@@ -2,13 +2,12 @@ const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
 const Store = require('./io');
 const ActiveWindow = require('./activewindow');
-const { stage, conf } = require('../shared/config.js');
+const { stage, conf } = require('./config');
+const { createWindow } = require('./window');
 const { getLogger, logShutdown } = require('./logger');
 
 const log = getLogger('main');
 
-
-const DEV = stage === 'dev';
 
 log.info('Starting main...');
 log.debug('Stage:', stage);
@@ -20,43 +19,8 @@ const userSettings = store.getSettingsSync();
 log.info('User settings:', userSettings);
 
 
-const createWindow = () => {
-    const windowConfig = {
-        title: 'Cheat',
-        titleBarStyle: 'hidden', // todo
-        vibrancy: 'content',
-        show: false,
-        webPreferences: {
-            nodeIntegration: true,
-            enableRemoteModule: true,
-            preload: path.resolve(__dirname, './preload.js')
-        }
-    }
-
-    Object.assign(windowConfig, conf.window);
-
-    log.info('Window config:', windowConfig);
-
-    const win = new BrowserWindow(windowConfig);
-
-    if (DEV) {
-        win.loadURL('http://localhost:8080/index.html');
-    } else {
-        win.loadFile('./dist/index.html');
-    }
-
-    if (DEV && process.argv.includes('--console')) {
-        win.webContents.openDevTools();
-    }
-
-    return win;
-}
-
-
-
-
 app.whenReady().then(async () => {
-    const win = createWindow();
+    const win = createWindow(conf.window, userSettings);
     const winListener = ActiveWindow(win);
 
     app.on('quit', () => {

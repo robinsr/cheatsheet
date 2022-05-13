@@ -1,8 +1,8 @@
 const { app } = require('electron');
 const log4js = require('log4js');
 const path = require('path');
-const { stage } = require('../shared/config.js');
-const DEV = stage === 'dev';
+const { DEV } = require('./config');
+
 
 const prefix = 'com.robinsr.cheatsheet.main.';
 const logPath = app.getPath('logs');

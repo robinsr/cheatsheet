@@ -3,7 +3,6 @@ import { get_for_key, macos_symbols } from './macos_symbols.js';
 import { getLogger } from './logger';
 
 const log = getLogger('DomUtils');
-
 export class ShowHideElement {
     constructor(e, display_type = 'block') {
         this.e = e;
@@ -38,26 +37,6 @@ const keyStringOpts = {
     }
 }
 
-export const getElementMatcher = (selector) => {
-    return (e) => elementMatcher(e, selector);
-}
-
-export const elementMatcher = (e, selector) => {
-    if (selector.startsWith('#')) {
-        return (e.target || e.srcElement).id && (e.target || e.srcElement).id === selector.replace('#', '');
-    } else if (selector.startsWith('.')) {
-        return (e.target || e.srcElement).classList
-            && (e.target || e.srcElement).classList.split(' ').includes(selector.replace('.', ''));
-    } else {
-        return false;
-    }
-}
-
-export const onEnterKey = (handler) => {
-    return (e) => {
-        if (isEnterKey(e)) handler(e);
-    }
-}
 
 export const getKeyString = (e, mode='cheatsheet') => {
     log.debug('KeyEvent in:', _pick(e, ['altKey', 'shiftKey', 'ctrlKey', 'metaKey', 'code', 'keyCode', 'key']));
@@ -158,7 +137,3 @@ const isSingleKeyPress = (e) => {
         .length === 0;
 }
 
-export const beforeUnloadHandler = (e) => {
-    e.preventDefault();
-    return event.returnValue = "Are you sure you want to exit?";
-}

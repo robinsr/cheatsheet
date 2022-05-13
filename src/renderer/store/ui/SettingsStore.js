@@ -23,7 +23,7 @@ export const Themes = {
 const ThemeValues = Object.values(Themes);
 const SysThemeModel = types
     .model('sysTheme', {
-        current: types.enumeration('keyTheme', ThemeValues)
+        current: types.enumeration('uiTheme', ThemeValues)
     })
     .actions(self => ({
         setTheme(theme) {

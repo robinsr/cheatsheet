@@ -37,10 +37,12 @@
 
 ## Bugs
 
-* Scroll bars; set some minimums. Modals have scroll bars too (bad)
+* Select input on edit item modal does not update when category is renamed
+* Scroll bars; set some minimums. Modals have scroll bars too (bad) (could just style them to be pretty)
 * Shortcuts with "+" character cause rendering error because "+" is used as key separator
   * Since some symbols are not used in shortucts (any alt or shift symbol), can therefor be safely used
     as separator? Examples `":", "|", "+"` ("+" is the obvious one) ✅
+  * Current IS working, but only because "+" is always mapped to its non-shift variant "="
 * Card title, text overflows (probably other text overflows, shortcut, app list, etc)
 
 ## Appendix

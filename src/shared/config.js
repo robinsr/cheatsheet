@@ -13,6 +13,15 @@ const packageConfig = require('../../package.json');
  * @property {{width: number, height: number}} window
  */
 
+/**
+ * Settings for BrowserWindow
+ * @typedef {object} WindowStageOverrides
+ * @property {number} width     - startup X dimension, in px
+ * @property {number} height    - startup Y dimension, in px
+ * @property {number} minWidth  - minimum X dimension, in px
+ * @property {number} minHeight - minimum Y dimension, in px
+ */
+
 const stage = process.env.ELECTRON_DEV === 'true' ? 'dev' : 'prod';
 
 const minimums = {
