@@ -1,13 +1,13 @@
 import React from 'react';
-import { Button } from 'components/inputs';
+import { Button, ButtonLink } from 'components/inputs';
 import { observer } from 'mobx-react-lite';
 import { GiMoonBats } from 'react-icons/gi';
 import { HiOutlineSave } from "react-icons/hi";
 import { Toggle } from 'components/inputs';
 import { useMst } from 'store';
 
-const OptionsForm = observer(({ closeContainer }) => {
-    const { ui, backup } = useMst();
+const OptionsForm = observer(() => {
+    const { settings, backup } = useMst();
 
     function onBackup() {
         let data = JSON.stringify(backup());
@@ -20,33 +20,33 @@ const OptionsForm = observer(({ closeContainer }) => {
     return (
         <nav className="nav-group">
             <h5 className="nav-group-title">Options</h5>
-            <Toggle checked={ui.useSystemTheme}
+            <Toggle checked={settings.useSystemTheme}
                     onChange={checked => {
-                        ui.toggleSystemTheme();
+                        settings.toggleSystemTheme();
                         // closeContainer();
                     }}
                     label={'OS default'}/>
-            <Toggle checked={ui.userPrefersNight}
-                    disabled={ui.useSystemTheme}
+            <Toggle checked={settings.userPrefersNight}
+                    disabled={settings.useSystemTheme}
                     onChange={checked => {
-                        checked ? ui.setUserTheme('night') : ui.setUserTheme('day');
+                        checked ? settings.setUserTheme('night') : settings.setUserTheme('day');
                         // closeContainer();
                     }}
                     label={<GiMoonBats/>}/>
-            <Toggle checked={ui.keyTheme === 'light'}
+            <Toggle checked={settings.keyTheme === 'light'}
                     onChange={e => {
-                        ui.toggleKeyTheme();
+                        settings.toggleKeyTheme();
                         // closeContainer();
                     }}
                     label={'Light Keys'}/>
-            <Toggle checked={ui.activeFollow}
-                    onChange={ui.toggleActiveFollow}
+            <Toggle checked={settings.activeFollow}
+                    onChange={settings.toggleActiveFollow}
                     label={'Active follow'}/>
-            <Toggle checked={ui.alwaysOnTop}
-                    onChange={ui.toggleAlwaysOnTop}
+            <Toggle checked={settings.alwaysOnTop}
+                    onChange={settings.toggleAlwaysOnTop}
                     label={'Keep window on top'}/>
             <div className="form-control my-2">
-                <Button small onClick={onBackup}><HiOutlineSave /> Backup now</Button>
+                <ButtonLink onClick={onBackup}><HiOutlineSave /> Backup now</ButtonLink>
             </div>
         </nav>
     );

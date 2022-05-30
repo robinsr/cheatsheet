@@ -58,7 +58,7 @@ const ResultLink = observer(({ result, query }) => {
     }
 
     return (
-        <a href={'#' + link} onClick={onClick} className={cns} >
+        <a href={'#' + link('')} onClick={onClick} className={cns} >
             <FlexRow gap={'0.5rem'}>
                 <FlexItem>
                     <figure className="avatar avatar-sm" data-initial={app.name[0].toUpperCase()} />

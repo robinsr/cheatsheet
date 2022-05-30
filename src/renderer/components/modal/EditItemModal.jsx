@@ -1,7 +1,9 @@
-import KeyScope from 'components/providers/KeyScope';
 import React from 'react';
 import { observer } from 'mobx-react-lite';
-import Modal from './Modal.jsx';
+import { EDIT_ITEM } from 'utils/paths';
+import useCursor from '../../hooks/useCursor';
+import Modal from './Modal';
+import KeyScope from 'components/providers/KeyScope';
 import { Button, CaptureBox, CursorFocusableInput, CursorNavigableForm, Toggle } from 'components/inputs';
 import { useMst } from 'store';
 import { getLogger } from 'utils';
@@ -12,7 +14,14 @@ const HELP_MSG = 'Not all keyboard shortcuts can be captured.\nExamples include:
 
 
 const EditModal = observer(() => {
-    let { editItem, categoryOptions, saveEditItem, clearEditItem } = useMst().edit;
+    let { editItem, categoryOptions, setEditItem, saveEditItem, clearEditItem } = useMst().edit;
+
+    // let { matches } = useCursor('#/*/items/*/edit*');
+    let { matches } = useCursor(EDIT_ITEM);
+
+    if (!matches) {
+        return null;
+    }
 
     if (editItem) {
         let {
@@ -75,7 +84,7 @@ const EditModal = observer(() => {
                                         defaultValue={commandDefault}
                                         command={command}
                                         onData={data => editItem.updateCommand(data)}
-                                        cursorName="capture-box"/>
+                                        cursorName="capture-box-primary"/>
                                 </div>
                                 <Toggle name={'second-stroke'}
                                         label={'Second stroke'}
@@ -89,7 +98,7 @@ const EditModal = observer(() => {
                                                     defaultValue={secondaryDefault}
                                                     command={secondary}
                                                     onData={data => editItem.updateSecondary(data)}
-                                                    cursorName="capture-box-2"/>
+                                                    cursorName="capture-box-secondary"/>
                                             </div>
                                         }
                                 />

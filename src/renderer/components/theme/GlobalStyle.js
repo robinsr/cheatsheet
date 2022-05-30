@@ -1,6 +1,8 @@
 import { Transition } from 'components/theme/elements';
 import { createGlobalStyle } from 'styled-components';
 
+const vibrancy = window.cheatsheetAPI.config.get('vibrancy');
+
 const GlobalStyle = createGlobalStyle`
   html, body, #app {
     height: 100%;
@@ -10,8 +12,8 @@ const GlobalStyle = createGlobalStyle`
   body {
     ${Transition()};
     
-    background-color: ${props => props.theme.base.bg};
-    color: ${props => props.theme.base.text};
+    background-color: ${p => vibrancy ? 'transparent' : p.theme.base.bg};
+    color: ${p => p.theme.base.text};
     
     &::-webkit-scrollbar {
       display: none;

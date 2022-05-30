@@ -1,9 +1,9 @@
-import short from 'short-uuid';
+import ShortUniqueId from 'short-unique-id';
 
-const uuid = short();
+const uuid = new ShortUniqueId({ length: 8 });
 
 export const newUuid = () => {
-    return uuid.new();
+    return uuid();
 }
 
 /**
@@ -31,4 +31,3 @@ export const decrement = (val) => val - 1;
 
 export * from './logger';
 export * from './dom';
-export * from './canvas_renderer';

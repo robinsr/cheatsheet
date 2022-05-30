@@ -1,18 +1,19 @@
 import './App.scss';
 
-import { observer } from 'mobx-react-lite';
 import React, { useState } from 'react';
+import { observer } from 'mobx-react-lite';
 import { Provider, rootStore, useMst } from 'store'
 import styled, { ThemeProvider } from 'styled-components';
-import { AppGroups, SidePane } from './layout';
-import { Nav } from './layout';
-import { EditAppModal, EditItemModal, HelpModal, ImageModal, UnknownAppModal, UserPrompt } from './modal'
-import { AppFlexContainer, columnBreakpoints, FloatingButton, GlobalStyle, themes } from 'components/theme';
+import { AppGroups, SidePane, Nav } from './layout';
+import Modals from './modal'
+import { AppFlexContainer, columnBreakpoints, GlobalStyle, themes } from 'components/theme';
 import KeyProvider from './providers/KeyProvider.jsx';
+import { Debugger } from 'components/dev/Debug';
 
+const debug = window.cheatsheetAPI.config.get('debug');
 
+// todo; move this somewhere
 const headerHeight = '78px';
-
 const SpacedContainer = styled.div`
   margin-top: ${headerHeight};
   padding-top: 3.2rem;
@@ -27,13 +28,15 @@ const SpacedContainer = styled.div`
 `;
 
 const ThemedApp = observer(() => {
-    const { ui } = useMst();
+    const { settings, cursor, state } = useMst();
+    let { keyScope, activeWindow } = state;
+
     const [ isMenuOpen, setMenuOpen ] = useState(false);
 
     const toggleMenu = () => setMenuOpen(!isMenuOpen);
 
     return (
-        <ThemeProvider theme={themes[ui.theme]}>
+        <ThemeProvider theme={themes[settings.theme]}>
             <React.Fragment>
                 <KeyProvider>
                     <div id={'blur-target'}>
@@ -44,15 +47,11 @@ const ThemedApp = observer(() => {
                                     <AppGroups/>
                                 </div>
                             </SpacedContainer>
-                            <SidePane isOpen={isMenuOpen} onClose={() => setMenuOpen(false)}/>
+                            <SidePane/>
                         </AppFlexContainer>
                     </div>
-                    <ImageModal/>
-                    <EditItemModal/>
-                    <EditAppModal/>
-                    <HelpModal/>
-                    <UnknownAppModal/>
-                    <UserPrompt/>
+                    {debug && <Debugger obj={{ keyScope, activeWindow, cursor }}/>}
+                    <Modals/>
                 </KeyProvider>
                 <GlobalStyle/>
             </React.Fragment>
@@ -63,8 +62,6 @@ const ThemedApp = observer(() => {
 
 // TODO; figure out error boundary. Not possible in function component
 export default function App() {
-    window.setTheme = rootStore.ui.setTheme;
-
     return (
         <Provider value={rootStore}>
             <ThemedApp/>

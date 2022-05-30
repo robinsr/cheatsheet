@@ -90,6 +90,3 @@ const PropositionActions = self => {
 }
 
 export const Proposition = types.model(PropositionModel).actions(PropositionActions);
-
-
-console.log(Proposition)

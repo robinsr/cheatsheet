@@ -12,28 +12,37 @@ const { window } = page;
 
 
 function copyProps(src, target) {
-  Object.defineProperties(target, {
-    ...Object.getOwnPropertyDescriptors(src),
-    ...Object.getOwnPropertyDescriptors(target),
-  });
+    Object.defineProperties(target, {
+        ...Object.getOwnPropertyDescriptors(src),
+        ...Object.getOwnPropertyDescriptors(target),
+    });
 }
 
 global.window = window;
 global.document = window.document;
-global.navigator = {
-  userAgent: 'node.js',
+
+const navigator = {
+    userAgent: 'node.js',
+    keyboard: {
+        // TODO, mock navigator.getLayoutMap
+        getLayoutMap: () => Promise.resolve({
+            keys: () => ({
+                next: () => ({
+                    done: true
+                })
+            })
+        })
+    }
 };
+
 global.requestAnimationFrame = function (callback) {
-  return setTimeout(callback, 0);
+    return setTimeout(callback, 0);
 };
 global.cancelAnimationFrame = function (id) {
-  clearTimeout(id);
+    clearTimeout(id);
 };
 
 copyProps(window, global);
+copyProps(navigator, window.navigator);
 
-window.cheatsheetAPI = {
-    stage: '__TEST__'
-}
-
-
+window.cheatsheetAPI = require('./mockAPI');

@@ -4,9 +4,13 @@
 import Logger from 'js-logger';
 import { isObjectLike } from 'lodash';
 
-const stage = window.cheatsheetAPI.stage();
+const [ isDev, isProd ] = window.cheatsheetAPI.stages();
 
 const { OFF, DEBUG, INFO, WARN, ERROR } = Logger;
+
+const log = Logger.get('AppLogger');
+log.setLevel(INFO);
+
 
 Logger.useDefaults({
     defaultLevel: INFO,
@@ -18,7 +22,7 @@ Logger.useDefaults({
         messages.unshift('[' + context.name + ']');
 
         // Stringify logged objects for file logging
-        if (stage === 'prod') {
+        if (isProd) {
             for (let i = 0; i < messages.length; i++) {
                 if (isObjectLike(messages[i])) {
                     messages[i] = JSON.stringify(messages[i]);
@@ -28,19 +32,21 @@ Logger.useDefaults({
       },
 });
 
-if (stage === 'dev') {
+if (isDev) {
     Logger.get('AppStore').setLevel(INFO);
     Logger.get('JSX/CursorNavigableForm').setLevel(INFO);
     Logger.get('JSX/CaptureBox').setLevel(INFO);
     Logger.get('JSX/EditItemModal').setLevel(INFO);
     Logger.get('KeyActions').setLevel(DEBUG);
-    Logger.get('KeyConfig').setLevel(DEBUG);
+    Logger.get('KeyConfig').setLevel(INFO);
     Logger.get('KeyEmitter').setLevel(INFO);
     Logger.get('Store').setLevel(INFO);
+    Logger.get('RootStore').setLevel(DEBUG);
     Logger.get('Store/action').setLevel(INFO);
     Logger.get('Store/patch').setLevel(INFO);
     Logger.get('Store/snapshot').setLevel(INFO);
     Logger.get('SettingsStore/action').setLevel(DEBUG);
+    Logger.get('CursorStore').setLevel(DEBUG);
 
     window._dev = {
         offLog: (ns) => Logger.get(ns).setLevel(INFO),
@@ -48,6 +54,20 @@ if (stage === 'dev') {
     }
 }
 
-export function getLogger(namespace) {
+/**
+ * Change the log level for a specified namespace
+ * @param {string} namespace
+ * @param {("OFF"|"DEBUG"|"INFO"|"WARN"|"ERROR")} level - dev override log level
+ */
+export function getLogger(namespace, level='INFO') {
+    Logger.get(namespace).setLevel(isDev ? levelsMap[level] : INFO);
     return Logger.get(namespace);
+}
+
+const levelsMap = {
+    'OFF': OFF,
+    'DEBUG': DEBUG,
+    'INFO': INFO,
+    'WARN': WARN,
+    'ERROR': ERROR
 }

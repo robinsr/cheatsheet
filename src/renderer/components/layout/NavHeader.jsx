@@ -5,23 +5,61 @@ import { useMst } from 'store';
 import styled, { keyframes } from 'styled-components';
 import { SearchBox } from 'components/layout/header';
 import { Button } from 'components/inputs';
-import { FlexGrow, FlexItem, SpaceBetweenItem, Transition } from 'components/theme';
+import { FlexGrow, FlexItem, FlexRow, SpaceBetweenItem, Transition } from 'components/theme';
+import { HOME, SIDEBAR } from 'utils/paths';
+import useHistory from '../../hooks/useHistory';
+import useParams from '../../hooks/useParams';
 
-const debug = window.cheatsheetAPI.config.get('debug');
 const appName = window.cheatsheetAPI.config.get('name');
+const debug = window.cheatsheetAPI.config.get('debug');
 
-// todo: figure out how to make this smoooth
-const bgKeyFrame = keyframes`
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-`
+
+const NavHeader = observer(() => {
+    const { cursor, state } = useMst();
+    const { push, back } = useHistory();
+    const [ isOpen ] = useParams(SIDEBAR);
+
+    const onMenuClick = e => {
+        e.preventDefault(); // prevent button focus
+        isOpen ? back() : push(SIDEBAR.link());
+    }
+
+    return (
+        <ThemedHeader>
+            <WindowTitleBar>
+                {titleBarContent(cursor, state.keyScope)}
+            </WindowTitleBar>
+            <div className="navbar">
+                <NavBarContents className="navbar-section">
+                    <Button primary icon={isOpen ? 'cross' : 'menu'} tabIndex={-1} onClick={onMenuClick}/>
+                    <SearchBarContainer>
+                        <SearchBox isMenuOpen={isOpen} />
+                    </SearchBarContainer>
+                    <FlexItem onClick={resizeToDefault} width={'40'}>
+                        <ImShrink2/>
+                    </FlexItem>
+                </NavBarContents>
+            </div>
+        </ThemedHeader>
+    );
+});
+
+const resizeToDefault = () => {
+    window.cheatsheetAPI.emit('app:requestResize');
+}
+
+const titleBarContent = (cursor, keyScope) => {
+    if (!debug) {
+        return <p>{appName}</p>;
+    }
+
+    return (
+        <FlexRow>
+            <FlexItem style={{paddingLeft: '70px'}}>{keyScope}</FlexItem>
+            <FlexItem>{cursor}</FlexItem>
+        </FlexRow>
+    );
+}
 
 const ThemedHeader = styled.header`
   ${Transition()};
@@ -51,41 +89,5 @@ const SearchBarContainer = styled.div`
   ${FlexGrow()}
 `;
 
-const NavHeader = observer(({
-    onMenuClick, isMenuOpen=false
-}) => {
-    let { cursor, state } = useMst();
-    let { keyScope, activeWindow } = state;
-
-    const resizeToDefault = () => {
-        window.cheatsheetAPI.emit('app:requestResize');
-    }
-
-    useEffect(() => {
-
-    }, []);
-
-    return (
-        <ThemedHeader>
-            <WindowTitleBar>
-                {debug
-                    ? <small className={"float-right"}>keyScope: {keyScope}; cursor: {cursor}; active: {activeWindow || 'none'}</small>
-                    : <p>{appName}</p>
-                }
-            </WindowTitleBar>
-            <div className="navbar">
-                <NavBarContents className="navbar-section">
-                    <Button primary icon={isMenuOpen ? 'cross' : 'menu'} tabIndex={-1} onClick={onMenuClick}/>
-                    <SearchBarContainer>
-                        <SearchBox isMenuOpen={isMenuOpen} />
-                    </SearchBarContainer>
-                    <FlexItem onClick={resizeToDefault} width={'40'}>
-                        <ImShrink2/>
-                    </FlexItem>
-                </NavBarContents>
-            </div>
-        </ThemedHeader>
-    );
-})
 
 export default NavHeader;

@@ -1,8 +1,8 @@
-import { types } from 'mobx-state-tree';
+import { getPath, types } from 'mobx-state-tree';
 import { pick as _pick } from 'lodash';
-import { newUuid, decrement, increment } from 'utils'
-import Optional from 'optional-js';
+import { newUuid } from 'utils'
 import MobxCategoryItem from './CategoryItem';
+import MobxCollection from 'store/types/Collection';
 
 /**
  * Defines actions for AppStore
@@ -12,37 +12,6 @@ import MobxCategoryItem from './CategoryItem';
  * @implements CollectionStore.<ICategoryItem>
  */
 const AppItemViews = self => ({
-    item(id) {
-        if (!id) throw new Error('No ID supplied');
-
-        return Optional.ofNullable(self.categories.find(i => i.id === id))
-            .orElseThrow(() => new Error(`Item '${id}' not found in category ${self.name}`));
-    },
-    index(id) {
-        if (!id) throw new Error('No ID supplied');
-
-        return Optional.ofNullable(self.categories.findIndex(i => i.id === id))
-            .orElseThrow(() => new Error(`Item '${id}' not found in category ${self.name}`));
-    },
-    at(i) {
-        return self.categories[ i ];
-    },
-    get first() {
-        return self.categories[ 0 ]
-    },
-    get last() {
-        return self.categories[ self.categories.length - 1 ]
-    },
-    next(id) {
-        return Optional.of(id)
-            .map(self.index).map(increment).map(self.at)
-            .orElse(self.first);
-    },
-    prev(id) {
-        return Optional.of(id)
-            .map(self.index).map(decrement).map(self.at)
-            .orElse(self.last);
-    },
     query(term) {
         return self.allItems.filter(i => i.label.toLowerCase().includes(term)) || []
     },
@@ -58,6 +27,9 @@ const AppItemViews = self => ({
         return self.categories
             .map(c => c.items)
             .flatMap(x => x);
+    },
+    get path() {
+        return getPath(self);
     }
 });
 
@@ -73,9 +45,11 @@ const AppItemActions = self => ({
         self = Object.assign(self, safeAttributes);
     },
     addCategory(name='New Category') {
-        self.categories.unshift(MobxCategoryItem.create({
+        let newCategory = MobxCategoryItem.create({
             id: newUuid(), name
-        }))
+        });
+        self.categories.unshift(newCategory);
+        return newCategory;
     },
     removeCategory(id) {
         self.categories = self.categories.filter(i => i.id !== id);
@@ -100,7 +74,7 @@ const MobxAppItem = types
     .views(AppItemViews)
     .actions(AppItemActions)
 
-export default MobxAppItem;
+export default types.compose(MobxCollection(MobxCategoryItem, { propName: 'categories' }), MobxAppItem).named('AppItem')
 
 /**
  * @typedef { IAppItemProps, IAppItemActions, IAppItemViews } IAppItem

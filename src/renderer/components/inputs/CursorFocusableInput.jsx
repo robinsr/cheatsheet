@@ -1,8 +1,8 @@
-import React, {useEffect, useRef} from 'react';
+import React, { useEffect } from 'react';
 import { observer } from "mobx-react-lite";
-import { useMst } from "store";
 import { getLogger } from 'utils';
 import { TextInput, Select } from 'components/inputs';
+import useCursor from '../../hooks/useCursor';
 
 const log = getLogger('JSX/CursorFocusableElement');
 
@@ -14,40 +14,42 @@ const log = getLogger('JSX/CursorFocusableElement');
  * @param {('text'|'select')} type - type of input (text or focus)
  * @param {boolean} [focus=false] - change cursor to value when element receives focus
  * @param {boolean} [blur=false] - active element should blur on cursor mismatch
+ * @param {string} pattern - param matcher pattern
  * @param {string} [keyscope] - set keyscope on focus
  *
  */
 const CursorFocusableInput = observer(({
-    cursorName, type, focus=false, blur=false, children, ...rest
+    cursorName, pattern, type, focus=false, blur=false, children, ...rest
 }) => {
-    let inputRef = useRef();
-    let { cursor, setCursor } = useMst();
+    const isText = type === 'text';
+    const isSelect = type === 'select';
 
-    useEffect(() => {
-        if (cursor === cursorName) {
-            log.debug('setting focus', cursorName);
-            inputRef.current.focus();
-            inputRef.current.select();
-        } else if (blur) {
-            inputRef.current.blur();
-        }
-    }, [ cursor ]);
+    let { matches } = useCursor(pattern);
+    let inputRef = null;
 
-    function onFocus(e) {
-        if (focus) {
-            setCursor(cursorName);
-        }
+    let setInputRef = elem => {
+        inputRef = elem;
     }
 
-    if (type === 'text') {
+    useEffect(() => {
+        if (matches && inputRef) {
+            log.debug('setting focus', cursorName);
+            isText && inputRef.focus();
+            isText && inputRef.select();
+        } else if (blur && inputRef) {
+            inputRef.blur();
+        }
+    }, [ matches, inputRef ]);
+
+    if (isText) {
         return (
-            <TextInput ref={inputRef} data-navname={cursorName} {...rest} />
+            <TextInput ref={setInputRef} data-navname={cursorName} {...rest} />
         );
     }
 
-    if (type === 'select') {
+    if (isSelect) {
         return (
-            <Select ref={inputRef} data-navname={cursorName} {...rest}>
+            <Select ref={setInputRef} data-navname={cursorName} {...rest}>
                 {children}
             </Select>
         );

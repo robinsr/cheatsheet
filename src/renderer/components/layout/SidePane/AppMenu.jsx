@@ -1,45 +1,28 @@
-
 import './AppMenu.scss';
 
 import React from 'react';
-import styled, { css } from 'styled-components';
-import classnames from 'classnames';
+import styled from 'styled-components';
 import { observer } from 'mobx-react-lite';
 import { useMst } from 'store';
 import { FaKeyboard } from 'react-icons/fa';
 import { FiEdit, FiFilePlus } from 'react-icons/fi';
 import { PointerItem, SpaceBetweenItem } from 'components/theme';
+import Link from 'components/cursor/Link';
+import { APP, EDIT_APP, IGNORE_APPS } from 'utils/paths';
 
-const HoverItem = ({ cursor, $id, theme }) => css`
-    color: ${cursor === $id ? theme.accent : 'unset'};
-  
-    &:hover {
-        color: ${theme.accent} : 'unset';
-    }
-`
-// night table row hover: rgb(29 29 77 / 10%)
+
 const MenuItemList = styled.li`
     ${props => PointerItem(props)}
-    ${props => HoverItem(props)}
     ${props => SpaceBetweenItem(props)}
     font-size: 0.9rem;
+  
+    &:hover {
+        color: ${p => p.theme.accent};
+    }
 `;
 
-const AppMenu = observer(({
-    onSelect=() => {}
-}) => {
-    let { apps, cursor, setCursor } = useMst();
-
-    function selectApp(appId) {
-        apps.setActiveApp(appId);
-        onSelect(appId);
-    }
-
-    function getListItemClasses(id) {
-        return classnames('app-header-list-item', {
-            'active': id === cursor
-        });
-    }
+const AppMenu = observer(() => {
+    let { apps } = useMst();
 
     return (
         <nav className="app-menu">
@@ -50,19 +33,16 @@ const AppMenu = observer(({
                 </span>
             </div>
             <ul className="app-menu-list">
-                {apps.appList.map(a => (
-                    <MenuItemList key={'spa'+a.id} $id={a.id} cursor={cursor}
-                        className={getListItemClasses(a.id)}
-                        onMouseEnter={() => setCursor(a.id)}>
-                            <div onClick={() => selectApp(a.id)}>
-                                <span><FaKeyboard/> {a.name}</span>
-                            </div>
-                            <div onClick={() => apps.setEditApp(a.id)}>
-                                <FiEdit/>
-                            </div>
+                {apps.appList.map(app => (
+                    <MenuItemList key={app.id}>
+                        <Link useReplace path={app.path}><span><FaKeyboard/> {app.name}</span></Link>
+                        <Link useReplace path={app.path + '/edit'}><FiEdit/></Link>
                     </MenuItemList>
                 ))}
             </ul>
+            <section>
+                <Link path={IGNORE_APPS.link()}>Ignore apps</Link>
+            </section>
         </nav>
     );
 });

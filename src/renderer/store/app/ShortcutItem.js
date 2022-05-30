@@ -1,5 +1,7 @@
 import { getParent, getPath, types } from 'mobx-state-tree';
 import { omit as _omit } from 'lodash';
+import { MobxShortcut } from 'store/types/Shortcut';
+import { ITEM, EDIT_ITEM } from 'utils/paths';
 
 /**
  * @class IShortcutItemViews
@@ -29,12 +31,31 @@ const ShortcutItemViews = self => ({
         return self.category.prev(self.id);
     },
 
-    get link() {
-        return `/apps/${self.app.id}/category/${self.category.id}/item/${self.id}`;
+    link(target) {
+        return ITEM.link(self.app.id, self.id);
+    },
+
+    get path() {
+        // let path = self.app.path;
+        // let hash = ITEM.link({ itemId: self.id });
+
+        // return path + hash;
+        return getPath(self);
+    },
+
+    editLink(field) {
+        // let path = self.app.path;
+        // let hash = EDIT_ITEM.link({ field, itemId: self.id });
+
+        return getPath(self) + '/edit' + (field ? `/field=${field}` : '');
     },
 
     get markdown() {
         return `|${self.label}|${self.command}|`; // todo; complete md string
+    },
+
+    getIndex() {
+        return self.category.index(self.id);
     }
 });
 
@@ -64,13 +85,7 @@ const ShortcutItemActions = self => {
         update: (attr, value) => {
             self[attr] = value;
         },
-        getDataImage: () => {
-            // TODO: fix this
-            //return new Promise((resolve, rej) => {
-                //render(ref.current).then(imageData => resolve(imageData));
-            //});
-        },
-        beforeDestroy: () => {
+        beforeDestroy() {
             console.log('I am being destroyed! ', self.label, self.id)
         },
         select(bool) {
@@ -93,8 +108,8 @@ const BaseMobxShortcutItem = types
     .model('MobxShortcutItem', {
         id: types.identifier,
         label: types.maybeNull(types.string),
-        command: types.maybeNull(types.string),
-        secondary: types.maybeNull(types.string),
+        command: types.maybeNull(MobxShortcut),
+        secondary: types.maybeNull(MobxShortcut),
         selected: types.optional(types.boolean, false)
     })
     .views(ShortcutItemViews)

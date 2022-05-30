@@ -23,23 +23,25 @@ const packageConfig = require('../../package.json');
  */
 
 const stage = process.env.ELECTRON_DEV === 'true' ? 'dev' : 'prod';
+const devTools = process.argv.includes('--console');
 
 const minimums = {
     minWidth: 400,
-    minHeight: 800
+    minHeight: 0
 }
 
 /** @type {Object.<any, StageConfig>} */
 const AppConfig = {
     dev: {
         name: packageConfig.productName,
-        saveEnabled: true,
+        saveEnabled: false,
         saveDir: 'snapshots',
         profile: 'dev',
         debug: true,
+        vibrancy: false, // experiment
         window: Object.assign({}, minimums, {
-            width: 2000,
-            height: 1600
+            width: devTools ? 2000 : 400,
+            height: devTools ? 1600 : 980
         })
     },
     prod:  {

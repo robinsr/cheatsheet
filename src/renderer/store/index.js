@@ -1,6 +1,6 @@
-import { debounce as _debounce } from 'lodash';
 import { createContext, useContext } from 'react';
-import { onAction, onPatch, onSnapshot } from 'mobx-state-tree';
+import { getPath, getPathParts, onAction, onPatch, onSnapshot, walk } from 'mobx-state-tree';
+import { debounce as _debounce } from 'lodash';
 import { getLogger } from 'utils';
 import MobxStore from "./RootStore.js";
 
@@ -17,13 +17,23 @@ onPatch(rootStore, patch => getLogger('Store/patch').debug(patch))
 onSnapshot(rootStore, (snapshot) => getLogger('Store/snapshot').debug(snapshot));
 
 
-Promise.all([ rootStore.apps.load(), rootStore.ui.load() ])
+Promise.all([ rootStore.apps.load(), rootStore.settings.load() ])
     .then(() => {
         setTimeout(() => {
             rootStore.state.loading(false);
-            window.cheatsheetAPI.emit('app:loaded')
+            window.cheatsheetAPI.emit('app:loaded');
             rootStore.listenToWindowChange();
             enableFileSync();
+
+            try {
+                let indexItem = rootStore.apps.topItem
+                let indexJsonPath = getPathParts(indexItem);
+                let indexIdPath = indexItem.path;
+                console.log(indexJsonPath);
+            } catch (e) {
+                console.error(e);
+            }
+            rootStore.history.push(getPath(rootStore.apps.appList[0]))
         }, 750);
     });
 
@@ -33,8 +43,8 @@ const enableFileSync = () => {
         rootStore.apps.save();
     }, 750));
 
-    onSnapshot(rootStore.ui, snapshot => {
-        rootStore.ui.save();
+    onSnapshot(rootStore.settings, snapshot => {
+        rootStore.settings.save();
     });
 }
 
@@ -54,8 +64,8 @@ export function useMst() {
     return store;
 }
 
-
-
 window.addEventListener('unload', e => {
     window.cheatsheetAPI.emit('app:reloading');
 });
+
+window.rootStore = rootStore;

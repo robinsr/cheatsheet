@@ -1,7 +1,10 @@
-import { FlexItem } from 'components/theme';
 import React from 'react';
 import { observer } from 'mobx-react-lite';
+import { MobxShortcut } from 'store/types/Shortcut';
 import styled from 'styled-components';
+import { HELP, HOME } from 'utils/paths';
+import useHistory from '../../hooks/useHistory';
+import useParams from '../../hooks/useParams';
 import Modal from './Modal';
 import { useMst } from 'store';
 import { newUuid } from 'utils';
@@ -37,10 +40,9 @@ const HelpTable = ({ scope, title }) => {
                             <tr key={newUuid()}>
                                 <td>{key.split(',').map(keyItem => <ShortcutKey
                                     key={newUuid()}
-                                    command={keyItem.trim()}
+                                    command={MobxShortcut.create(keyItem.trim())}
                                     capture={false}
-                                    splitKey={'+'}
-                                    useRaw={true}
+                                    useRaw={false}
                                 />).reduce((p, c) => [p, ' or ', c])}</td>
                                 <td>{help}</td>
                             </tr>
@@ -55,20 +57,21 @@ const HelpTable = ({ scope, title }) => {
 
 
 const HelpModal = observer(() => {
-    const { cursor, setCursor } = useMst();
+    const { back } = useHistory();
+    const [ isMatch ] = useParams(HELP);
 
-    if (cursor !== 'HELP') {
+    if (!isMatch) {
         return null;
     }
 
     return (
-        <KeyScope scope={'HELP'} prevScope={'APP'}>
+        <KeyScope scope={'MODAL'} prevScope={'APP'}>
             <Modal
-                type="medium"
+                type="regular"
                 name="help-modal"
                 title={'Shortcut keys'}
                 active={true}
-                onClose={() => setCursor(null)}
+                onClose={() => back()}
                 content={
                      <div className="content">
                         <div className="">

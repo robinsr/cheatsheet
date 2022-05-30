@@ -1,8 +1,33 @@
 import { pick as _pick } from 'lodash';
-import { get_for_key, macos_symbols } from './macos_symbols.js';
 import { getLogger } from './logger';
 
 const log = getLogger('DomUtils');
+const logKeyCode = getLogger('KeyCodeMap');
+
+const isAlpha = new RegExp(/[a-z]{1}/)
+const KeyCodeMap = new Map();
+
+Object.assign(window._dev || {}, {
+    keycodemap: () => console.log(KeyCodeMap)
+});
+
+window.navigator.keyboard.getLayoutMap().then(userKeyMap => {
+    let keyboardCodes = userKeyMap.keys();
+    let keyCode = keyboardCodes.next()
+    while (!keyCode.done) {
+        let keyValue = userKeyMap.get(keyCode.value);
+
+        if (isAlpha.test(keyValue)) {
+            KeyCodeMap.set(keyCode.value, keyValue.toUpperCase());
+        } else {
+            KeyCodeMap.set(keyCode.value, keyValue);
+        }
+
+        keyCode = keyboardCodes.next();
+    }
+});
+
+
 export class ShowHideElement {
     constructor(e, display_type = 'block') {
         this.e = e;
@@ -23,59 +48,66 @@ export const getKeyDirection = (e) => {
     }
 }
 
-const letter_key = new RegExp(/^Key[\w]{1}$/);
+/**
+ * Tests of key pressed is a number key (DigitX, NumpadX).
+ * These are consistent across keyboard layouts
+ * @type {RegExp}
+ */
+const isNumberKeyCode = new RegExp(/^(Digit|Numpad)[\d]{1}$/);
 
 
 const keyStringOpts = {
     hotkeys: {
-        modifiers: ['meta', 'ctrl','alt', 'shift'],
+        modifiers: ['meta', 'ctrl', 'alt', 'shift'],
         joiner: '+'
     },
     cheatsheet: {
         modifiers: ['Meta', 'Control', 'Alt', 'Shift'],
-        joiner: '-'
+        joiner: ' '
     }
 }
-
 
 export const getKeyString = (e, mode='cheatsheet') => {
     log.debug('KeyEvent in:', _pick(e, ['altKey', 'shiftKey', 'ctrlKey', 'metaKey', 'code', 'keyCode', 'key']));
 
     let opts = keyStringOpts[mode];
 
-    let kbString = [];
+    let pressedKeys = [];
 
     if (e.metaKey) {
-        kbString.push(opts.modifiers[0]);
+        pressedKeys.push(opts.modifiers[0]);
     }
 
     if (e.ctrlKey) {
-        kbString.push(opts.modifiers[1]);
+        pressedKeys.push(opts.modifiers[1]);
     }
 
     if(e.altKey){
-        kbString.push(opts.modifiers[2]);
+        pressedKeys.push(opts.modifiers[2]);
     }
 
     if (e.shiftKey) {
-        kbString.push(opts.modifiers[3]);
+        pressedKeys.push(opts.modifiers[3]);
     }
 
     if (!['Control', 'Shift', 'Alt', 'Meta'].includes(e.key)) {
-        if (macos_symbols[e.key.toLowerCase()]) {
-            kbString.push(e.key.toLowerCase());
-        } else if (letter_key.test(e.code)) {
-            kbString.push(e.code.substr(-1));
-        } else if (get_for_key(e.key)) {
-            kbString.push(get_for_key(e.key));
+        logKeyCode.debug(`Looking up key ${e.key} ${e.code}`)
+        if (isSpaceKey(e)) {
+            pressedKeys.push('Space')
+        } else if (isNumberKeyCode.test(e.code)) {
+            pressedKeys.push(e.code.substr(-1));
+        } else if (KeyCodeMap.has(e.code)) {
+            logKeyCode.debug(`Using KeyCodeMap value "${e.code}" => "${KeyCodeMap.get(e.code)}"`);
+            pressedKeys.push(KeyCodeMap.get(e.code));
         } else {
-            kbString.push(e.key);
+            pressedKeys.push(e.code);
         }
     }
 
-    log.debug('key out:', kbString);
+    log.debug('key out:', pressedKeys);
 
-    return kbString.join(opts.joiner);
+    // return pressedKeys.join(opts.joiner);
+    return pressedKeys;
 }
 
 export const captureActions = {
@@ -120,6 +152,10 @@ const isEscKey = (e) => {
 
 export const isEnterKey = (e) => {
     return (e.keyCode === 13 || e.key === 'Enter');
+}
+
+export const isSpaceKey = (e) => {
+    return (e.key === ' ');
 }
 
 const isKeyDown = (e) => {

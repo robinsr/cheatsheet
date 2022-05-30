@@ -1,11 +1,10 @@
-
+import { isEmpty } from 'lodash';
 import React, { useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 import styled from 'styled-components';
 
-import { useMst, KeyThemes } from 'store';
+import { useMst } from 'store';
 import { PointerItem, Transition } from 'components/theme';
-import { get_for_key } from 'utils/macos_symbols.js';
 
 const keyStyles = {
     light: {
@@ -35,8 +34,14 @@ const Shortcut = styled.span`
   }
 `;
 
-const ShortcutKey = observer(({ item, command, capture=false, splitKey='-', useRaw=false, onClick }) => {
-    let { ui } = useMst();
+const ShortcutKey = observer(({
+    item,
+    command,
+    capture=false,
+    useRaw=false,
+    onClick
+}) => {
+    let { settings } = useMst();
 
     let ref = useRef(null);
 
@@ -44,19 +49,18 @@ const ShortcutKey = observer(({ item, command, capture=false, splitKey='-', useR
         item.setRef(ref);
     }
 
-    if (!command) {
+    if (!command || isEmpty(command.keys)) {
         return null;
     }
 
+    const kbds = command.keys
+        .map(key => useRaw ? key.name : key.symbol)
+        .map(key => <kbd style={keyStyles[settings.keyTheme]} key={command.id + key}>{key}</kbd>)
+        .reduce((prev, curr) => [prev, ' + ', curr])
+
     return(
         <span>
-            <Shortcut id={'kbd-'+command} ref={ref} onClick={onClick}>
-                {command.split(splitKey)
-                    .map(key => useRaw ? key : get_for_key(key))
-                    .map(key => <kbd style={keyStyles[ui.keyTheme]} key={command + key}>{key}</kbd>)
-                    .reduce((prev, curr) => [prev, ' + ', curr])
-                }
-            </Shortcut>
+            <Shortcut id={'kbd-'+command} ref={ref} onClick={onClick}>{kbds}</Shortcut>
         </span>
     );
 })

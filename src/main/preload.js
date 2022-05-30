@@ -1,7 +1,11 @@
 const { contextBridge, ipcRenderer: ipc } = require('electron');
-const { stage, conf } = require('../shared/config.js');
+const { stage, conf, isDev, isProd } = require('../shared/config.js');
 
-
+/**
+ * @class cheatsheetAPI
+ * @constructor
+ * @global
+ */
 const cheatsheetAPI = {
     apps: {
         save: async (data) => await ipc.invoke('api:apps:save', data),
@@ -21,7 +25,9 @@ const cheatsheetAPI = {
         get: (key) => conf[key]
     },
     stage: () => stage,
+    stages: () => [ isDev(), isProd() ],
     systemBeep: () => ipc.invoke('app:beep')
 }
 
 contextBridge.exposeInMainWorld('cheatsheetAPI', cheatsheetAPI);
+contextBridge.exposeInMainWorld('API', cheatsheetAPI);

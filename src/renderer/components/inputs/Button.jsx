@@ -85,7 +85,7 @@ export const Button = ({ icon, children, ...rest }) => {
     } else {
         return (
             <BaseButton {...rest}>
-                <i className={'icon icon-' + icon}></i>
+                <i className={'icon icon-' + icon}></i> {children}
             </BaseButton>
         );
     }

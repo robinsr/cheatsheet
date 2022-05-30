@@ -41,7 +41,7 @@ darkModeQuery.onchange = e => {
 };
 
 /**
- * SettingsStore actions
+ * @class SettingsStoreActions
  * @param {ISettingsStore} self
  * @constructor
  */
@@ -66,16 +66,11 @@ const SettingsStoreActions = (self) => ({
             log.error(err);
         }
     }),
-    /**
-     * Sets the user's preferred theme
-     * @name ISettingsStore#setUserTheme
-     */
+
     setUserTheme(theme) {
         self.userTheme = theme;
     },
-    /**
-     * @name ISettingsStore#toggleKeyTheme
-     */
+
     toggleKeyTheme() {
         switch (self.keyTheme) {
             case KeyThemes.light:
@@ -113,12 +108,20 @@ const SettingsStoreActions = (self) => ({
         if (self.ignoreApps.indexOf(appName) === -1) {
             self.ignoreApps.unshift(appName);
         }
+    },
+
+    /**
+     * @name ISettingsStore#removeIgnoreApp
+     * @param {string} appName
+     */
+    removeIgnoreApp(appName) {
+        self.ignoreApps.splice(self.ignoreApps.indexOf(appName), 1);
     }
 });
 
 
 /**
- * SettingsStore computed views
+ * @class SettingsStoreViews
  * @param {ISettingsStore} self
  * @constructor
  */
@@ -148,7 +151,7 @@ const ignoreAppsDefault = [
 
 /**
  * Contains "user-settings" -like properties that are to be persisted
- * @typedef {object} ISettingsStore
+ * @typedef {object} SettingsStoreProps
  * @property {boolean} useSystemTheme
  * @property {Themes} userTheme
  * @property {KeyThemes} keyTheme
@@ -178,3 +181,7 @@ MobxSettingsStore.__defaults = {
 };
 
 export default MobxSettingsStore;
+
+/**
+ * @typedef { SettingsStoreActions, SettingsStoreViews, SettingsStoreProps } ISettingsStore
+ */

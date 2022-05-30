@@ -5,7 +5,8 @@ import { observer } from 'mobx-react-lite';
 import { useMst } from 'store';
 import { CardMenu, MenuItem } from 'components/card/CardMenu';
 import { Button, ButtonLink, ContentEditable, ToggleButton } from 'components/inputs';
-import { renderPNG, renderSVG, ShowHideElement } from 'utils';
+import { ShowHideElement } from 'utils';
+import { renderPNG, renderSVG } from 'utils/canvas_renderer';
 import ShortcutTable from './ShortcutTable';
 
 const CardContainer = styled.div`

@@ -1,150 +1,130 @@
-// https://www.toptal.com/developers/keycode
 
-let macos_symbols = {
-    Meta: { 
-        symbol: "⌘", alt: "cmd"
+const PREFER_SYMBOL = Symbol('prefer_symbol');
+const PREFER_ABBR = Symbol('prefer_abbreviation');
+const PREFER_NAME = Symbol('prefer_name');
+
+const macos_symbols = {
+    Meta: {
+        name: 'command', abbr: 'cmd' , symbol: "⌘", prefs: [ PREFER_SYMBOL ]
     },
-    Option: { 
-        symbol: "⌥", alt: "alt"
+    Option: {
+        name: 'option', abbr: 'opt' , symbol: "⌥", prefs: [ PREFER_SYMBOL ]
     },
-    Alt: { 
-        symbol: "⌥", alt: "alt"
+    Alt: {
+        name: 'alt', abbr: 'alt' , symbol: "⌥", prefs: [ PREFER_SYMBOL ]
     },
-    Control: { 
-        symbol: "⌃", alt: "ctrl"
+    Control: {
+        name: 'control', abbr: 'ctrl' , symbol: "⌃", prefs: [ PREFER_SYMBOL ]
     },
-    Shift: { 
-        symbol: "⇧", alt: "shift"
+    Shift: {
+        name: 'shift', abbr: 'shift' , symbol: "⇧", prefs: [ PREFER_SYMBOL ]
     },
-    CapsLock: { 
-        symbol: "⇪", alt: null
+    Space: {
+        name: 'space', abbr: 'space', symbol: "␣", prefs: [ PREFER_NAME ]
     },
-    Fn: {
-        symbol: "fn", alt: null
+    Escape: {
+        name: 'escape', abbr: 'esc', symbol: "⎋", prefs: [ PREFER_ABBR ]
     },
-    ArrowLeft: { 
-        symbol: "←", alt: null
+    ArrowLeft: {
+        name: 'left arrow', abbr: 'left' , symbol: "←", prefs: [ PREFER_SYMBOL ]
     },
-    ArrowRight: { 
-        symbol: "→", alt: null
+    ArrowRight: {
+        name: 'right arrow', abbr: 'right' , symbol: "→", prefs: [ PREFER_SYMBOL ]
     },
-    ArrowUp: { 
-        symbol: "↑", alt: null
+    ArrowUp: {
+        name: 'up arrow', abbr: 'up' , symbol: "↑", prefs: [ PREFER_SYMBOL ]
     },
-    ArrowDown: { 
-        symbol: "↓", alt: null
+    ArrowDown: {
+        name: 'down arrow', abbr: 'down' , symbol: "↓", prefs: [ PREFER_SYMBOL ]
     },
-    Tab: { 
-        symbol: "⇥", alt: null,
+    Tab: {
+        name: 'tab', abbr: 'tab', symbol: "⇥", prefs: [ PREFER_SYMBOL ]
     },
-    backtab: { 
-        symbol: "⇤", alt: null
+    Enter: {
+        name: 'return', abbr: 'return' , symbol: "↩", prefs: [ PREFER_SYMBOL ]
     },
-    return: { 
-        symbol: "↩", alt: null
+    Delete: {
+        name: 'delete', abbr: 'del' , symbol: "⌫", prefs: [ PREFER_ABBR ]
     },
-    Enter: { 
-        symbol: "↩", alt: null
+    PageUp: {
+        name: 'page up', abbr: 'page ↑' , symbol: "⇞", prefs: [ PREFER_NAME ]
     },
-    Delete: { 
-        symbol: "⌫", alt: "del"
+    PageDown: {
+        name: 'page down', abbr: 'page ↓' , symbol: "⇟", prefs: [ PREFER_NAME ]
     },
-    forwarddelete: { 
-        symbol: "⌦", alt: null
+    Home: {
+        name: 'home', abbr: 'home' , symbol: "↖", prefs: [ PREFER_NAME ]
     },
-    PageUp: { 
-        symbol: "⇞", alt: null
+    End: {
+        name: 'end', abbr: 'end', symbol: "↘", prefs: [ PREFER_NAME ]
     },
-    PageDown: { 
-        symbol: "⇟", alt: null
+    CapsLock: {
+        name: 'caps lock', abbr: 'lock' , symbol: "⇪", prefs: [ PREFER_NAME ]
     },
-    Home: { 
-        symbol: "↖", alt: null
+    NumLock: {
+        name: 'clear', abbr: 'clr', symbol: "⌧", prefs: [ PREFER_NAME ]
     },
-    End: { 
-        symbol: "↘", alt: null
+    NumpadEnter: {
+        name: 'numpad enter', abbr: 'enter' , symbol: "↩", prefs: [ PREFER_ABBR ]
     },
-    Clear: { 
-        symbol: "⌧", alt: null
+    NumpadEquals: {
+        name: 'numpad equals', abbr: 'num=', symbol: '=', prefs: [ PREFER_SYMBOL ]
     },
-    Space: { 
-        symbol: "␣", alt: 'space', useAlt: true
+    NumpadDivide: {
+        name: 'numpad divide', abbr: 'num/', symbol: '/', prefs: [ PREFER_SYMBOL ]
     },
-    ' ': {
-        symbol: null, alt: 'space', useAlt: true
+    NumpadMultiply: {
+        name: 'numpad multiply', abbr: 'num*', symbol: '*', prefs: [ PREFER_SYMBOL ]
     },
-    Escape: { 
-        symbol: "⎋", alt: null
+    NumpadSubtract: {
+        name: 'numpad subtract', abbr: 'num-', symbol: '-', prefs: [ PREFER_SYMBOL ]
     },
-    Eject: { 
-        symbol: "⏏", alt: null
+    NumpadAdd: {
+        name: 'numpad add', abbr: 'num+', symbol: '+', prefs: [ PREFER_SYMBOL ]
+    },
+    NumpadDecimal: {
+        name: 'numpad decimal', abbr: 'num.', symbol: '.', prefs: [ PREFER_SYMBOL ]
     }
 }
 
-const unshift_symbols = {
-    '!': '1',
-    '@': '2',
-    '#': '3',
-    '$': '4',
-    '%': '5',
-    '^': '6',
-    '&': '7',
-    '*': '8',
-    '(': '9',
-    ')': '0',
-    '_': '-',
-    '+': '=',
-    '{': '[',
-    '}': ']',
-    '|': '\\',
-    ':': ';',
-    '"': '\'',
-    '<': ',',
-    '>': '.',
-    '?': '/'
-}
+const SymbolsProxy = new Proxy(macos_symbols, {
+    has(symbols, prop) {
+        return prop in symbols || Object.keys(symbols).map(k => symbols[k].name).includes(prop);
+    },
+    get(symbols, prop) {
+        if (prop in symbols){
+            return symbols[prop];
+        }
 
-const unalt_symbols = {
-    '¡': '1',
-    '™': '2',
-    '£': '3',
-    '¢': '4',
-    '∞': '5',
-    '§': '6',
-    '¶': '7',
-    '•': '8',
-    'ª': '9',
-    'º': '0',
-    '–': '-',
-    '≠': '=',
-    '“': '[',
-    '‘': ']',
-    '«': '\\',
-    '…': ';',
-    'æ': '\'',
-    '≤': ',',
-    '≥': '.',
-    '÷': '/'
-}
+        let match = Object.keys(symbols).find(k => symbols[k].name === prop);
 
-export function get_for_key (key) {
-    if (unshift_symbols[key]) {
-        return unshift_symbols[key];
+        if (match) {
+            return symbols[match];
+        }
     }
+});
 
-    if (unalt_symbols[key]) {
-        return unalt_symbols[key];
-    }
 
-    if (!macos_symbols[key]){
+export const formatKey = (key, overrides) => {
+    if (SymbolsProxy[key]) {
+        let { useSymbols, useNumpad } = overrides;
+        let { name, abbr, symbol, prefs } = SymbolsProxy[key];
+
+        if (useSymbols && prefs.includes(PREFER_SYMBOL)) {
+            return symbol;
+        }
+
+        if (prefs.includes(PREFER_ABBR)) {
+            return abbr;
+        }
+
+        if (prefs.includes(PREFER_NAME)) {
+            return name;
+        }
+
+    } else {
         return key;
     }
-
-    if (macos_symbols[key].useAlt) {
-        return macos_symbols[key].alt;
-    } else {
-        return macos_symbols[key].symbol;
-    }
 }
 
-export { macos_symbols }
+

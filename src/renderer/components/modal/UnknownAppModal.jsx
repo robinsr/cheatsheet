@@ -6,7 +6,7 @@ import Modal from 'components/modal/Modal';
 import { Button } from 'components/inputs';
 
 const UnknownAppModal = observer(() => {
-    let { apps, state, ui } = useMst();
+    let { apps, state, settings } = useMst();
 
     if (!state.unknownApp) {
         return null;
@@ -15,7 +15,7 @@ const UnknownAppModal = observer(() => {
     let { unknownApp } = state;
 
     const onIgnore = () => {
-        ui.addIgnoreApp(unknownApp);
+        settings.addIgnoreApp(unknownApp);
         state.clearUnknownAppName();
     }
 
@@ -34,7 +34,7 @@ const UnknownAppModal = observer(() => {
                 type="small"
                 name="unknown-app-modal"
                 title={<span>New app?</span>}
-                active={unknownApp !== null}
+                active={true}
                 onClose={onLater}
                 content={
                     <div>

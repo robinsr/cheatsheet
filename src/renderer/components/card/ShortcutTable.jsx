@@ -1,12 +1,13 @@
+import React from 'react';
+import styled from 'styled-components';
+import { observer } from 'mobx-react-lite';
 import classnames from 'classnames';
 import { Checkbox } from 'components/inputs'
 import { FlexItem, PointerItem } from 'components/theme';
 import { TableRow, TableContainer, TableHeaderRow } from 'components/theme/elements/Table';
-import { observer } from 'mobx-react-lite';
-import React from 'react';
-
-import { useMst } from 'store';
-import styled from 'styled-components';
+import { EDIT_ITEM, ITEM } from 'utils/paths';
+import useCursor from '../../hooks/useCursor';
+import useHistory from '../../hooks/useHistory';
 import ShortcutKey from './ShortcutKey.jsx';
 
 
@@ -24,8 +25,10 @@ const ShortcutItemRow = styled(TableRow)`
 const ShortcutTableRow = observer(({
     item, editing, onMoveUp, onMoveDown
 }) => {
-    let { edit, cursor, setCursor } = useMst();
-    let { id, label, command, secondary, selected, select, deselect } = item;
+    let { id, label, command, secondary, selected, select } = item;
+
+    const { matches } = useCursor('#' + item.path);
+    const { push, back } = useHistory();
 
     function onRightClick(e) {
         if (e.nativeEvent.which === 3) {
@@ -33,14 +36,13 @@ const ShortcutTableRow = observer(({
         }
     }
 
-    function onClick(e, nextCursor) {
+    function onClick(e, fieldName) {
         if (editing) return;
         e.stopPropagation();
-        setCursor(nextCursor);
-        edit.setEditItem(item);
+        push(EDIT_ITEM.link({ itemId: id, field: fieldName }));
     }
 
-    let cls = classnames({ 'active': id === cursor });
+    let cls = classnames({ 'active': matches });
 
     return (
         <ShortcutItemRow className={cls}
@@ -55,11 +57,11 @@ const ShortcutTableRow = observer(({
                     onChange={e => editing && select(e.target.checked)}/>
             </FlexItem>
             <FlexItem>
-                <ShortcutKey item={item} command={command} capture={false} onClick={(e) => onClick(e, 'capture-bo')} />
+                <ShortcutKey item={item} command={command} capture={false} onClick={(e) => onClick(e, 'capture-box-primary')} />
                 {secondary
                     ? <React.Fragment>
                         <strong> + </strong>
-                        <ShortcutKey item={item} command={secondary} capture={false} onClick={(e) => onClick(e, 'capture-box-2')} />
+                        <ShortcutKey item={item} command={secondary} capture={false} onClick={(e) => onClick(e, 'capture-box-secondary')} />
                       </React.Fragment>
                     : null}
             </FlexItem>

@@ -1,17 +1,19 @@
 import './SearchBox.scss';
-import classnames from 'classnames';
-import { CursorFocusableInput } from 'components/inputs';
-import { Transition } from 'components/theme';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-
-import { useMst } from 'store';
+import classnames from 'classnames';
+import ShortcutItem from 'store/app/ShortcutItem';
 import styled from 'styled-components';
+import { useMst } from 'store';
 import { isEnterKey } from 'utils';
-import { macos_symbols } from 'utils/macos_symbols.js';
+import { APP, SEARCH } from 'utils/paths';
 
-import SearchResults from './SearchResults.jsx';
+import { Transition } from 'components/theme';
+import { CursorFocusableInput } from 'components/inputs';
+import useHistory from '../../../hooks/useHistory';
+import useParams from '../../../hooks/useParams';
+import SearchResults from './SearchResults';
 
 const StyledFormElement = styled.div`
   ${Transition()};
@@ -41,39 +43,48 @@ const FormAutoCompleteInput = styled(StyledFormElement).attrs(props => ({
 const SearchBox = observer(({
     isMenuOpen=false
 }) => {
-    let { apps, cursor, setCursor, search, edit } = useMst();
+    let { next } = useHistory();
+    let { apps, search } = useMst();
     let { query, results, updateQuery, clearQuery } = search;
 
     let [ focused, isFocused ] = useState(false);
-
     let isFocusedClass = classnames({ 'is-focused': focused === true });
 
-    useEffect(function clearOnMenuOpen() {
+    let currentApp = null;
+    let [ isAppPage, params ] = useParams(APP);
+    if (isAppPage) {
+        currentApp = apps.at(params.appIndex).name;
+    }
+
+    useEffect(() => {
         if (isMenuOpen) {
             clearQuery();
         }
     }, [ isMenuOpen ]);
 
     const handleKeyPress = (e) => {
-        if (isEnterKey(e) && query.length > 5) {
-            onNewKeyClick()
+        if (!isEnterKey(e) || query.length < 6) {
+            return;
         }
-    }
 
-    const onNewKeyClick = (e) => {
         let app = apps.selectedApp;
-        let cat = app.categories[0];
-        let id = cat.addItem(query);
-        edit.setEditItem(id);
+        let category = app.categories[0];
+
+        if (!category) {
+            category = app.addCategory();
+        }
+
+        let newItem = category.addItem(query);
+
         clearQuery();
-        setCursor('edit-form-label');
+        next(newItem.path + '/edit/field=label');
     }
 
     return (
         <FormAutoComplete>
             <FormAutoCompleteInput className={isFocusedClass}>
                 <CursorFocusableInput
-                    cursorName={'SEARCH'}
+                    pattern={SEARCH}
                     blur={true}
                     id="app-search-input"
                     type="text"
@@ -85,7 +96,7 @@ const SearchBox = observer(({
                     value={search.query}
                 />
                 {query.length > 5 &&
-                    <small className="float-right"><em>{macos_symbols.return.symbol} to create new</em></small>
+                    <small className="float-right"><em>↩ to create new in {currentApp}</em></small>
                 }
             </FormAutoCompleteInput>
             <SearchResults results={results} query={query}/>

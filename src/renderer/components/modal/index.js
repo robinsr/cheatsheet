@@ -1,8 +1,25 @@
-export { default as ExportModal } from './ExportModal.jsx';
-export { default as ImageModal } from './ImageModal.jsx';
-export { default as EditItemModal } from './EditItemModal.jsx';
-export { default as EditAppModal } from './EditAppModal.jsx';
-export { default as HelpModal } from './HelpModal.jsx';
-export { default as UnknownAppModal } from './UnknownAppModal'
-export { default as UserPrompt } from './UserPrompt';
+import React from 'react';
 
+import ImageModal from './ImageModal';
+import EditItemModal from './EditItemModal';
+import EditAppModal from './EditAppModal';
+import HelpModal from './HelpModal';
+import UnknownAppModal from './UnknownAppModal'
+import UserPrompt from './UserPrompt';
+import IgnoreListModal from './IgnoreListModal';
+
+const Modals = () => {
+    return (
+        <React.Fragment>
+            <ImageModal/>
+            <EditItemModal/>
+            <EditAppModal/>
+            <HelpModal/>
+            <UnknownAppModal/>
+            <IgnoreListModal/>
+            <UserPrompt/>
+        </React.Fragment>
+    )
+};
+
+export default Modals;

@@ -1,11 +1,18 @@
 const { BrowserWindow, nativeTheme } = require('electron');
 const fs = require('fs');
 const path = require('path');
-const { DEV, devTools } = require('./config');
+const { DEV, devTools, conf } = require('./config');
 const { getLogger } = require('./logger');
 const { darken } = require('polished');
 
 const log = getLogger('window');
+
+const vibrancyConfig = {
+    transparency: true,
+    backgroundColor: '#00000000',
+    vibrancy: 'under-window',
+    visualEffectState: 'followWindow'
+}
 
 
 /**
@@ -28,6 +35,10 @@ module.exports.createWindow = (stageOverrides, userSettings) => {
             nodeIntegration: true,
             preload: getPreloadScript()
         }
+    }
+
+    if (conf.vibrancy) {
+        Object.assign(windowConfig, vibrancyConfig);
     }
 
     Object.assign(windowConfig, stageOverrides);

@@ -14,7 +14,3 @@ log.info(JSON.stringify(window.cheatsheetAPI.config.getAll(), null, 1));
 
 const root = createRoot(document.getElementById('app'));
 root.render(<App />);
-
-window.addEventListener('hashchange', event => {
-    log.debug(`Hash Change:`, event.path[0].location.hash);
-});

@@ -1,7 +1,8 @@
-import { detach, getParent, getPath, getType, types } from 'mobx-state-tree';
-import { getLogger, newUuid, increment, decrement } from 'utils';
+import { detach, getParent, getPath, types } from 'mobx-state-tree';
+import { getLogger, newUuid } from 'utils';
+import ShortcutItem from './ShortcutItem';
 import MobxShortcutItem from './ShortcutItem';
-import Optional from 'optional-js';
+import MobxCollection from 'store/types/Collection';
 
 const log = getLogger('Store/CategoryItem');
 
@@ -12,42 +13,6 @@ const log = getLogger('Store/CategoryItem');
  * @constructor
  */
 export const CategoryItemViews = (self) => ({
-    item(id) {
-        if (!id) throw new Error('No ID supplied');
-
-        return Optional.ofNullable(self.items.find(i => i.id === id))
-            .orElseThrow(() => new Error(`Item '${id}' not found in category ${self.name}`));
-    },
-    index(id) {
-        if (!id) throw new Error('No ID supplied');
-
-        return Optional.ofNullable(self.items.findIndex(i => i.id === id))
-            .orElseThrow(() => new Error(`Item '${id}' not found in category ${self.name}`));
-    },
-    at(i) {
-        return self.items[i];
-    },
-    next(id) {
-        /** @type {IAppItem} */
-        let parent = getParent(self, 2);
-
-        return Optional.of(id)
-            .map(self.index).map(increment).map(self.at)
-            .orElseGet(() => parent.next(self.id).first);
-    },
-    prev(id) {
-        /** @type {IAppItem} */
-        let parent = getParent(self, 2)
-        return Optional.of(id)
-            .map(self.index).map(decrement).map(self.at)
-            .orElseGet(() => parent.prev(self.id).last);
-    },
-    get first() {
-        return self.items[0];
-    },
-    get last() {
-        return self.items[self.items.length - 1];
-    },
     get path() {
         return getPath(self);
     },
@@ -68,12 +33,20 @@ export const CategoryItemActions = (self) => ({
     updateName(name) {
         self.name = name
     },
-    addItem(label) {
+    addItem(label='New Shortcut', afterItem) {
         let id = newUuid();
-        self.items.push(MobxShortcutItem.create({
-            id, label: label || 'New Shortcut', command: ''
-        }));
-        return id;
+        let index = self.items.length;
+        let newItem = MobxShortcutItem.create({
+            id, label, command: ''
+        });
+
+        if (afterItem) {
+            index = self.index(afterItem)
+        }
+
+        self.items.splice(index, 0, newItem)
+
+        return newItem;
     },
     removeItem(id) {
         // self.items.splice(self.index(id), 1);
@@ -86,18 +59,14 @@ export const CategoryItemActions = (self) => ({
         self.items.filter(i => i.selected).forEach(i => i.select(false));
     },
     acceptItem(item) {
-        if (getType(item) === MobxShortcutItem) {
-            self.items.push(item);
-        } else {
-            throw new Error(`Cannot accept type ${getType(item)}`);
-        }
+        self.items.push(item);
     },
     moveItemDown(id) {
         if (!id) return null;
         let next = self.next(id);
 
         if (next) {
-            self.swapItems(self.item(id), next);
+            self.swapItems(self.get(id), next);
         }
     },
     moveItemUp(id) {
@@ -105,10 +74,14 @@ export const CategoryItemActions = (self) => ({
         let prev = self.prev(id);
 
         if (prev) {
-            self.swapItems(self.item(id), prev)
+            self.swapItems(self.get(id), prev)
         }
     },
     swapItems(item1, item2) {
+        if (item1.id === item2.id) {
+            return;
+        }
+
         let i1 = self.index(item1.id);
         let i2 = self.index(item2.id);
 
@@ -125,6 +98,11 @@ export const CategoryItemActions = (self) => ({
     }
 });
 
+const collectionConfig = {
+    orElseNext: (self) => getParent(self, 2).next(self.id).first,
+    orElsePrev: (self) => getParent(self, 2).prev(self.id).last
+}
+
 /**
  * @typedef {object} ICategoryItemProps
  * @property {string} id
@@ -134,13 +112,12 @@ export const CategoryItemActions = (self) => ({
 const MobxCategoryItem = types
     .model({
         id: types.identifier,
-        name: types.string,
-        items: types.array(MobxShortcutItem)
+        name: types.string
     })
     .views(CategoryItemViews)
     .actions(CategoryItemActions)
 
-export default MobxCategoryItem;
+export default types.compose(MobxCollection(ShortcutItem, collectionConfig), MobxCategoryItem).named('CategoryItem');
 
 /**
  * @typedef  {ICategoryItemProps, CategoryItemActions, CategoryItemViews } ICategoryItem

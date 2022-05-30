@@ -1,10 +1,10 @@
 import { flow, getEnv, getSnapshot, resolveIdentifier, types } from 'mobx-state-tree';
 import { newUuid, getLogger } from 'utils';
-import Optional from 'optional-js';
 
 import MobxAppItem from './AppItem';
 import MobxCategoryItem from './CategoryItem';
 import MobxShortcutItem from './ShortcutItem';
+import MobxCollection from 'store/types/Collection';
 
 const log = getLogger('AppStore');
 
@@ -17,15 +17,7 @@ const log = getLogger('AppStore');
  * @constructor
  */
 const AppStoreViews = (self) =>  ({
-    item(id) {
-        return Optional.ofNullable(self.appList.find(a => a.id === id))
-            .orElseThrow(() => new Error(`App '${id}' not found`));
-    },
-    index(id) {
-        return Optional.ofNullable(self.appList.findIndex(a => a.id === id))
-            .orElseThrow(() => new Error(`App '${id}' not found`));
-    },
-    window(name) {
+    getByWindowName(name) {
         return self.appList.find(a => a.windowName === name) || null;
     },
     query(term) {
@@ -40,24 +32,19 @@ const AppStoreViews = (self) =>  ({
     find(id) {
         return self.allItems.find(i => i.id === id) || null;
     },
-
     isItem(id) {
         return self.find(id) !== null;
     },
-
-    get first() {
-        return self.appList[0]
-    },
-    get last() {
-        return self.appList[self.appList.length - 1]
-    },
-    get isEmpty() {
+    isEmpty() {
         return this.appList
             .map(a => a.isEmpty)
             .reduce((p, c) => p && c, true);
     },
     get topItem() {
         return self.selectedApp.allItems[0];
+    },
+    get bottomItem() {
+        return self.selectedApp.allItems[self.selectedApp.allItems.length - 1];
     },
     get allItems() {
         return self.appList
@@ -124,7 +111,7 @@ const AppStoreActions = (self) => ({
     },
     setActiveApp(appId) {
         if (typeof appId === 'string') {
-            self.selectedApp = self.item(appId);
+            self.selectedApp = self.get(appId);
         } else if (typeof appId === 'number') {
             self.selectedApp = self.appList[appId];
         } else {
@@ -135,43 +122,12 @@ const AppStoreActions = (self) => ({
         self.selectedApp = null;
     },
     setEditApp(appId) {
-        self.editApp = self.item(appId);
+        self.editApp = self.get(appId);
     },
     clearEditApp() {
         self.editApp = null;
     },
-    nextApp() {
-        let current = self.index(self.selectedApp.id);
 
-        if (self.appList[current + 1]) {
-            self.selectedApp = self.appList[current + 1];
-        } else {
-            self.selectedApp = self.first;
-        }
-    },
-    prevApp() {
-        let current = self.index(self.selectedApp.id);
-
-        if (self.appList[current - 1]) {
-            self.selectedApp = self.appList[current - 1];
-        } else {
-            self.selectedApp = self.last;
-        }
-    },
-    addItem(itemId, label) {
-        if (itemId) {
-            log.debug('addItem, found cursor:', itemId)
-            let result = resolveIdentifier(MobxShortcutItem, self, itemId)
-
-            if (result) {
-                log.debug('Resolved cursor:', result)
-                return result.category.addItem(label);
-            }
-
-        } else {
-            log.debug('addItem, no cursor');
-        }
-    },
     removeItem(itemId) {
         if (itemId) {
             log.debug('addItem, found cursor:', itemId)
@@ -200,13 +156,15 @@ const AppStoreActions = (self) => ({
  * @property {boolean} isEmpty
  */
 const MobxAppStore = types
-    .model('MobxAppStore', {
-        appList: types.array(MobxAppItem),
-        selectedApp: types.maybeNull(types.reference(MobxAppItem)),
-        editApp: types.maybeNull(types.reference(MobxAppItem)),
-    })
-    .views(AppStoreViews)
-    .actions(AppStoreActions)
+    .compose(MobxCollection(MobxAppItem, { propName: 'appList' }),
+        types
+            .model('MobxAppStore', {
+                selectedApp: types.maybeNull(types.reference(MobxAppItem)),
+                editApp: types.maybeNull(types.reference(MobxAppItem)),
+        })
+        .views(AppStoreViews)
+        .actions(AppStoreActions)
+    ).named('AppStore');
 
 MobxAppStore.__defaults = {
     appList: [],

@@ -15,7 +15,7 @@ const KeyProvider = observer(({ children }) => {
     const keyEmitter = useMemo(() => {
         return new KeyEmitter([
             key_scopes.APP,
-            key_scopes.HELP,
+            key_scopes.MODAL,
             key_scopes.SEARCH,
             key_scopes.CAPTURE,
             key_scopes.EDIT_ITEM,

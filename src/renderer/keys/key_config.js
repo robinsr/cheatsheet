@@ -1,5 +1,8 @@
+import { getPath, resolvePath, tryResolve } from 'mobx-state-tree';
+import AppItem from 'store/app/AppItem';
 import { getKeyDirection } from 'utils/dom.js';
 import { getLogger } from 'utils/logger.js';
+import { EDIT_APP, HELP, IGNORE_APPS, ITEM, SEARCH, SIDEBAR } from 'utils/paths'
 const log = getLogger('KeyConfig');
 
 /**
@@ -13,37 +16,123 @@ const log = getLogger('KeyConfig');
  * @type {Object.<string, IKeyAction>}
  */
 export const key_config = {
+    GO_BACK: {
+        key: 'esc',
+        help: null,
+        run: (e, root) => {
+            root.history.back();
+        }
+    },
     CLEAR_CURSOR: {
         key: 'esc',
         help: null,
         run: (e, root) => {
-            root.setCursor(null);
+            root.history.push('#');
+        }
+    },
+    SHOW_IGNORE_APPS: {
+        key: 'i',
+        help: 'Show ignored apps',
+        run: (e, root) => {
+            root.history.breadcrumb();
+            root.history.push(IGNORE_APPS.link());
         }
     },
     SHOW_HELP_MODAL: {
         key: 'shift+/,?',
         help: 'Show this help window',
         run: (e, root) => {
-            root.setCursor('HELP');
+            root.history.breadcrumb();
+            root.history.push(HELP.link());
+        }
+    },
+    SHOW_MENU: {
+        key: 'm',
+        help: 'Show sidebar menu',
+        run: (e, root) => {
+            root.history.breadcrumb();
+            root.history.push(SIDEBAR.link());
         }
     },
     FOCUS_SEARCH: {
         key: '/',
         help: 'Go to search',
         run: (e, root) => {
-            root.setCursor('SEARCH');
+            root.history.breadcrumb();
+            root.history.push(SEARCH.link());
         }
     },
-    MOVE_CURSOR: {
+    CHANGE_APP: {
+        key: 'right, left',
+        help: 'Change the app in view',
+        run: (e, root) => {
+            let { path } = root.history;
+            let app = resolvePath(root, path);
+
+            if (app) {
+                let direction = getKeyDirection(e);
+
+                if (direction.RIGHT) {
+                    root.setCursor(root.apps.next(app.id).path)
+                } else if (direction.LEFT) {
+                    root.setCursor(root.apps.prev(app.id).path)
+                }
+            }
+        }
+    },
+    MOVE_ITEM_CURSOR: {
         key: 'up, down',
         help: 'Move highlight up or down',
         run: (e, root) => {
-            let direction = getKeyDirection(e)
+            let direction = getKeyDirection(e);
+            let { hash, push, replace } = root.history;
 
-            if (direction.UP) {
-                root.cursorUp();
-            } else {
-                root.cursorDown();
+            try {
+                let item = tryResolve(root, hash.replace('#', ''));
+
+                if (item && direction.DOWN && item.next) {
+                    return replace('#' + item.next.path);
+                }
+
+                if (item && direction.UP && item.prev) {
+                    return replace('#' + item.prev.path);
+                }
+
+                if (direction.DOWN) {
+                    return push('#' + root.apps.topItem?.path);
+                }
+
+                if (direction.UP) {
+                    return push('#' + root.apps.bottomItem?.path);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    },
+    SELECT_ITEM: {
+        key: 'E, enter',
+        help: 'Open focused shortcut in edit pane',
+        run: (e, root) => {
+            let { hash, push } = root.history;
+
+            // TODO; search bar does not have its own scope
+            if (e.target?.id === 'app-search-input') {
+                log.warn('TODO: search bar does not have its own scope')
+                return;
+            }
+
+            try {
+                let item = tryResolve(root, hash.replace('#', ''));
+
+                if (item) {
+                    root.history.breadcrumb();
+                    push(hash + '/edit/field=label');
+                } else {
+                    log.warn('Enter key pressed, but cursor value is not valid item: ', hash);
+                }
+            } catch (e) {
+                console.error(e);
             }
         }
     },
@@ -51,31 +140,18 @@ export const key_config = {
         key: 'shift+up, shift+down',
         help: 'Move highlighted item up or down',
         run: (e, root) => {
+            let { hash, replace } = root.history;
             let direction = getKeyDirection(e);
+            let item = resolvePath(root, hash.replace('#', ''));
 
-            if (root.apps.isItem(root.cursor)) {
-                let item = root.apps.find(root.cursor);
-
+            if (item) {
                 if (direction.UP) {
                     item.category.swapItems(item.prev, item);
+                    replace('#' + getPath(item));
                 } else {
                     item.category.swapItems(item, item.next);
+                    replace('#' + getPath(item));
                 }
-            }
-        }
-    },
-    CHANGE_APP: {
-        key: 'right, left',
-        help: 'Change the app in view',
-        run: (e, root) => {
-            let direction = ( e.key === 'ArrowRight' ? 'NEXT' : 'PREV');
-
-            if (direction === 'NEXT') {
-                root.apps.nextApp()
-                root.setCursor(root.apps.topItem.id)
-            } else if (direction === 'PREV') {
-                root.apps.prevApp();
-                root.setCursor(root.apps.topItem.id)
             }
         }
     },
@@ -90,27 +166,6 @@ export const key_config = {
             }
         }
     },
-    SELECT_ITEM: {
-        key: 'E, enter',
-        help: 'Open focused shortcut in edit pane',
-        run: (e, root) => {
-
-            let { apps, edit, cursor, setCursor } = root;
-
-            // TODO; search bar does not have its own scope
-            if (e.target?.id === 'app-search-input') {
-                log.warn('TODO: search bar does not have its own scope')
-                return;
-            }
-
-            if (apps.isItem(cursor)) {
-                edit.setEditItem(cursor);
-                setCursor('edit-form-label');
-            } else {
-                log.warn('Enter key pressed, but cursor value is not valid item: ', cursor)
-            }
-        }
-    },
     EDIT_LABEL: {
         key: 'L',
         help: 'Edit label of highlighted item',
@@ -122,23 +177,31 @@ export const key_config = {
         key: 'S',
         help: 'Create new shortcut',
         run: (e, root) => {
-             root.apps.addItem(root.cursor);
+            // what to do really depends on the cursor
+            let { path, hash, replace } = root.history;
+
+            let item = resolvePath(root, hash.replace('#', ''));
+
+            if (item) {
+                let id = item.category.addItem('New Shortcut', item.id);
+                return;
+            }
+
+            // If just /apps/appList/i
         }
     },
     NEW_CATEGORY: {
         key: 'C',
         help: 'Create a new category in current app',
         run: (e, root) => {
-            root.apps.addItem(root.cursor);
+
         }
     },
     CLEAR_EDIT_ITEM: {
         key: 'esc',
         help: 'Exit edit shortcut pane',
         run: (e, root) => {
-            let editItem = root.edit.editItem.id.replace('__edit__', '');
-            root.edit.clearEditItem();
-            root.setCursor(editItem);
+            root.history.back();
         }
     },
     SAVE_EDIT_ITEM: {
@@ -146,6 +209,7 @@ export const key_config = {
         help: 'Save edit item',
         run: (e, root) => {
             root.edit.saveEditItem();
+            root.history.back();
         }
     },
     NEXT_EDIT_FIELD: {
@@ -165,8 +229,9 @@ export const key_config = {
         key: 'A',
         help: 'Show edit pane for current app',
         run: (e, root) => {
-            root.apps.setEditApp(root.apps.selectedApp.id);
-            root.setCursor('edit-app-name');
+            // root.apps.setEditApp(root.apps.selectedApp.id);
+            let appIndex = root.apps.index(root.apps.selectedApp.id);
+            root.history.push(EDIT_APP.link({ appIndex }));
         }
     },
     CLEAR_EDIT_APP: {
@@ -271,16 +336,19 @@ export const key_scopes = {
     APP: {
         config: { scope: 'APP', keydown: true, keyup: false },
         actions: [
+            'CLEAR_CURSOR',
             'SHOW_HELP_MODAL',
+            'SHOW_IGNORE_APPS',
             'FOCUS_SEARCH',
-            'MOVE_CURSOR',
+            'MOVE_ITEM_CURSOR',
             'CHANGE_APP',
             'SELECT_ITEM',
             'MOVE_SELECTION',
             'DELETE_ITEM',
             'NEW_SHORTCUT',
             'NEW_CATEGORY',
-            'EDIT_CURRENT_APP'
+            'EDIT_CURRENT_APP',
+            'SHOW_MENU'
         ],
         eventFilter: (e, scope) => {
             if (scope && scope !== 'APP') {
@@ -297,12 +365,12 @@ export const key_scopes = {
             return !ifAny.includes(true);
         }
     },
-    HELP: {
-        config: { scope: 'HELP', keydown: true, keyup: false },
+    MODAL: {
+        config: { scope: 'MODAL', keydown: true, keyup: false },
         actions: [
-            'CLEAR_CURSOR'
+            'GO_BACK'
         ],
-        eventFilter: (e) => window.location.hash === '#HELP'
+        eventFilter: (e, scope) => scope === 'MODAL'
     },
     SEARCH: {
         config: { scope: 'SEARCH', keydown: false, keyup: true },

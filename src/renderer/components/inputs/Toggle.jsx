@@ -66,7 +66,7 @@ const SwitchControl = styled.i`
     left: 0;
     position: absolute;
     top: 0;
-    transition: background .2s,border .2s,box-shadow .2s,color .2s,left .2s;
+    transition: background .8s, border .8s, box-shadow .2s, color .8s, left .8s;
     width: 0.8rem;
   }
 `;
