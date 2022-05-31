@@ -25,9 +25,6 @@ const TestItemType = types
 .actions(self => ({
     isEmptyAction() { return true; }
 }))
-.views(self => ({
-    isEmptyView() { return true; }
-}))
 .named('TestItemType');
 
 const TestItemTypeCollection = MobxCollection(TestItemType)

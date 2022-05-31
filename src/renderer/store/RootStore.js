@@ -10,7 +10,6 @@ import MobxSettingsStore from './ui/SettingsStore';
 import MobxSearchStore from './ui/SearchStore';
 import MobxStateStore from './ui/StateStore';
 import MobxAppStore from './app/AppStore';
-import MobxEditItemStore from './edit/EditItemStore';
 import MobxImageModalStore from './export/ImageStore';
 import MobxShortcutItem from './app/ShortcutItem';
 
@@ -113,7 +112,6 @@ const RootStoreActions = self => ({
 /**
  * @typedef {object} IRootStoreProps
  * @property {ISettingsStore} settings
- * @property {IEditStore} edit
  * @property {IAppStore} apps
  * @property {ImageModalStore} imageModal
  * @property {SearchStore} search
@@ -123,7 +121,6 @@ const RootStoreActions = self => ({
 const MobxStore = types
     .model('MobxStore', {
         settings: MobxSettingsStore,
-        edit: MobxEditItemStore,
         apps: MobxAppStore,
         imageModal: MobxImageModalStore,
         search: MobxSearchStore,
@@ -135,7 +132,6 @@ const MobxStore = types
 
 MobxStore.__defaults = {
     settings: MobxSettingsStore.__defaults,
-    edit: MobxEditItemStore.__defaults,
     apps: MobxAppStore.__defaults,
     imageModal: MobxImageModalStore.__defaults,
     search: MobxSearchStore.__defaults,

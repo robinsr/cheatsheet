@@ -4,7 +4,6 @@ import hotkeys from 'hotkeys-js';
 import { observer } from "mobx-react-lite";
 import { isEmpty as _isEmpty } from 'lodash';
 import classnames from "classnames";
-import { useMst } from "store";
 import { MobxShortcut, SEPARATOR } from 'store/types/Shortcut';
 import {
     captureActions,
@@ -20,6 +19,7 @@ import { key_scopes } from 'keys/key_config';
 import { Debugger } from 'components/dev/Debug';
 import ShortcutKey from 'components/card/ShortcutKey';
 import StyledCaptureBox from 'components/inputs/keycapture/StyledCaptureBox';
+import useCursor from '../../../hooks/useCursor';
 import UndoButton from './UndoButton';
 
 const log = getLogger('JSX/CaptureBox');
@@ -30,24 +30,19 @@ const CaptureBox = observer(({
     defaultValue, command, cursorName, tabNext, onData
 }) => {
     let keyEmitter = useKeys();
-    let { cursor, setCursor } = useMst();
+    let { matches } = useCursor('*' + cursorName);
     let ref = useRef();
 
     let [ status, setStatus ] = useState('blur');
     let [ keyString, setKeyString ] = useState(null);
 
     useEffect(() => {
-        if (cursor && cursor.endsWith(cursorName)){
+        if (matches){
             log.debug('Focusing:', cursorName);
             ref.current?.focus();
         }
-    }, [ cursor ]);
+    }, [ matches ]);
 
-    const onClick = (e) => {
-        if (cursorName && cursor !== cursorName) {
-            setCursor(cursorName);
-        }
-    }
 
     const startCapture = () => {
         log.debug("Capturing");
@@ -129,7 +124,7 @@ const CaptureBox = observer(({
      * keyString (unsaved input) > command (saved to edit model) > defaultValue (saved to model)
      */
     return (
-        <div style={{position: "relative"}} onBlur={stopCapture} onClick={onClick}>
+        <div style={{position: "relative"}} onBlur={stopCapture}>
             <StyledCaptureBox className={cns}
                  tabIndex="0"
                  id="capture-box"

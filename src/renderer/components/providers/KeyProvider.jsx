@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Provider } from '../../keys';
-import { key_scopes } from '../../keys/key_config';
+import { Provider } from 'keys';
+import { key_scopes } from 'keys/key_config';
 import KeyEmitter from '../../keys/key_emitter';
 import { useMst } from 'store';
 import { getLogger } from 'utils';
@@ -13,7 +13,7 @@ const KeyProvider = observer(({ children }) => {
     let root = useMst();
 
     const keyEmitter = useMemo(() => {
-        return new KeyEmitter([
+        const keyEmitter = new KeyEmitter([
             key_scopes.APP,
             key_scopes.MODAL,
             key_scopes.SEARCH,
@@ -22,16 +22,19 @@ const KeyProvider = observer(({ children }) => {
             key_scopes.EDIT_APP,
             key_scopes.NEW_APP
         ], 'APP');
+
+        keyEmitter.onScope(scope => {
+            root.state.setKeyScope(scope);
+        });
+
+        log.debug('Calling keyEmitter.onKey')
+        keyEmitter.onKey(({ event, actionName, run }) => {
+            log.debug('Running action: ', actionName);
+            run(event, root);
+        });
+
+        return keyEmitter;
     }, []);
-
-    keyEmitter.onScope(scope => {
-        root.state.setKeyScope(scope);
-    });
-
-    keyEmitter.onKey(({ event, actionName, run }) => {
-        log.debug('Running action: ', actionName);
-        run(event, root);
-    });
 
     return (
         <Provider value={keyEmitter}>{children}</Provider>

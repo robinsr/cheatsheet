@@ -1,12 +1,12 @@
 import { Transition } from 'components/theme/elements';
 import { createGlobalStyle } from 'styled-components';
 
-const vibrancy = window.cheatsheetAPI.config.get('vibrancy');
+const { vibrancy, window: dimensions } = window.cheatsheetAPI.config.getAll()
 
 const GlobalStyle = createGlobalStyle`
   html, body, #app {
     height: 100%;
-    min-width: 20rem;
+    min-width: ${dimensions.minWidth}px;
   }
   
   body {

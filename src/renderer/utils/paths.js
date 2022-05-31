@@ -2,7 +2,7 @@ import UrlPattern from 'url-pattern';
 import { isNull } from 'lodash';
 import { getLogger } from './logger';
 
-const log = getLogger('PathPattern', 'DEBUG');
+const log = getLogger('PathPattern');
 
 class Pattern extends UrlPattern {
     constructor(pattern, replace) {
@@ -25,6 +25,10 @@ class Pattern extends UrlPattern {
         } catch (e) {
             log.error('Could not generate link. Args:', args);
         }
+    }
+
+    path(args = { _: '' }) {
+        return this.link(args).replace('#', '');
     }
 
     matcher(args = { _: '' }) {
@@ -58,7 +62,7 @@ export const SEARCH = new HashPattern('#search(*)')
 
 // Apps, Shortcuts
 export const APP = new PathPattern('/apps/appList/:appIndex');
-export const EDIT_APP = APP.extend('/edit');
+export const EDIT_APP = APP.extend('/edit(#field=:field)');
 export const ITEM = new HashPattern('#/apps/appList/:appIndex/categories/:categoryIndex/items/:itemIndex');
 export const EDIT_ITEM = ITEM.extend('/edit(/field=:field)');
 

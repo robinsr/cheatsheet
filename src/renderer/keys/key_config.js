@@ -1,9 +1,13 @@
-import { getPath, resolvePath, tryResolve } from 'mobx-state-tree';
-import AppItem from 'store/app/AppItem';
+import { getPath, getType, resolvePath, tryResolve } from 'mobx-state-tree';
 import { getKeyDirection } from 'utils/dom.js';
 import { getLogger } from 'utils/logger.js';
 import { EDIT_APP, HELP, IGNORE_APPS, ITEM, SEARCH, SIDEBAR } from 'utils/paths'
 const log = getLogger('KeyConfig');
+
+// TODO move to model utils
+const isNamed = (obj, expectedName) => {
+    return getType(obj)?.name === expectedName;
+}
 
 /**
  * @typedef {object} IKeyAction
@@ -85,7 +89,7 @@ export const key_config = {
         help: 'Move highlight up or down',
         run: (e, root) => {
             let direction = getKeyDirection(e);
-            let { hash, push, replace } = root.history;
+            let { hash, path, push, replace } = root.history;
 
             try {
                 let item = tryResolve(root, hash.replace('#', ''));
@@ -98,12 +102,14 @@ export const key_config = {
                     return replace('#' + item.prev.path);
                 }
 
-                if (direction.DOWN) {
-                    return push('#' + root.apps.topItem?.path);
+                let app = tryResolve(root, path);
+
+                if (app && direction.DOWN && app.topItem?.path) {
+                    return push('#' + app.topItem?.path);
                 }
 
-                if (direction.UP) {
-                    return push('#' + root.apps.bottomItem?.path);
+                if (app && direction.UP && app.bottomItem?.path) {
+                    return push('#' + app.bottomItem?.path);
                 }
             } catch (e) {
                 console.error(e);
@@ -208,8 +214,7 @@ export const key_config = {
         key: 'enter,command+S',
         help: 'Save edit item',
         run: (e, root) => {
-            root.edit.saveEditItem();
-            root.history.back();
+            // do nothing, handled in EditItemModal
         }
     },
     NEXT_EDIT_FIELD: {
@@ -229,18 +234,26 @@ export const key_config = {
         key: 'A',
         help: 'Show edit pane for current app',
         run: (e, root) => {
-            // root.apps.setEditApp(root.apps.selectedApp.id);
-            let appIndex = root.apps.index(root.apps.selectedApp.id);
-            root.history.push(EDIT_APP.link({ appIndex }));
+            let { path, hash, push } = root.history;
+            let app = tryResolve(root, path);
+
+            if (app && isNamed(app, 'MobxAppItem')) {
+                push(app.path + '/edit#field=name');
+            }
         }
     },
     CLEAR_EDIT_APP: {
         key: 'esc',
         help: null,
         run: (e, root) => {
-            e.target.id === 'app-search-input' && e.target.blur();
-            root.apps.clearEditApp()
-            root.setCursor(root.apps.topItem.id);
+            root.history.back();
+        }
+    },
+    SAVE_EDIT_APP: {
+        key: 'enter',
+        help: null,
+        run: (e, root) => {
+            // do nothing, handled in EditAppModal
         }
     },
     MOVE_SEARCH_CURSOR: {
@@ -288,10 +301,10 @@ export const key_config = {
         key: 'esc',
         help: null,
         run: (e, root) => {
-            let { setCursor, search, apps, state } = root;
-            search.clearQuery();
-            setCursor(apps.topItem.id);
+            let { history, search, apps, state } = root;
             state.setKeyScope('APP');
+            search.clearQuery();
+            history.back();
         }
     },
     'NEW_APP -> MAYBE_LATER': {
@@ -314,7 +327,8 @@ export const key_config = {
         key: 'N',
         help: null,
         run: (e, root) => {
-            root.ui.addIgnoreApp(root.state.unknownApp);
+            let { unknownApp } = root.state;
+            root.settings.addIgnoreApp(unknownApp);
             root.state.clearUnknownAppName();
         }
     }
@@ -334,7 +348,7 @@ export const key_config = {
 /** @type Object.<string,IKeyScopes> */
 export const key_scopes = {
     APP: {
-        config: { scope: 'APP', keydown: true, keyup: false },
+        config: { scope: 'APP', keydown: false, keyup: true },
         actions: [
             'CLEAR_CURSOR',
             'SHOW_HELP_MODAL',
@@ -366,7 +380,7 @@ export const key_scopes = {
         }
     },
     MODAL: {
-        config: { scope: 'MODAL', keydown: true, keyup: false },
+        config: { scope: 'MODAL', keydown: false, keyup: true },
         actions: [
             'GO_BACK'
         ],
@@ -396,9 +410,10 @@ export const key_scopes = {
         eventFilter: (e, scope) => scope === 'EDIT_ITEM'
     },
     EDIT_APP: {
-        config: { scope: 'EDIT_APP' },
+        config: { scope: 'EDIT_APP', keydown: false, keyup: true },
         actions: [
-            'CLEAR_EDIT_APP'
+            'CLEAR_EDIT_APP',
+            'SAVE_EDIT_APP'
         ],
         eventFilter: (e, scope) => scope === 'EDIT_APP'
     },

@@ -30,11 +30,9 @@ const ShortcutItemViews = self => ({
     get prev() {
         return self.category.prev(self.id);
     },
-
     link(target) {
         return ITEM.link(self.app.id, self.id);
     },
-
     get path() {
         // let path = self.app.path;
         // let hash = ITEM.link({ itemId: self.id });
@@ -42,18 +40,9 @@ const ShortcutItemViews = self => ({
         // return path + hash;
         return getPath(self);
     },
-
     editLink(field) {
-        // let path = self.app.path;
-        // let hash = EDIT_ITEM.link({ field, itemId: self.id });
-
         return getPath(self) + '/edit' + (field ? `/field=${field}` : '');
     },
-
-    get markdown() {
-        return `|${self.label}|${self.command}|`; // todo; complete md string
-    },
-
     getIndex() {
         return self.category.index(self.id);
     }

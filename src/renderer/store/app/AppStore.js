@@ -29,11 +29,11 @@ const AppStoreViews = (self) =>  ({
             .flatMap(x => x)
             .slice(0, 6);
     },
-    find(id) {
+    findItem(id) {
         return self.allItems.find(i => i.id === id) || null;
     },
     isItem(id) {
-        return self.find(id) !== null;
+        return self.findItem(id) !== null;
     },
     isEmpty() {
         return this.appList
@@ -176,6 +176,6 @@ export default MobxAppStore;
 
 
 /**
- * @typedef { IAppStoreProps, IAppStoreViews, IAppStoreActions } IAppStore
+ * @typedef { CollectionStore<IAppItem>, IAppStoreProps, IAppStoreViews, IAppStoreActions } IAppStore
  */
 

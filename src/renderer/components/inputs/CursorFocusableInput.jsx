@@ -4,7 +4,7 @@ import { getLogger } from 'utils';
 import { TextInput, Select } from 'components/inputs';
 import useCursor from '../../hooks/useCursor';
 
-const log = getLogger('JSX/CursorFocusableElement');
+const log = getLogger('JSX/CursorFocusableElement', 'DEBUG');
 
 /**
  * Sets active element to a specific input when cursor

@@ -28,6 +28,12 @@ const AppItemViews = self => ({
             .map(c => c.items)
             .flatMap(x => x);
     },
+    get topItem() {
+        return self.allItems[0];
+    },
+    get bottomItem() {
+        return self.allItems[self.allItems.length - 1];
+    },
     get path() {
         return getPath(self);
     }
@@ -40,9 +46,8 @@ const AppItemViews = self => ({
  * @constructor
  */
 const AppItemActions = self => ({
-    update(attrs) {
-        let safeAttributes = _pick(attrs, ['name', 'windowName'])
-        self = Object.assign(self, safeAttributes);
+    update(attr, value) {
+        self[attr] = value;
     },
     addCategory(name='New Category') {
         let newCategory = MobxCategoryItem.create({
@@ -65,7 +70,7 @@ const AppItemActions = self => ({
  * @property {string} windowName
  */
 const MobxAppItem = types
-    .model('MobxAppItem', {
+    .model({
         id: types.identifier,
         name: types.string,
         categories: types.array(MobxCategoryItem),
@@ -74,8 +79,24 @@ const MobxAppItem = types
     .views(AppItemViews)
     .actions(AppItemActions)
 
-export default types.compose(MobxCollection(MobxCategoryItem, { propName: 'categories' }), MobxAppItem).named('AppItem')
+export default types.compose(MobxCollection(MobxCategoryItem, { propName: 'categories' }), MobxAppItem).named('MobxAppItem')
 
 /**
  * @typedef { IAppItemProps, IAppItemActions, IAppItemViews } IAppItem
  */
+
+
+export const MobxEditAppItem = MobxAppItem.extend(self => {
+    let { name, windowName } = self;
+
+    return {
+        views: {
+            get defaultName() {
+                return name;
+            },
+            get defaultWindow() {
+                return windowName;
+            }
+        }
+    }
+})

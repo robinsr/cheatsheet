@@ -5,9 +5,8 @@ import classnames from 'classnames';
 import { Checkbox } from 'components/inputs'
 import { FlexItem, PointerItem } from 'components/theme';
 import { TableRow, TableContainer, TableHeaderRow } from 'components/theme/elements/Table';
-import { EDIT_ITEM, ITEM } from 'utils/paths';
+import Link from 'components/cursor/Link';
 import useCursor from '../../hooks/useCursor';
-import useHistory from '../../hooks/useHistory';
 import ShortcutKey from './ShortcutKey.jsx';
 
 
@@ -28,7 +27,6 @@ const ShortcutTableRow = observer(({
     let { id, label, command, secondary, selected, select } = item;
 
     const { matches } = useCursor('#' + item.path);
-    const { push, back } = useHistory();
 
     function onRightClick(e) {
         if (e.nativeEvent.which === 3) {
@@ -36,36 +34,33 @@ const ShortcutTableRow = observer(({
         }
     }
 
-    function onClick(e, fieldName) {
-        if (editing) return;
-        e.stopPropagation();
-        push(EDIT_ITEM.link({ itemId: id, field: fieldName }));
-    }
-
     let cls = classnames({ 'active': matches });
 
     return (
-        <ShortcutItemRow className={cls}
-            onClick={(e) => onClick(e, 'edit-form-label')}
-            onAuxClick={onRightClick}
-            >
-            <FlexItem grow>
-                <Checkbox
-                    label={label}
-                    showCheckbox={editing}
-                    checked={selected}
-                    onChange={e => editing && select(e.target.checked)}/>
-            </FlexItem>
-            <FlexItem>
-                <ShortcutKey item={item} command={command} capture={false} onClick={(e) => onClick(e, 'capture-box-primary')} />
-                {secondary
-                    ? <React.Fragment>
-                        <strong> + </strong>
-                        <ShortcutKey item={item} command={secondary} capture={false} onClick={(e) => onClick(e, 'capture-box-secondary')} />
-                      </React.Fragment>
-                    : null}
-            </FlexItem>
-        </ShortcutItemRow>
+        <Link path={`#${item.path}/edit/field=edit-form-label`} disabled={editing}>
+            <ShortcutItemRow className={cls} onAuxClick={onRightClick}>
+                <FlexItem grow>
+                    <Checkbox
+                        label={label}
+                        showCheckbox={editing}
+                        checked={selected}
+                        onChange={e => editing && select(e.target.checked)}/>
+                </FlexItem>
+                <FlexItem>
+                    <Link path={`#${item.path}/edit/field=capture-box-primary`} disabled={editing}>
+                        <ShortcutKey item={item} command={command} capture={false} />
+                    </Link>
+                    {secondary
+                        ? <React.Fragment>
+                            <strong> + </strong>
+                            <Link path={`#${item.path}/edit/field=capture-box-secondary`} disabled={editing}>
+                                <ShortcutKey item={item} command={secondary} capture={false} />
+                            </Link>
+                          </React.Fragment>
+                        : null}
+                </FlexItem>
+            </ShortcutItemRow>
+        </Link>
     )
 });
 

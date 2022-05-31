@@ -3,8 +3,7 @@ import { isMatch } from 'matcher';
 import UrlPattern from 'url-pattern';
 import { getLogger } from 'utils';
 
-
-const log = getLogger('useCursor', 'DEBUG');
+const log = getLogger('useCursor');
 
 /**
  * Uses the hash of location
@@ -22,6 +21,7 @@ const useCursor = (pattern='*') => {
     } else {
         // plain string
         matches = isMatch(hash, pattern);
+        log.debug('Match result:', matches, pattern, hash);
     }
 
     return { matches, params };

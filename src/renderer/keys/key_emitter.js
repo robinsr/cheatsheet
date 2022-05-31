@@ -1,9 +1,10 @@
-import Logger from 'js-logger';
-import EventEmitter from 'events';
 import hotkeys from 'hotkeys-js';
+import EventEmitter from 'events';
+import { getLogger } from 'utils';
 import { key_config } from './key_config.js';
 
-const log = Logger.get('KeyEmitter');
+const log = getLogger('KeyEmitter');
+const eventLog = getLogger('KeyEmitter/events', 'DEBUG');
 
 const EVENT_NAMES = {
     KEYS: 'keys',
@@ -70,11 +71,11 @@ export default class KeyEmitter extends EventEmitter {
             log.warn('DANGER! No source for set scope!');
         }
 
-        log.debug(`Setting scope: [${scope}], source: [${source}]`);
-
-        hotkeys.setScope(scope);
-
-        this.emit(EVENT_NAMES.SCOPE, scope);
+        if (hotkeys.getScope() !== scope) {
+            log.debug(`Setting scope: [${scope}], source: [${source}]`);
+            hotkeys.setScope(scope);
+            this.emit(EVENT_NAMES.SCOPE, scope);
+        }
     }
 
     /**
@@ -93,7 +94,7 @@ export default class KeyEmitter extends EventEmitter {
             log.debug(`Installing action: [${actionName}] = "${key}" (${keyup?'key▲':''} ${keydown?'key▼':''})`);
 
             hotkeys(key, scope.config, (e) => {
-                log.debug('Triggering action', actionName);
+                eventLog.debug('Triggering action:', actionName, 'Listener Count:', this.listenerCount(EVENT_NAMES.KEYS));
                 this.emit(EVENT_NAMES.KEYS, {
                     event: e, run, actionName
                 });
