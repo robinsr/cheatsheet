@@ -9,6 +9,10 @@ const GlobalStyle = createGlobalStyle`
     min-width: ${dimensions.minWidth}px;
   }
   
+  html {
+    background: ${p => p.theme.base.bg};
+  }
+  
   body {
     ${Transition()};
     

@@ -26,7 +26,8 @@ const cheatsheetAPI = {
     },
     stage: () => stage,
     stages: () => [ isDev(), isProd() ],
-    systemBeep: () => ipc.invoke('app:beep')
+    systemBeep: () => ipc.invoke('app:beep'),
+    reload: () => ipc.invoke('app:reload')
 }
 
 contextBridge.exposeInMainWorld('cheatsheetAPI', cheatsheetAPI);

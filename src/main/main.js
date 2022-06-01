@@ -56,7 +56,7 @@ app.whenReady().then(async () => {
     // Any user settings that require an electron API call
     // to take effect (should be saved and applied on app restart)
     ipcMain.handle('app:settingsUpdated', (newSettings) => {
-        console.info('Syncing user settings', newSettings);
+        log.info('Syncing user settings', newSettings);
 
         const settingsKeys = Object.keys(newSettings);
 
@@ -84,4 +84,8 @@ app.whenReady().then(async () => {
         win.setSize(width, height, true);
     });
 
+    ipcMain.handle('app:reload', (e) => {
+        log.info('Handling IPC event: app:reload');
+        win.reload();
+    });
 })
