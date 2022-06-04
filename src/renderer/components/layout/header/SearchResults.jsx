@@ -1,3 +1,4 @@
+import { getPath } from 'mobx-state-tree';
 import React from 'react';
 import { observer } from 'mobx-react-lite';
 import classnames from 'classnames';
@@ -7,6 +8,7 @@ import { FlexItem, FlexRow } from 'components/theme';
 import KeyScope from 'components/providers/KeyScope.jsx';
 import ShortcutKey from 'components/card/ShortcutKey.jsx';
 import { useMst } from 'store';
+import useHistory from '../../../hooks/useHistory';
 
 const ResultList = styled.ul`
     background: ${props => props.theme.base.bg};
@@ -45,20 +47,23 @@ const ResultLabel = ({ result: { label, id }, query }) => {
 }
 
 const ResultLink = observer(({ result, query }) => {
-    let { id, label, app, category, command, link } = result;
+    let { id, app, category, command } = result;
 
-    let { cursor, setCursor, search, apps } = useMst();
+    let { search } = useMst();
+    let { hash } = useHistory();
 
-    const cns = classnames({ 'active': cursor === 'search_' + id })
+    const cns = classnames({ 'active': hash === '#search/' + id })
+
+    let linkpath = getPath(app);
+    let linkhash = getPath(result);
+    let link = '#' + linkpath + '#' + linkhash;
 
     const onClick = (e) => {
         search.clearQuery();
-        apps.setActiveApp(result.app.id);
-        setCursor(result.id)
     }
 
     return (
-        <a href={'#' + link('')} onClick={onClick} className={cns} >
+        <a href={link} onClick={onClick}  className={cns} onFocus={e => {}}>
             <FlexRow gap={'0.5rem'}>
                 <FlexItem>
                     <figure className="avatar avatar-sm" data-initial={app.name[0].toUpperCase()} />
@@ -85,16 +90,17 @@ const SearchResults = observer(({ results, query }) => {
     }
 
     return (
-        <KeyScope scope={'SEARCH'} prevScope={'APP'}>
-            <ResultList className="menu">
-                {results.map(result => (
-                    <li className="search-box-result menu-item" key={result.id}>
-                        <ResultLink result={result} query={query}/>
-                    </li>
-                ))}
-            </ResultList>
-        </KeyScope>
+        <ResultList className="menu">
+            {results.map(result => (
+                <li className="search-box-result menu-item" key={result.id}>
+                    <ResultLink result={result} query={query}/>
+                </li>
+            ))}
+        </ResultList>
     )
 });
 
 export default SearchResults;
+
+// <KeyScope scope={'SEARCH'} prevScope={'APP'}>
+// </KeyScope>

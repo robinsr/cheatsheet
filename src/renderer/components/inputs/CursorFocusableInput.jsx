@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { observer } from "mobx-react-lite";
 import { getLogger } from 'utils';
 import { TextInput, Select } from 'components/inputs';
-import useCursor from '../../hooks/useCursor';
+import useCursor from 'hooks/useCursor';
 
 const log = getLogger('JSX/CursorFocusableElement', 'DEBUG');
 
@@ -33,7 +33,7 @@ const CursorFocusableInput = observer(({
 
     useEffect(() => {
         if (matches && inputRef) {
-            log.debug('setting focus', cursorName);
+            log.debug('setting focus', cursorName || rest.id);
             isText && inputRef.focus();
             isText && inputRef.select();
         } else if (blur && inputRef) {

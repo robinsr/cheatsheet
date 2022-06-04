@@ -9,8 +9,8 @@ import { TableContainer, TableHeaderRow, TableRow } from 'components/theme/eleme
 import { FlexItem } from 'components/theme';
 
 import { IGNORE_APPS } from 'utils/paths';
-import useHistory from '../../hooks/useHistory';
-import useParams from '../../hooks/useParams';
+import useHistory from 'hooks/useHistory';
+import useParams from 'hooks/useParams';
 
 
 const IgnoreListModal = observer(() => {

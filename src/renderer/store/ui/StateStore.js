@@ -99,7 +99,7 @@ MobxStateStore.__defaults = {
     isLoading: true,
     isSaving: false,
     activeWindow: window.cheatsheetAPI.config.get('name'),
-    keyScope: null,
+    keyScope: 'APP',
     unknownApp: null,
     userPrompt: null
 }

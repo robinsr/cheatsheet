@@ -261,17 +261,18 @@ export const key_config = {
         help: null,
         run: (e, root) => {
             let direction = getKeyDirection(e);
-            let { cursor, setCursor, search, apps } = root;
+            let { search } = root;
+            let { hash, replace } = root.history;
 
-            if (cursor?.startsWith('search_')) {
-                let itemId = cursor.replace('search_', '');
+            if (hash?.startsWith('#search')) {
+                let itemId = hash.replace('#search/', '');
                 if (direction.UP) {
-                    setCursor('search_' + search.prev(itemId).id);
+                    replace('#search/' + search.prev(itemId).id);
                 } else {
-                    setCursor('search_' + search.next(itemId).id);
+                    replace('#search/' + search.next(itemId).id);
                 }
             } else if (search.first) {
-                setCursor('search_' + search.first.id);
+                replace('#search/' + search.first.id);
             }
         }
     },

@@ -1,7 +1,10 @@
 import hotkeys from 'hotkeys-js';
+import { autorun } from 'mobx';
 import EventEmitter from 'events';
 import { getLogger } from 'utils';
 import { key_config } from './key_config.js';
+
+import { rootStore } from 'store';
 
 const log = getLogger('KeyEmitter');
 const eventLog = getLogger('KeyEmitter/events', 'DEBUG');
@@ -14,6 +17,9 @@ const EVENT_NAMES = {
 // Not sure if using event emitter is the best here, but it
 // solves the issue of having a new callback every rerender
 export default class KeyEmitter extends EventEmitter {
+    /** @type {string[]} **/
+    installed = [];
+
     constructor(scopes, defaultScope) {
         super();
         Object.assign(this, { scopes, defaultScope });
@@ -25,9 +31,7 @@ export default class KeyEmitter extends EventEmitter {
         this.filters = scopes.map(scope => ({
             [scope.config.scope]: scope.eventFilter
         }))
-        .reduce((prev, curr) => {
-            return Object.assign(prev, curr);
-        }, {});
+        .reduce((prev, curr) => Object.assign(prev, curr), {});
 
         hotkeys.filter = (e) => {
             let results = Object.keys(this.filters).map(key => ({
@@ -54,6 +58,10 @@ export default class KeyEmitter extends EventEmitter {
                 window.cheatsheetAPI.systemBeep();
             }
         }
+
+        autorun(() => {
+            this.setScope(rootStore.state.keyScope, 'KeyEmitter::autorun');
+        })
     }
 
     onKey(cb) {
@@ -69,6 +77,11 @@ export default class KeyEmitter extends EventEmitter {
     setScope(scope, source) {
         if (!source) {
             log.warn('DANGER! No source for set scope!');
+        }
+
+        if (!scope || !this.installed.includes(scope)) {
+            log.error(`Invalid scope ${scope}`);
+            return;
         }
 
         if (hotkeys.getScope() !== scope) {
@@ -100,5 +113,7 @@ export default class KeyEmitter extends EventEmitter {
                 });
             });
         });
+
+        this.installed.push(scopeName);
     }
 }

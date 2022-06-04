@@ -64,6 +64,7 @@ const SearchBox = observer(({
 
     const handleKeyPress = (e) => {
         if (!isEnterKey(e) || query.length < 6) {
+            e.stopPropagation();
             return;
         }
 

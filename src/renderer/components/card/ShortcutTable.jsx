@@ -6,7 +6,7 @@ import { Checkbox } from 'components/inputs'
 import { FlexItem, PointerItem } from 'components/theme';
 import { TableRow, TableContainer, TableHeaderRow } from 'components/theme/elements/Table';
 import Link from 'components/cursor/Link';
-import useCursor from '../../hooks/useCursor';
+import useCursor from 'hooks/useCursor';
 import ShortcutKey from './ShortcutKey.jsx';
 
 

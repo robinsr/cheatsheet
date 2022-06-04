@@ -1,11 +1,6 @@
 const path = require('path');
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-// const ThemesGeneratorPlugin = require('themes-switch/ThemesGeneratorPlugin');
-// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-
-const themes = [ 'default', 'darcula' ];
-//,styles: themes.map(theme => `./renderer/styles/themes/${theme}.scss`)
 
 module.exports = {
     entry: {
@@ -47,6 +42,7 @@ module.exports = {
             store: path.resolve(__dirname, '../src/renderer/store/'),
             utils: path.resolve(__dirname, '../src/renderer/utils/'),
             keys: path.resolve(__dirname, '../src/renderer/keys/'),
+            hooks: path.resolve(__dirname, '../src/renderer/hooks/'),
             fonts: path.resolve(__dirname, '../fonts/'),
         },
         fallback: {
@@ -63,9 +59,5 @@ module.exports = {
     ],
     optimization: {
         runtimeChunk: 'single'
-        // chunkIds: 'named',
-        // splitChunks: {
-        //     chunks: "all"
-        // }
     }
 };

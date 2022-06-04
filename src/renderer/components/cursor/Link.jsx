@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { isValidElement } from 'react';
 import { observer } from 'mobx-react-lite';
 import { noop } from 'lodash';
-import useHistory from '../../hooks/useHistory';
+import useHistory from 'hooks/useHistory';
 
 const Link = observer(({ path, useReplace=false, disabled=false, afterClick=noop, children }) => {
     let { push, replace } = useHistory();

@@ -139,8 +139,6 @@ const MobxCollection = (itemType, opts) => {
         enumerable: isTest
     });
 
-    console.log(collection);
-
     return collection;
 }
 

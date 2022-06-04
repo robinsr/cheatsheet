@@ -7,8 +7,8 @@ import { SearchBox } from 'components/layout/header';
 import { Button } from 'components/inputs';
 import { FlexGrow, FlexItem, FlexRow, SpaceBetweenItem, Transition } from 'components/theme';
 import { HOME, SIDEBAR } from 'utils/paths';
-import useHistory from '../../hooks/useHistory';
-import useParams from '../../hooks/useParams';
+import useHistory from 'hooks/useHistory';
+import useParams from 'hooks/useParams';
 
 const appName = window.cheatsheetAPI.config.get('name');
 const debug = window.cheatsheetAPI.config.get('debug');

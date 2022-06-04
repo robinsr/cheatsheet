@@ -29,7 +29,7 @@ const TestItemType = types
 
 const TestItemTypeCollection = MobxCollection(TestItemType)
 
-const TestUnionType = types.compose(TestContainerType, TestItemTypeCollection).named('TestUnionType');
+const TestComposeType = types.compose(TestContainerType, TestItemTypeCollection).named('TestComposeType');
 
 const testInstanceName = 'I am "testInstance"';
 let testInstance;
@@ -37,7 +37,7 @@ let testInstance;
 describe('Store', () => {
     describe('MobxCollection', () => {
         beforeEach(() => {
-            testInstance = TestUnionType.create({
+            testInstance = TestComposeType.create({
                 items: getTestItems(),
                 containerProp: testInstanceName
             })
@@ -45,14 +45,14 @@ describe('Store', () => {
 
         describe('Usage', () => {
             describe('ItemType', () => {
-                it('creates a union type with a collection using the supplied item type', () => {
+                it('creates a composed type with a collection using the supplied item type', () => {
                     let snap = testInstance.toJSON();
                     expect(snap).toHaveProperty('containerProp', testInstanceName);
                     expect(snap).toHaveProperty('items');
                     expect(snap.items).toHaveLength(3);
                 })
 
-                it('exposes collection to methods from other type in union', () => {
+                it('exposes collection to methods from other type in composed', () => {
                     expect(testInstance.combineAllNames()).toEqual('Alpha-Beta-Gamma');
                 })
 
