@@ -1,5 +1,5 @@
 import { curry, isNumber, toInteger } from 'lodash';
-import { isModelType, typecheck, types } from 'mobx-state-tree';
+import { getPath, isModelType, typecheck, types } from 'mobx-state-tree';
 import Optional from 'optional-js';
 import { decrement, increment, newUuid } from 'utils';
 
@@ -21,15 +21,26 @@ import { decrement, increment, newUuid } from 'utils';
 const isTest = process.env.NODE_ENV === 'test';
 const COLLECTION_SYM = Symbol('MobxCollectionType');
 
+/**
+ *
+ * @param self
+ * @param keyType
+ * @template T
+ * @return {function(T):number}
+ */
 const getItemRetriever = (self, keyType) => {
     switch (keyType) {
+        case 'id':
+            return (id) => self._items.find(i => i.id === id);
         case 'path':
-            return curry(self.find)('path'); // todo, this wont work
+            return (path) => self._items.find(i => getPath(i) === path);
         case 'index':
-            return self.index;
-        default:
-            return self.get;
+            return (i) => self._items[i];
     }
+}
+
+const getIndexRetriever = () => {
+
 }
 
 const toNumber = (i) => {
@@ -43,28 +54,35 @@ const toNumber = (i) => {
  * @param propName - name of inner array. Can be accessed in unions
  * @constructor
  */
-const MobxCollectionModel = (itemType, propName='items') => {
+const MobxCollectionModel = (itemType, { propName }) => {
     return types.model({
         [ propName ]: types.array(itemType),
         active: types.maybeNull(types.string)
     })
 }
 
-const MobxCollectionViews = ({ propName, orElseNext, orElsePrev }) => self => ({
-    get(id) {
-        return Optional.ofNullable(self[propName].find(i => i.id === id))
-            .orElseThrow(() => new Error(`Item '${id}' not found in ${propName}`));
+const MobxCollectionViews = (itemType, { propName, orElseNext, orElsePrev }) => self => ({
+    get(key, keyType = 'id') {
+        return Optional.ofNullable(getItemRetriever(self, keyType)(key))
+            .orElseThrow(() => new Error(`Item '${key}' not found in ${propName}`));
     },
     find(attr, value) {
-        return Optional.ofNullable(self[propName].find(i => i[attr] === value))
+        return Optional.ofNullable(self._items.find(i => i[attr] === value))
             .orElseThrow(() => new Error(`Item matching ${attr}=${value} not found in ${propName}`))
     },
-    index(id) {
-        return Optional.ofNullable(self[propName].findIndex(i => i.id === id))
-            .orElseThrow(() => new Error(`Item '${id}' not found in category ${self.name}`));
+    findIndex(id) {
+        return Optional.ofNullable(self._items.findIndex(i => i.id === id))
+            .orElseThrow(() => new Error(`Item '${id}' not found in ${propName}`));
+    },
+    indexOf(item) {
+        typecheck(itemType, item);
+        return Optional.ofNullable(item)
+            .map(item => self._items.indexOf(item))
+            .filter(i => i !== -1)
+            .orElseThrow(() => new Error(`Item with id '${item.id}' not found in ${propName}`));
     },
     at(i) {
-        return toNumber(i) < self[propName].length ? self[propName][i] : null;
+        return toNumber(i) < self._items.length ? self._items[i] : null;
     },
     get first() {
         return self[propName][0]
@@ -72,31 +90,34 @@ const MobxCollectionViews = ({ propName, orElseNext, orElsePrev }) => self => ({
     get last() {
         return self[propName][self[propName].length - 1]
     },
-    /**
-     *
-     * @param {string|number} key
-     * @param {('')} [keyType=id]
-     * @return {unknown}
-     */
-    next(id, keyType = 'id') {
-        let getter = getItemRetriever(self, 'id'); // TODO get next item by path (eg "/items/1")
-
-        return Optional.of(id)
-            .map(self.index).map(increment).map(self.at)
+    next(key, keyType = 'id') {
+        return Optional.of(key)
+            .map(getItemRetriever(self, keyType))
+            .map(self.indexOf).map(increment).map(self.at)
             .orElseGet(() => orElseNext(self));
     },
-    prev(id) {
-        return Optional.of(id)
-            .map(self.index).map(decrement).map(self.at)
+    prev(key, keyType = 'id') {
+        return Optional.of(key)
+            .map(getItemRetriever(self, keyType))
+            .map(self.indexOf).map(decrement).map(self.at)
             .orElseGet(() => orElsePrev(self));
     },
 
     get isEmpty() {
         return self[propName].length === 0;
+    },
+
+    /**
+     * Returns raw collection
+     * @return {T[]}
+     * @private
+     */
+    get _items() {
+        return self[propName];
     }
 });
 
-const MobxCollectionActions = (itemType, propName) => self => ({
+const MobxCollectionActions = (itemType, { propName }) => self => ({
     add(item = {}) {
         if (!item.id) {
             item.id = newUuid();
@@ -128,9 +149,9 @@ const MobxCollection = (itemType, opts) => {
 
     let name = `${itemType.name || 'AnonymousModel'}Collection`;
 
-    let collection = MobxCollectionModel(itemType, propName)
-        .views(MobxCollectionViews(options))
-        .actions(MobxCollectionActions(itemType, propName))
+    let collection = MobxCollectionModel(itemType, options)
+        .views(MobxCollectionViews(itemType, options))
+        .actions(MobxCollectionActions(itemType, options))
         .named(name);
 
     Object.defineProperty(collection, COLLECTION_SYM, {

@@ -3,16 +3,22 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import classnames from 'classnames';
 import styled from 'styled-components';
-
+import { FocusLink } from 'components/cursor';
 import { FlexItem, FlexRow } from 'components/theme';
-import KeyScope from 'components/providers/KeyScope.jsx';
 import ShortcutKey from 'components/card/ShortcutKey.jsx';
 import { useMst } from 'store';
-import useHistory from '../../../hooks/useHistory';
+import useLocation from 'hooks/useLocation';
+
+const ResultLink = styled.a`
+    a:focus, .active {
+        color: ${p => p.theme.cursor.color};
+        background: ${p => p.theme.cursor.bg};
+    }
+`;
 
 const ResultList = styled.ul`
     background: ${props => props.theme.base.bg};
-`
+`;
 
 const ResultText = styled.div`
   text-overflow: ellipsis;
@@ -22,7 +28,7 @@ const ResultText = styled.div`
 
 const MetaResult = styled(ResultText)`
   width: 90px;
-`
+`;
 
 const ResultLabel = ({ result: { label, id }, query }) => {
     const getResultsSplit = (() => {
@@ -46,24 +52,26 @@ const ResultLabel = ({ result: { label, id }, query }) => {
     )
 }
 
-const ResultLink = observer(({ result, query }) => {
-    let { id, app, category, command } = result;
+const ResultItem = observer(({ result, query }) => {
+    let { path, app, category, command } = result;
 
-    let { search } = useMst();
-    let { hash } = useHistory();
+    let { search, state } = useMst();
+    let { hash } = useLocation();
 
-    const cns = classnames({ 'active': hash === '#search/' + id })
+    const isActive = hash === '#search' + path;
+
+    const cns = classnames('search-result', { 'active': isActive });
 
     let linkpath = getPath(app);
-    let linkhash = getPath(result);
-    let link = '#' + linkpath + '#' + linkhash;
+    let link = '#' + linkpath + '#' + path;
 
     const onClick = (e) => {
         search.clearQuery();
+        state.setKeyScope('APP');
     }
 
     return (
-        <a href={link} onClick={onClick}  className={cns} onFocus={e => {}}>
+        <FocusLink path={link} cursor={'#search' + path} afterClick={onClick} className={cns}>
             <FlexRow gap={'0.5rem'}>
                 <FlexItem>
                     <figure className="avatar avatar-sm" data-initial={app.name[0].toUpperCase()} />
@@ -80,7 +88,7 @@ const ResultLink = observer(({ result, query }) => {
                     <ShortcutKey item={result} command={command} />
                 </FlexItem>
             </FlexRow>
-        </a>
+        </FocusLink>
     );
 })
 
@@ -93,7 +101,7 @@ const SearchResults = observer(({ results, query }) => {
         <ResultList className="menu">
             {results.map(result => (
                 <li className="search-box-result menu-item" key={result.id}>
-                    <ResultLink result={result} query={query}/>
+                    <ResultItem result={result} query={query}/>
                 </li>
             ))}
         </ResultList>

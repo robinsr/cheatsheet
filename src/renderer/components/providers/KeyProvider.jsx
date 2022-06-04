@@ -17,6 +17,7 @@ const KeyProvider = observer(({ children }) => {
             key_scopes.APP,
             key_scopes.MODAL,
             key_scopes.SEARCH,
+            key_scopes.SEARCH_RESULTS,
             key_scopes.CAPTURE,
             key_scopes.EDIT_ITEM,
             key_scopes.EDIT_APP,

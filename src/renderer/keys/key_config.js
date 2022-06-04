@@ -256,6 +256,20 @@ export const key_config = {
             // do nothing, handled in EditAppModal
         }
     },
+    SELECT_FIRST_RESULT: {
+        key: 'down',
+        help: null,
+        run: (e, root) => {
+            let { search, state } = root;
+            let { hash, replace, breadcrumb } = root.history;
+
+            if (search.first) {
+                breadcrumb();
+                replace('#search' + search.first.path);
+                state.setKeyScope('SEARCH_RESULTS');
+            }
+        }
+    },
     MOVE_SEARCH_CURSOR: {
         key: 'up,down',
         help: null,
@@ -265,14 +279,14 @@ export const key_config = {
             let { hash, replace } = root.history;
 
             if (hash?.startsWith('#search')) {
-                let itemId = hash.replace('#search/', '');
+                let itemPath = hash.replace('#search', '');
                 if (direction.UP) {
-                    replace('#search/' + search.prev(itemId).id);
+                    replace('#search' + search.prev(itemPath, 'path').path);
                 } else {
-                    replace('#search/' + search.next(itemId).id);
+                    replace('#search' + search.next(itemPath, 'path').path);
                 }
             } else if (search.first) {
-                replace('#search/' + search.first.id);
+                replace('#search' + search.first.path);
             }
         }
     },
@@ -280,21 +294,8 @@ export const key_config = {
         key: 'enter',
         help: null,
         run: (e, root) => {
-            let { cursor, setCursor, search, apps } = root;
-            if (e.target?.id === 'app-search-input') {
-                // create new
-                throw new Error('Should not run enter action when in search text input');
-            }
-
-            if (cursor.startsWith('search_')) {
-                let itemId = cursor.replace('search_', '');
-
-                if (apps.isItem(itemId)) {
-                    let item = apps.find(itemId);
-                    apps.setActiveApp(item.app.id);
-                    setCursor(itemId);
-                    search.clearQuery();
-                }
+            if (e.target?.classList.contains('search-result')) {
+                e.target.click();
             }
         }
     },
@@ -390,16 +391,16 @@ export const key_scopes = {
     SEARCH: {
         config: { scope: 'SEARCH', keydown: false, keyup: true },
         actions: [
-            'EXIT_SEARCH', 'MOVE_SEARCH_CURSOR', 'SELECT_SEARCH_RESULT'
+            'EXIT_SEARCH', 'SELECT_FIRST_RESULT'
         ],
         eventFilter: (e) => e.target?.id === 'app-search-input'
     },
-    SEARCH_BUTTONS: {
-        config: { scope: 'SEARCH_BUTTONS', keydown: false, keyup: true },
+    SEARCH_RESULTS: {
+        config: { scope: 'SEARCH_RESULTS', keydown: false, keyup: true },
         actions: [
-            //, 'SELECT_SEARCH_RESULT'
+            'SELECT_SEARCH_RESULT', 'MOVE_SEARCH_CURSOR', 'GO_BACK'
         ],
-        eventFilter: () => false
+        eventFilter: (e) => e.target.classList.contains('search-result')
     },
     EDIT_ITEM: {
         config: { scope: 'EDIT_ITEM' },
@@ -437,3 +438,10 @@ export const key_scopes = {
     }
 }
 
+// disable window scroll
+// TODO move somewhere that makes sense
+window.addEventListener("keydown", function(e) {
+    if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+        e.preventDefault();
+    }
+}, false);

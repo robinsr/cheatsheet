@@ -58,7 +58,8 @@ class HashPattern extends Pattern {
 // Home, page functions
 export const HOME = new PathPattern('/');
 export const SIDEBAR = new HashPattern('#sidebar(*)');
-export const SEARCH = new HashPattern('#search(*)')
+export const SEARCH = new HashPattern('#search')
+export const SEARCH_RESULT = new HashPattern('#search/*')
 
 // Apps, Shortcuts
 export const APP = new PathPattern('/apps/appList/:appIndex');

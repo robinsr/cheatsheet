@@ -1,5 +1,6 @@
 import { getPath, resolvePath, types } from 'mobx-state-tree';
 import MobxCollection from 'store/types/Collection';
+import { fail } from 'jest/'
 
 
 const getTestItems = () => ([
@@ -155,6 +156,20 @@ describe('Store', () => {
             })
         })
 
+        describe('.get([path], "path")', () => {
+            it('find items by path', () => {
+                expect(testInstance.get('/items/0', 'path')).toHaveProperty('name', 'Alpha');
+                expect(testInstance.get('/items/1', 'path')).toHaveProperty('name', 'Beta');
+                expect(testInstance.get('/items/2', 'path')).toHaveProperty('name', 'Gamma');
+            })
+
+            it('throws on not found', () => {
+                expect(() => {
+                    testInstance.get('/items/999');
+                }).toThrowError('Item \'/items/999\' not found in items');
+            })
+        })
+
         describe('.find([attr], [value])', () => {
             it('returns an item by dynamic property name', () => {
                 expect(testInstance.find('name', 'Alpha')).toHaveProperty('id', '123')
@@ -184,11 +199,35 @@ describe('Store', () => {
             })
         })
 
-        describe('.index([id])', () => {
+        describe('.findIndex([id])', () => {
             it('returns the index of an item with matching id', () => {
-                expect(testInstance.index('123')).toEqual(0);
-                expect(testInstance.index('456')).toEqual(1);
-                expect(testInstance.index('789')).toEqual(2);
+                expect(testInstance.findIndex('123')).toEqual(0);
+                expect(testInstance.findIndex('456')).toEqual(1);
+                expect(testInstance.findIndex('789')).toEqual(2);
+            })
+        })
+
+        describe('.indexOf([item])', () => {
+            it('returns the index value of an item', () => {
+                // in practice the item will have been retrieved
+                // through other methods (not calling _items array)
+                expect(testInstance.indexOf(testInstance._items[0])).toEqual(0);
+                expect(testInstance.indexOf(testInstance._items[1])).toEqual(1);
+                expect(testInstance.indexOf(testInstance._items[2])).toEqual(2);
+            })
+
+            it('type-checks the input', () => {
+                expect(() => {
+                    testInstance.indexOf({ scooby: 'doo' })
+                }).toThrowError()
+            })
+
+            it('throws on not found', () => {
+                expect(() => {
+                    let testItem = TestItemType.create({ name: 'Scooby', id: 'doo' });
+                    let result = testInstance.indexOf(testItem);
+                    throw new Error(`Found index ${result}`);
+                }).toThrowError('Item with id \'doo\' not found in items')
             })
         })
 
@@ -238,18 +277,31 @@ describe('Store', () => {
                 expect(item.id).toEqual('789');
             })
 
+            it('find an item by path and returns next item', () => {
+                let item = testInstance.next('/items/1', 'path');
+
+                expect(item).toBeDefined();
+                expect(item.id).toEqual('789');
+            })
+
             it ('loops back to the first item at end of collection', () => {
                 let item = testInstance.next('789');
 
                 expect(item).toBeDefined();
                 expect(item.id).toEqual('123');
             })
-
         })
 
         describe('.prev()', () => {
             it('finds an item by id and returns the previous item', () => {
                 let item = testInstance.prev('456');
+
+                expect(item).toBeDefined();
+                expect(item.id).toEqual('123');
+            })
+
+             it('find an item by path and returns previous item', () => {
+                let item = testInstance.prev('/items/1', 'path');
 
                 expect(item).toBeDefined();
                 expect(item.id).toEqual('123');
