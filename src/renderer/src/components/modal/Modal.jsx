@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import React from 'react';
 import classnames from 'classnames';
-import { Button } from 'components/inputs';
+import { Button } from '~/components/inputs/index';
 import { createGlobalStyle } from 'styled-components';
 
 const ModalOverrides = createGlobalStyle`

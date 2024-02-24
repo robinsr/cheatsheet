@@ -25,15 +25,16 @@ Promise.all([ rootStore.apps.load(), rootStore.settings.load() ])
             rootStore.listenToWindowChange();
             enableFileSync();
 
-            try {
-                let indexItem = rootStore.apps.topItem
-                let indexJsonPath = getPathParts(indexItem);
-                let indexIdPath = indexItem.path;
-                console.log(indexJsonPath);
-            } catch (e) {
-                console.error(e);
-            }
-            rootStore.history.push(getPath(rootStore.apps.appList[0]))
+            // try {
+            //     let indexItem = rootStore.apps.topItem
+            //     let indexJsonPath = getPathParts(indexItem);
+            //     let indexIdPath = indexItem.path;
+            //     console.log(indexJsonPath);
+            // } catch (e) {
+            //     console.error(e);
+            // }
+            // rootStore.history.push(getPath(rootStore.apps.appList[0]))
+            rootStore.history.push('/')
         }, 750);
     });
 

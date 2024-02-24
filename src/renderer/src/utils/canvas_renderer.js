@@ -2,7 +2,7 @@ import html2canvas from 'html2canvas';
 import { changeDpiDataUrl } from 'changedpi';
 // TODO dom-to-svg breaks jest unit tests. Maybe move to backend process instead of browser
 import { elementToSVG, inlineResources } from 'dom-to-svg';
-import optimize from 'svgo-browser/lib/optimize';
+// import optimize from 'svgo-browser/lib/optimize';
 
 import { CustomPNGImage, CustomSVGImage } from 'utils/images.js';
 

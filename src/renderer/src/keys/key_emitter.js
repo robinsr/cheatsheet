@@ -1,6 +1,6 @@
 import hotkeys from 'hotkeys-js';
 import { autorun } from 'mobx';
-import EventEmitter from 'events';
+import EventEmitter from 'eventemitter3';
 import { getLogger } from 'utils';
 import { key_config } from './key_config.js';
 

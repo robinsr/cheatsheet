@@ -41,7 +41,7 @@ const AppStoreViews = (self) =>  ({
             .reduce((p, c) => p && c, true);
     },
     get topItem() {
-        return self.selectedApp.allItems[0];
+        return self.selectedApp?.allItems[0];
     },
     get bottomItem() {
         return self.selectedApp.allItems[self.selectedApp.allItems.length - 1];

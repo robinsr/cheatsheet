@@ -2,12 +2,12 @@ import './App.scss';
 
 import React, { useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Provider, rootStore, useMst } from 'store'
+import { Provider, rootStore, useMst } from '../store/index.js'
 import styled, { ThemeProvider } from 'styled-components';
 import { AppGroups, SidePane, Nav } from './layout';
-import ErrorAlert from 'components/layout/ErrorAlert';
+import ErrorAlert from 'components/layout/ErrorAlert.jsx';
 import Modals from './modal'
-import { AppFlexContainer, columnBreakpoints, GlobalStyle, themes } from 'components/theme';
+import { AppFlexContainer, columnBreakpoints, GlobalStyle, themes } from 'components/theme/index.js';
 import KeyProvider from './providers/KeyProvider';
 import { Debugger } from 'components/dev/Debug';
 import { ErrorBoundary } from 'react-error-boundary'
@@ -82,6 +82,7 @@ const ThemedErrorState = observer((props) => {
 export default function App() {
     return (
         <Provider value={rootStore}>
+            <p>Poop Dick</p>
             <ErrorBoundary
                 FallbackComponent={ThemedErrorState}
                 onReset={() => {

@@ -1,8 +1,8 @@
 import { detach, getParent, getPath, types } from 'mobx-state-tree';
-import { getLogger, newUuid } from 'utils';
+import { getLogger, newUuid } from '../../utils';
 import ShortcutItem from './ShortcutItem';
 import MobxShortcutItem from './ShortcutItem';
-import MobxCollection from 'store/types/Collection';
+import MobxCollection from '../types/Collection';
 
 const log = getLogger('Store/CategoryItem');
 

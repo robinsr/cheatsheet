@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
-const Store = require('./io');
+const Store = require('./io.js');
 const ActiveWindow = require('./activewindow');
 const { stage, conf } = require('./config');
 const { createWindow } = require('./window');

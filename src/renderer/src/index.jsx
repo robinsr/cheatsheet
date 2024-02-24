@@ -2,7 +2,7 @@ import './components/App.scss';
 
 import { createRoot } from 'react-dom/client';
 import React from 'react';
-import { getLogger } from 'utils';
+import { getLogger } from './utils';
 import App from './components/App.jsx';
 
 const log = getLogger('AppMain');

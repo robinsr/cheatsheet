@@ -22,7 +22,7 @@ const packageConfig = require('../../package.json');
  * @property {number} minHeight - minimum Y dimension, in px
  */
 
-const stage = process.env.ELECTRON_DEV === 'true' ? 'dev' : 'prod';
+const stage = process.env.NODE_ENV_ELECTRON_VITE === 'development' ? 'dev' : 'prod';
 const devTools = process.argv.includes('--console');
 
 const minimums = {

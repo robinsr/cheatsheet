@@ -48,7 +48,7 @@ module.exports.createWindow = (stageOverrides, userSettings) => {
     const win = new BrowserWindow(windowConfig);
 
     if (DEV) {
-        win.loadURL('http://localhost:8080/index.html');
+        win.loadURL('http://localhost:5173/index.html');
     } else {
         win.loadFile('./dist/index.html');
     }
@@ -95,7 +95,7 @@ const themeDefaults = {
  * @throws {Error} If script does not exist at expected path
  */
 const getPreloadScript = () => {
-    const preloadPath = path.resolve(__dirname, './preload.js');
+    const preloadPath = path.resolve(__dirname, '../preload/index.js');
 
     if (!fs.existsSync(preloadPath)) {
         throw new Error('Invalid preload script path: ' + preloadPath);
